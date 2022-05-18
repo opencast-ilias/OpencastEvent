@@ -1,0 +1,43 @@
+//
+// Deutsch Language File for OpencastEvent Plugin
+//
+<!-- language file start -->
+obj_xoce#:#Opencast Event
+objs_xoce#:#Opencast Events
+obj_xoce_duplicate#:#Kopieren
+objs_xoce_duplicate#:#Kopiere Opencast Events
+obj_xoce_select#:#Wähle Opencast Event
+xoce_add#:#Opencast Event hinzufügen
+xoce_new#:#Neues Opencast Event
+xoce_read#:#Lesezugriff auf Opencast Event
+xoce_write#:#Opencast Event aktualisieren
+xoce_delete#:#Opencast Event löschen
+xoce_visible#:#Opencast Event ist sichtbar
+xoce_edit_permission#:#Zugriffsrecht bearbeiten
+online#:#Online Status
+table_title#:#Bestehendes Video aus Opencast auswählen
+textFilter#:#Text Filter
+status#:#Status
+offline#:#Offline
+edit#:#Bearbeiten
+title#:#Video Titel
+description#:#Video Beschreibung
+event_id#:#Video Identifier
+show_event#:#Content
+event_settings#:#Event Einstellungen
+msg_creation_failed#:#Objekte vom Typ „Opencast Event“ können nur in Kursen oder Gruppen angelegt werden.
+no_event_id#:#Aus der Liste muss ein Opencast Event ausgewählt werden.
+create_successful#:#Opencast event object erfolgreich erstellt.
+update_successful#:#Opencast event object erfolgreich bearbeitet.
+no_title#Ein Titel für die Veranstaltung muss eingefügt werden.
+change_event#:#Auswählen eines anderen Opencast-Ereignisses aus der Tabelle
+reset#:#Zurücksetzen
+display_type#:#Präsentationsmodus
+new_tab#:#Video in neuem Tab anzeigen (Vollbild)
+embed#:#Video im Inhaltstab einbetten
+width#:#Breite
+height#:#Höhe
+height_width#:#Maximale Breite / Höhe in Pixel
+size_type#:#Inhaltsgröße
+maximize#:#Maximal
+custome_size#:#Benutzerdefiniert

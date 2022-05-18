@@ -1,0 +1,46 @@
+//
+// English Language File for OpencastEvent Plugin
+//
+<!-- language file start -->
+obj_xoce#:#Opencast Event
+objs_xoce#:#Opencast Events
+obj_xoce_duplicate#:#Copy
+objs_xoce_duplicate#:#Copy Opencast Events
+obj_xoce_select#:#Select Opencast Event
+xoce_add#:#Add Opencast Event
+xoce_new#:#Add New Opencast Event
+xoce_read#:#Read access to Opencast Event
+xoce_write#:#Update Opencast Event
+xoce_delete#:#Delete Opencast Event
+xoce_visible#:#Opencast Event is visible
+xoce_edit_permission#:#Change permission settings
+online#:#Online Status
+table_title#:#Select an existing video from Opencast
+textFilter#:#Text Filter
+status#:#Status
+offline#:#Offline
+edit#:#Edit
+title#:#Video Title
+description#:#Video Description
+event_id#:#Video Identifier
+show_event#:#Content
+event_settings#:#Event Settings
+msg_creation_failed#:#Objects of type "Opencast Event" can only be created in courses or groups.
+no_event_id#:#An Opencast Video must be selected from the list.
+create_successful#:#Opencast event object successfully created.
+update_successful#:#Opencast event object successfully updated.
+no_title#A title for the event must be inserted.
+change_event#:#Select another opencast video from the table
+reset#:#Reset
+display_type#:#Presentation Mode
+new_tab#:#Display video in a new tab (Full Screen)
+embed#:#Embed video in the content tab
+width#:#Width
+height#:#height
+height_width#:#Max. width / height in pixels
+cont_constrain_proportions#:#Constrain Proportions
+size_type#:#Content Size
+maximize#:#Maximum
+custome_size#:#Custom
+title_info#:#Please use Opencast Object to change the title of the video
+description_info#:#Please use Opencast Object to change the description of the video

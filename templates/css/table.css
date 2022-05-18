@@ -1,0 +1,14 @@
+#event_table {
+	padding: 1em 2em;
+}
+tr.xoce_table_row_selectable {
+	cursor: pointer;
+}
+
+tr.xoce_table_row_selectable:hover, tr.xoce_table_row_selectable.selected:hover {
+	background-color: #557196 !important;
+}
+
+tr.xoce_table_row_selectable.selected {
+	background-color: #808080 !important;
+}
