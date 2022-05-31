@@ -7,7 +7,7 @@ require_once('./Services/Form/classes/class.ilCheckboxInputGUI.php');
 require_once('./Customizing/global/plugins/Services/Repository/RepositoryObject/OpencastEvent/classes/class.ilOpencastEventPlugin.php');
 require_once('./Customizing/global/plugins/Services/Repository/RepositoryObject/OpencastEvent/classes/class.ilObjOpencastEventAccess.php');
 require_once('./Customizing/global/plugins/Services/Repository/RepositoryObject/OpencastEvent/classes/class.ilObjOpencastEvent.php');
-require_once('./Customizing/global/plugins/Services/Repository/RepositoryObject/OpenCast/classes/class.ilOpenCastPlugin.php');
+require_once('./Customizing/global/plugins/Services/Repository/RepositoryObject/OpencastObject/classes/class.ilOpencastObjectPlugin.php');
 use srag\Plugins\Opencast\DI\OpencastDIC;
 use srag\Plugins\Opencast\Model\Config\PluginConfig;
 use srag\Plugins\Opencast\Util\Player\PlayerDataBuilderFactory;
@@ -46,7 +46,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
     /** @var EventAPIRepository*/
     private $event_repository;
 
-    /** @var ilOpenCastPlugin */
+    /** @var ilOpencastObjectPlugin */
     private $opencast_plugin;
 
     /** @var PaellaConfigServiceFactory */
@@ -66,7 +66,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
         $this->tabs = $DIC->tabs();
         $this->tree = $DIC->repositoryTree();
         $this->tpl = $DIC['tpl'];
-        $this->opencast_plugin = ilOpenCastPlugin::getInstance();
+        $this->opencast_plugin = ilOpencastObjectPlugin::getInstance();
         $opencast_dic = OpencastDIC::getInstance();
         $this->event_repository = $opencast_dic->event_repository();
         $this->paellaConfigServiceFactory = $opencast_dic->paella_config_service_factory();
@@ -134,7 +134,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
             ilUtil::sendFailure($this->txt('msg_creation_failed'), true);
             $this->ctrl->redirectByClass('ilDashboardGUI', '');
         }
-        
+
         $forms = array(
             self::CFORM_NEW => $this->initCreateForm($a_new_type),
         );
@@ -178,7 +178,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
     protected function saveEvent()
     {
         $this->ctrl->setParameter($this, 'new_type', $this->getType());
-        
+
         $form = $this->initEventForm(true);
         if ($this->checkInput($form)) {
             $this->ctrl->setParameter($this, 'new_type', '');
@@ -261,7 +261,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
         $this->tabs->activateTab('content');
         $tpl_name = $this->object->getNewTab() ? 'tpl.OpencastEventPlayer.html' : 'tpl.OpencastEventPlayerEmbed.html';
         $tpl = new ilTemplate($this->getPlugin()->getDirectory() . '/templates/html/' . $tpl_name, true, true);
-        
+
         $event_id = $this->object->getEventId();
         $event = $this->event_repository->find($event_id);
 
@@ -395,7 +395,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
         $newObj->setDescription($event->getDescription());
         $newObj->setEventId($form->getInput('event_id'));
         $newObj->create();
-        
+
         if ($newObj) {
             $parent_id = $this->node_id;
             $this->node_id = null;
@@ -406,7 +406,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
             if ($dtpl) {
                 $newObj->applyDidacticTemplate($dtpl);
             }
-            
+
             // auto rating
             $this->handleAutoRating($newObj);
         }
@@ -446,7 +446,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
     private function renderEventForm($form, $table, $is_new = true)
     {
         $event_tpl = new ilTemplate($this->getPlugin()->getDirectory() . '/templates/html/tpl.OpencastEventCreate.html', true, true);
-        
+
         $event_tpl->setCurrentBlock('form');
         $target_replace = '<div class="ilFormFooter clearfix">';
         $display_table = $is_new ? 'block' : 'none';
@@ -500,7 +500,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
     protected function initEventForm($is_new = true)
     {
         $form = new ilPropertyFormGUI();
-        
+
         $form->setTitle($this->txt('obj_' . $this->getType()));
 
         if ($is_new) {
@@ -586,7 +586,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
             $form->addCommandButton('resetEdit', $this->txt('reset'));
             $form->addCommandButton('cancelEdit', $this->lng->txt('cancel'));
         }
-        
+
         return $form;
     }
 
@@ -687,7 +687,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
         }
 
         $events = $this->getEvents($filter, $offset, $limit, $sort);
-        
+
         $max_size = ($offset + 1) * $limit;
         $has_next = false;
         $has_prev = $offset > 0 ? true : false;

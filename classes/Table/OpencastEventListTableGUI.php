@@ -1,6 +1,6 @@
 <?php
 include_once("./Services/Table/classes/class.ilTable2GUI.php");
-require_once("./Customizing/global/plugins/Services/Repository/RepositoryObject/OpenCast/classes/class.ilOpenCastPlugin.php");
+require_once("./Customizing/global/plugins/Services/Repository/RepositoryObject/OpencastObject/classes/class.ilOpencastObjectPlugin.php");
 
 use srag\Plugins\Opencast\Model\User\xoctUser;
 use srag\Plugins\Opencast\Model\Metadata\Definition\MDFieldDefinition;
@@ -34,7 +34,7 @@ class OpencastEventListTableGUI extends ilTable2GUI
      */
     protected $dic;
     /**
-     * @var ilOpenCastPlugin
+     * @var ilOpencastObjectPlugin
      */
     private $opencast_plugin;
     /**
@@ -64,7 +64,7 @@ class OpencastEventListTableGUI extends ilTable2GUI
         $this->dic = $DIC;
         $this->parent_obj = $a_parent_obj;
         $this->plugin = $a_parent_obj->getPlugin();
-        $this->opencast_plugin = ilOpenCastPlugin::getInstance();
+        $this->opencast_plugin = ilOpencastObjectPlugin::getInstance();
         $opencast_dic = OpencastDIC::getInstance();
         $this->series_repository = $opencast_dic->series_repository();
         PluginConfig::setApiSettings();
@@ -129,11 +129,11 @@ class OpencastEventListTableGUI extends ilTable2GUI
             if ($object->getProcessingState() == Event::STATE_SUCCEEDED) {
                 $this->tpl->setVariable('ADDITIONAL_CSS_CLASSES', $this->parent_obj->getType() . '_table_row_selectable');
             }
-        
+
             $this->tpl->setVariable('DATA_EVENT_ID', $row['identifier']);
             $this->tpl->setVariable('DATA_TITLE', $row['title']);
             $this->tpl->setVariable('DATA_DESCRIPTION', $row['description']);
-    
+
             foreach ($this->getEventColumns() as $column_name => $column_txt) {
                 $column = $this->getColumnValue($column_name, $row);
                 $temp_identifier = strtoupper($column_name);

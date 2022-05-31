@@ -7,7 +7,7 @@ Introduces a new object in which a single Opencast video can be selected.
 # Usage
 
 This plugin is meant to provide the ability to create an object in a course or a group that displays an opencast event, by choosing this event among all the available events in a form of a table list.
-It relies on the main [ILIAS-Plugin Opencast](https://github.com/opencast-ilias/OpenCast) to get the events, check accessibility and display the selected event using Paella player.
+It relies on the main [ILIAS-Plugin Opencast](https://github.com/opencast-ilias/OpencastObject) to get the events, check accessibility and display the selected event using Paella player.
 
 ## Getting Started
 
