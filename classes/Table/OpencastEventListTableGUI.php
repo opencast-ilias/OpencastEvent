@@ -1,4 +1,5 @@
 <?php
+
 include_once("./Services/Table/classes/class.ilTable2GUI.php");
 require_once("./Customizing/global/plugins/Services/Repository/RepositoryObject/OpenCast/classes/class.ilOpenCastPlugin.php");
 
@@ -18,12 +19,11 @@ use srag\Plugins\Opencast\Model\Event\Event;
  */
 class OpencastEventListTableGUI extends ilTable2GUI
 {
-    const GET_PARAM_EVENT_ID = 'event_id';
-    const F_TEXTFILTER = 'textFilter';
-    const F_SERIES = 'series';
-    const F_START_FROM = 'start_from';
-    const F_START_TO = 'start_to';
-    const F_START = 'start';
+    public const F_TEXTFILTER = 'textFilter';
+    public const F_SERIES = 'series';
+    public const F_START_FROM = 'start_from';
+    public const F_START_TO = 'start_to';
+    public const F_START = 'start';
 
     /**
      * @var ilObjOpencastEventGUI
@@ -101,7 +101,7 @@ class OpencastEventListTableGUI extends ilTable2GUI
      * @param int $ref_id
      * @return OpencastEventListTableGUI
      */
-    public function setRefId($ref_id)
+    public function setRefId($ref_id): OpencastEventListTableGUI
     {
         $this->ref_id = $ref_id;
         return $this;
@@ -110,7 +110,7 @@ class OpencastEventListTableGUI extends ilTable2GUI
     /**
      * @return int
      */
-    public function getRefId()
+    public function getRefId(): int
     {
         return $this->ref_id;
     }
@@ -118,7 +118,7 @@ class OpencastEventListTableGUI extends ilTable2GUI
     /**
     * Filling the row
     */
-    protected function fillRow($row)
+    protected function fillRow($row): void
     {
         if (!isset($row['object'])) {
             $this->tpl->setVariable("TXT_EMPTY_INFO", $row);
@@ -129,11 +129,11 @@ class OpencastEventListTableGUI extends ilTable2GUI
             if ($object->getProcessingState() == Event::STATE_SUCCEEDED) {
                 $this->tpl->setVariable('ADDITIONAL_CSS_CLASSES', $this->parent_obj->getType() . '_table_row_selectable');
             }
-        
+
             $this->tpl->setVariable('DATA_EVENT_ID', $row['identifier']);
             $this->tpl->setVariable('DATA_TITLE', $row['title']);
             $this->tpl->setVariable('DATA_DESCRIPTION', $row['description']);
-    
+
             foreach ($this->getEventColumns() as $column_name => $column_txt) {
                 $column = $this->getColumnValue($column_name, $row);
                 $temp_identifier = strtoupper($column_name);
@@ -149,7 +149,7 @@ class OpencastEventListTableGUI extends ilTable2GUI
     /**
     * Init filter
     */
-    public function initFilter()
+    public function initFilter(): void
     {
         $title = $this->addFilterItemByMetaType(self::F_TEXTFILTER, self::FILTER_TEXT, false, $this->plugin->txt(self::F_TEXTFILTER));
         $title->readFromSession();
@@ -166,7 +166,7 @@ class OpencastEventListTableGUI extends ilTable2GUI
         $this->filter[self::F_START_TO] = $start->getValue()['to'];
     }
 
-    public function getSelectableColumns()
+    public function getSelectableColumns(): array
     {
         return [];
     }
@@ -181,7 +181,7 @@ class OpencastEventListTableGUI extends ilTable2GUI
      *
      * @return array $series_options series option list
      */
-    private function getSeriesFilterOptions()
+    private function getSeriesFilterOptions(): array
     {
         $series_options = ['' => '-'];
         $xoctUser = xoctUser::getInstance($this->dic->user());
@@ -202,7 +202,7 @@ class OpencastEventListTableGUI extends ilTable2GUI
      *
      * @return array $filter list of filters
      */
-    public function buildFilterArray()
+    public function buildFilterArray(): array
     {
         $filter = ['status' => 'EVENTS.EVENTS.STATUS.PROCESSED'];
 
@@ -234,7 +234,7 @@ class OpencastEventListTableGUI extends ilTable2GUI
      *
      * @return string the column value
      */
-    private function getColumnValue(string $column, $row)
+    private function getColumnValue(string $column, $row): string
     {
         switch ($column) {
             case 'thumbnail':
@@ -265,7 +265,7 @@ class OpencastEventListTableGUI extends ilTable2GUI
      *
      * @return array columns list
      */
-    private function getEventColumns()
+    private function getEventColumns(): array
     {
         return [
             'thumbnail' => $this->opencast_plugin->txt('event_preview'),

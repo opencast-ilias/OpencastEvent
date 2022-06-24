@@ -9,11 +9,10 @@ include_once "./Services/Repository/classes/class.ilObjectPluginListGUI.php";
  */
 class ilObjOpencastEventListGUI extends ilObjectPluginListGUI
 {
-
     /**
      * Init type
      */
-    public function initType()
+    public function initType(): void
     {
         $this->setType(ilOpencastEventPlugin::ID);
     }
@@ -21,7 +20,7 @@ class ilObjOpencastEventListGUI extends ilObjectPluginListGUI
     /**
      * Get name of gui class handling the commands
      */
-    public function getGuiClass()
+    public function getGuiClass(): string
     {
         return "ilObjOpencastEventGUI";
     }
@@ -29,7 +28,7 @@ class ilObjOpencastEventListGUI extends ilObjectPluginListGUI
     /**
      * Get commands
      */
-    public function initCommands()
+    public function initCommands(): array
     {
         // Always set
         $this->timings_enabled = true;
@@ -64,12 +63,12 @@ class ilObjOpencastEventListGUI extends ilObjectPluginListGUI
     /**
      * Get item properties
      *
-     * @return        array                array of property arrays:
-     *                                "alert" (boolean) => display as an alert property (usually in red)
-     *                                "property" (string) => property name
-     *                                "value" (string) => property value
+     * @return array array of property arrays:
+     *    "alert" (bool) => display as an alert property (usually in red)
+     *    "property" (string) => property name
+     *    "value" (string) => property value
      */
-    public function getProperties()
+    public function getProperties(): array
     {
         global $lng, $ilUser;
 
@@ -110,7 +109,7 @@ class ilObjOpencastEventListGUI extends ilObjectPluginListGUI
         $a_get_asynch_commands = false,
         $a_asynch_url = "",
         $a_context = self::CONTEXT_REPOSITORY
-    ) {
+    ): string {
         $event_obj = new ilObjOpencastEvent($a_ref_id);
 
         $latest_title = $event_obj->getTitle();

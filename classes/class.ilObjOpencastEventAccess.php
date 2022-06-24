@@ -10,7 +10,6 @@ require_once("./Customizing/global/plugins/Services/Repository/RepositoryObject/
  */
 class ilObjOpencastEventAccess extends ilObjectPluginAccess
 {
-
     /**
      * Checks whether a user may invoke a command or not
      * (this method is called by ilAccessHandler::checkAccess)
@@ -25,7 +24,7 @@ class ilObjOpencastEventAccess extends ilObjectPluginAccess
      * @param int $a_user_id user id (default is current user)
      * @return bool true, if everything is ok
      */
-    public function _checkAccess($a_cmd, $a_permission, $a_ref_id, $a_obj_id, $a_user_id = 0)
+    public function _checkAccess($a_cmd, $a_permission, $a_ref_id, $a_obj_id, $a_user_id = 0): bool
     {
         global $ilUser, $ilAccess;
 
@@ -52,7 +51,7 @@ class ilObjOpencastEventAccess extends ilObjectPluginAccess
      * @param $a_id int
      * @return bool
      */
-    public static function checkOnline($a_id)
+    public static function checkOnline($a_id): bool
     {
         global $ilDB;
 
@@ -62,6 +61,6 @@ class ilObjOpencastEventAccess extends ilObjectPluginAccess
         $set = $ilDB->query($select_sql);
 
         $rec = $ilDB->fetchAssoc($set);
-        return (boolean) $rec["is_online"];
+        return (bool) $rec["is_online"];
     }
 }

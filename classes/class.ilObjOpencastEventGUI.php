@@ -24,9 +24,9 @@ use srag\Plugins\Opencast\Model\User\xoctUser;
  */
 class ilObjOpencastEventGUI extends ilObjectPluginGUI
 {
-    const DEFAULT_WIDTH = 320;
-    const DEFAULT_HEIGHT = 180;
-    const DEFAULT_LIMIT = 10;
+    public const DEFAULT_WIDTH = 320;
+    public const DEFAULT_HEIGHT = 180;
+    public const DEFAULT_LIMIT = 10;
 
     /** @var Container */
     protected $dic;
@@ -58,7 +58,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
     /**
      * Initialisation
      */
-    protected function afterConstructor()
+    protected function afterConstructor(): void
     {
         global $DIC;
         $this->dic = $DIC;
@@ -77,7 +77,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
     /**
      * Get type.
      */
-    final public function getType()
+    final public function getType(): string
     {
         return ilOpencastEventPlugin::ID;
     }
@@ -85,7 +85,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
     /**
      * Handles all commmands of this class, centralizes permission checks
      */
-    public function performCommand($cmd)
+    public function performCommand($cmd): void
     {
         switch ($cmd) {
             case 'create':
@@ -109,7 +109,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
     /**
      * Command to be performed after creation.
     */
-    public function getAfterCreationCmd()
+    public function getAfterCreationCmd(): string
     {
         return 'editEvent';
     }
@@ -117,7 +117,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
     /**
      * Command to be performed by default.
     */
-    public function getStandardCmd()
+    public function getStandardCmd(): string
     {
         return 'showContent';
     }
@@ -127,14 +127,14 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
      *
      * The reason to have this methos here, is to check if the object is being used in course/group.
      */
-    protected function initCreationForms($a_new_type)
+    protected function initCreationForms($a_new_type): array
     {
         // To prevent using it out of course or groups.
         if (!$this->checkParentGroupCourse($_GET['ref_id'])) {
             ilUtil::sendFailure($this->txt('msg_creation_failed'), true);
             $this->ctrl->redirectByClass('ilDashboardGUI', '');
         }
-        
+
         $forms = array(
             self::CFORM_NEW => $this->initCreateForm($a_new_type),
         );
@@ -149,7 +149,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
     /**
      * Sets the tab for this plugin.
      */
-    public function setTabs()
+    public function setTabs(): void
     {
         global $ilAccess;
 
@@ -175,10 +175,10 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
      * It is meant to check the creation form, create the opencast event object and perform afterSave method.
      * It returns to create action if the requirments are not met.
      */
-    protected function saveEvent()
+    protected function saveEvent(): void
     {
         $this->ctrl->setParameter($this, 'new_type', $this->getType());
-        
+
         $form = $this->initEventForm(true);
         if ($this->checkInput($form)) {
             $this->ctrl->setParameter($this, 'new_type', '');
@@ -202,7 +202,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
      * It overwrite the public create method of the parents,
      * in order for us to provide a custom form.
      */
-    public function create()
+    public function create(): void
     {
         $form = $this->initEventForm();
         $table = $this->getTable();
@@ -213,7 +213,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
     /**
      * This method is used to display a custom event object edit form.
      */
-    protected function editEvent()
+    protected function editEvent(): void
     {
         $this->tabs->activateTab('event_settings');
         $form = $this->initEventForm(false);
@@ -226,7 +226,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
     /**
      * This method is used to update the event object, and redirects back to editEvent action.
      */
-    protected function updateEvent()
+    protected function updateEvent(): void
     {
         $form = $this->initEventForm(false);
         if ($this->checkInput($form)) {
@@ -240,7 +240,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
     /**
      * This method is used to redirect to showContent action, in case edit form is canceled.
      */
-    protected function cancelEdit()
+    protected function cancelEdit(): void
     {
         $this->ctrl->redirect($this, 'showContent');
     }
@@ -248,7 +248,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
     /**
      * This method is used to redirect back to editEvent action, in case of reset.
      */
-    protected function resetEdit()
+    protected function resetEdit(): void
     {
         $this->ctrl->redirect($this, 'editEvent');
     }
@@ -256,12 +256,12 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
     /**
      * This is the main index action of the plugin, to display the opencast event object.
      */
-    protected function showContent()
+    protected function showContent(): void
     {
         $this->tabs->activateTab('content');
         $tpl_name = $this->object->getNewTab() ? 'tpl.OpencastEventPlayer.html' : 'tpl.OpencastEventPlayerEmbed.html';
         $tpl = new ilTemplate($this->getPlugin()->getDirectory() . '/templates/html/' . $tpl_name, true, true);
-        
+
         $event_id = $this->object->getEventId();
         $event = $this->event_repository->find($event_id);
 
@@ -285,7 +285,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
     /**
      * This method is meant to call by the iframe in order to provide the Paella player source code.
      */
-    public function streamVideo()
+    public function streamVideo(): void
     {
         $event_id = $this->object->getEventId();
         $event = $this->event_repository->find($event_id);
@@ -342,7 +342,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
      *
      * @return stdClass $js_config
      */
-    protected function buildJSConfig(Event $event)
+    protected function buildJSConfig(Event $event): stdClass
     {
         $js_config = new stdClass();
         $paella_config = $this->paellaConfigService->getEffectivePaellaPlayerUrl($event->isLiveEvent());
@@ -365,7 +365,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
      *
      * @return stdClass $js_config
      */
-    protected function getPlayerJSConfig()
+    protected function getPlayerJSConfig(): stdClass
     {
         $js_config = new stdClass();
         $js_config->maximize = $this->object->getMaximize();
@@ -381,7 +381,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
      *
      * @return ilObjOpencastEvent $newObj
      */
-    private function createOpencastEventObject($form)
+    private function createOpencastEventObject($form): ilObjOpencastEvent
     {
         // create instance
         $event = $this->event_repository->find($form->getInput('event_id'));
@@ -395,7 +395,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
         $newObj->setDescription($event->getDescription());
         $newObj->setEventId($form->getInput('event_id'));
         $newObj->create();
-        
+
         if ($newObj) {
             $parent_id = $this->node_id;
             $this->node_id = null;
@@ -406,7 +406,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
             if ($dtpl) {
                 $newObj->applyDidacticTemplate($dtpl);
             }
-            
+
             // auto rating
             $this->handleAutoRating($newObj);
         }
@@ -419,7 +419,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
      *
      * @param ilPropertyFormGUI $form
      */
-    private function updateOpencastEventObject($form)
+    private function updateOpencastEventObject($form): void
     {
         $event = $this->event_repository->find($form->getInput('event_id'));
         $this->object->setTitle($event->getTitle());
@@ -441,12 +441,12 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
      *
      * @param ilPropertyFormGUI $form
      * @param OpencastEventListTableGUI $table
-     * @param boolean $is_new determine the state of the form to be rendered for create or editEvent action
+     * @param bool $is_new determine the state of the form to be rendered for create or editEvent action
      */
-    private function renderEventForm($form, $table, $is_new = true)
+    private function renderEventForm($form, $table, $is_new = true): void
     {
         $event_tpl = new ilTemplate($this->getPlugin()->getDirectory() . '/templates/html/tpl.OpencastEventCreate.html', true, true);
-        
+
         $event_tpl->setCurrentBlock('form');
         $target_replace = '<div class="ilFormFooter clearfix">';
         $display_table = $is_new ? 'block' : 'none';
@@ -474,9 +474,9 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
      *
      * @param ilPropertyFormGUI $form
      *
-     * @return boolean based on the checkers defined, returns true of false.
+     * @return bool based on the checkers defined, returns true of false.
      */
-    protected function checkInput($form)
+    protected function checkInput($form): bool
     {
         $return = $form->checkInput();
 
@@ -493,14 +493,14 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
     /**
      * Helper function to create the form object. Different forms may be created based of the param.
      *
-     * @param boolean $is_new to determine if the form is used for edit or create action.
+     * @param bool $is_new to determine if the form is used for edit or create action.
      *
      * @return ilPropertyFormGUI $form
      */
-    protected function initEventForm($is_new = true)
+    protected function initEventForm($is_new = true): ilPropertyFormGUI
     {
         $form = new ilPropertyFormGUI();
-        
+
         $form->setTitle($this->txt('obj_' . $this->getType()));
 
         if ($is_new) {
@@ -586,14 +586,14 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
             $form->addCommandButton('resetEdit', $this->txt('reset'));
             $form->addCommandButton('cancelEdit', $this->lng->txt('cancel'));
         }
-        
+
         return $form;
     }
 
     /**
      * @return array
      */
-    private function getRangeSliderConfig()
+    private function getRangeSliderConfig(): array
     {
         return [
             'skin' => 'modern',
@@ -612,7 +612,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
      *
      * @param $form ilPropertyFormGUI
      */
-    protected function addValuesToForm(&$form)
+    protected function addValuesToForm(&$form): void
     {
         $values_array = [
             'title' => $this->object->getTitle(),
@@ -630,7 +630,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
             ],
             'new_tab' => $this->object->getNewtab()
         ];
-        $size_type = $this->object->getMaximize() ? 'maximize': 'custom';
+        $size_type = $this->object->getMaximize() ? 'maximize' : 'custom';
         $values_array['size_type'] = $size_type;
         if ($_GET['change_event']) {
             $values_array['change_event'] = true;
@@ -642,11 +642,11 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
     /**
      * Helper function to get the opencast event list table.
      *
-     * @param boolean $is_new to determine if the form is used for edit or create action.
+     * @param bool $is_new to determine if the form is used for edit or create action.
      *
      * @return OpencastEventListTableGUI
      */
-    protected function getTable($is_new = true)
+    protected function getTable($is_new = true): OpencastEventListTableGUI
     {
         include_once($this->getPlugin()->getDirectory() . '/classes/Table/OpencastEventListTableGUI.php');
         $opencast_event_table = new OpencastEventListTableGUI($this, $is_new ? 'create' : 'editEvent', (int) $_GET['ref_id']);
@@ -667,11 +667,11 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
      * Helper function to set table data and properties accordingly.
      *
      * @param OpencastEventListTableGUI $opencast_event_table the opencast event table.
-     * @param boolean $is_new to determine if the form is used for edit or create action.
+     * @param bool $is_new to determine if the form is used for edit or create action.
      *
      * @return OpencastEventListTableGUI
      */
-    private function handleTable($opencast_event_table, $is_new)
+    private function handleTable($opencast_event_table, $is_new): OpencastEventListTableGUI
     {
         $limit = self::DEFAULT_LIMIT;
         $filter = $opencast_event_table->buildFilterArray();
@@ -687,7 +687,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
         }
 
         $events = $this->getEvents($filter, $offset, $limit, $sort);
-        
+
         $max_size = ($offset + 1) * $limit;
         $has_next = false;
         $has_prev = $offset > 0 ? true : false;
@@ -728,7 +728,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
      * Helper function to apply filters of the table when it is rendered for create action.
      * It redirects back to create action
      */
-    public function applyFilter()
+    public function applyFilter(): void
     {
         $table = $this->getTable();
         $this->performApplyFilter($table);
@@ -740,7 +740,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
      * Helper function to apply filters of the table when it is rendered for editEvent action.
      * It redirects back to editEvent action
      */
-    public function applyFilterEdit()
+    public function applyFilterEdit(): void
     {
         $table = $this->getTable(false);
         $this->performApplyFilter($table);
@@ -753,7 +753,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
      *
      * @param OpencastEventListTableGUI $table
      */
-    private function performApplyFilter($table)
+    private function performApplyFilter($table): void
     {
         $table->resetOffset();
         $table->storeProperty('offset', 0);
@@ -765,7 +765,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
      * Helper function to reset filters of the table when it is rendered for create action.
      * It redirects back to create action.
      */
-    public function resetFilter()
+    public function resetFilter(): void
     {
         $table = $this->getTable();
         $this->performResetFilter($table);
@@ -777,7 +777,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
      * Helper function to reset filters of the table when it is rendered for editEvent action.
      * It redirects back to editEvent action
      */
-    public function resetFilterEdit()
+    public function resetFilterEdit(): void
     {
         $table = $this->getTable(false);
         $this->performResetFilter($table);
@@ -790,7 +790,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
      *
      * @param OpencastEventListTableGUI $table
      */
-    private function performResetFilter($table)
+    private function performResetFilter($table): void
     {
         $table->resetOffset();
         $table->storeProperty('offset', 0);
@@ -802,7 +802,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
      * Gets the opencast event plugin
      * @return ilOpencastEventPlugin
      */
-    public function getPlugin()
+    public function getPlugin(): ilOpencastEventPlugin
     {
         return parent::getPlugin();
     }
@@ -811,9 +811,9 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
      * Checks if the parent object is course or group, to prevent access otherwise!
      *
      * @param string $ref_id
-     * @return boolean
+     * @return bool
      */
-    private function checkParentGroupCourse($ref_id)
+    private function checkParentGroupCourse($ref_id): bool
     {
         $is_checked = false;
         if ($this->tree->checkForParentType($ref_id, 'grp') > 0 ||
@@ -828,7 +828,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
      *
      * @return array $events events list
      */
-    private function getEvents($filter = [], $offset = 0, $limit = 1000, $sort = '')
+    private function getEvents($filter = [], $offset = 0, $limit = 1000, $sort = ''): array
     {
         // the api doesn't deliver a max count, so we fetch (limit + 1) to see if there should be a 'next' page
         try {

@@ -35,7 +35,7 @@ class ilObjOpencastEvent extends ilObjectPlugin
     /**
      * Get type.
      */
-    final public function initType()
+    final public function initType(): void
     {
         $this->setType(ilOpencastEventPlugin::ID);
     }
@@ -43,7 +43,7 @@ class ilObjOpencastEvent extends ilObjectPlugin
     /**
      * Create object
      */
-    public function doCreate()
+    public function doCreate(): void
     {
         global $ilDB;
 
@@ -63,7 +63,7 @@ class ilObjOpencastEvent extends ilObjectPlugin
     /**
      * Read data from db
      */
-    public function doRead()
+    public function doRead(): void
     {
         global $ilDB;
 
@@ -99,7 +99,7 @@ class ilObjOpencastEvent extends ilObjectPlugin
     /**
      * Update data
      */
-    public function doUpdate()
+    public function doUpdate(): void
     {
         global $ilDB;
 
@@ -120,7 +120,7 @@ class ilObjOpencastEvent extends ilObjectPlugin
     /**
      * Delete data from db
      */
-    public function doDelete()
+    public function doDelete(): void
     {
         global $ilDB;
 
@@ -133,7 +133,7 @@ class ilObjOpencastEvent extends ilObjectPlugin
     /**
      * Do Cloning
      */
-    public function doCloneObject($new_obj, $a_target_id, $a_copy_id = null)
+    public function doCloneObject($new_obj, $a_target_id, $a_copy_id = null): void
     {
         $new_obj->setOnline($this->isOnline());
         $new_obj->setEventId($this->getEventId());
@@ -147,9 +147,9 @@ class ilObjOpencastEvent extends ilObjectPlugin
     /**
      * Set online
      *
-     * @param boolean online
+     * @param bool online
      */
-    public function setOnline($a_val)
+    public function setOnline($a_val): void
     {
         $this->online = $a_val;
     }
@@ -157,9 +157,9 @@ class ilObjOpencastEvent extends ilObjectPlugin
     /**
      * Get online
      *
-     * @return boolean online
+     * @return bool online
      */
-    public function isOnline()
+    public function isOnline(): bool
     {
         return $this->online ? true : false;
     }
@@ -169,7 +169,7 @@ class ilObjOpencastEvent extends ilObjectPlugin
      *
      * @param string event id
      */
-    public function setEventId($a_val)
+    public function setEventId($a_val): void
     {
         $this->event_id = $a_val;
     }
@@ -179,7 +179,7 @@ class ilObjOpencastEvent extends ilObjectPlugin
      *
      * @return string event id
      */
-    public function getEventId()
+    public function getEventId(): string
     {
         return $this->event_id;
     }
@@ -189,7 +189,7 @@ class ilObjOpencastEvent extends ilObjectPlugin
      *
      * @param int width
      */
-    public function setWidth($a_val)
+    public function setWidth($a_val): void
     {
         $this->width = $a_val ? intval($a_val) : null;
     }
@@ -199,9 +199,9 @@ class ilObjOpencastEvent extends ilObjectPlugin
      *
      * @return int width
      */
-    public function getWidth()
+    public function getWidth(): int
     {
-        return $this->width;
+        return !empty($this->width) ? $this->width : 0;
     }
 
     /**
@@ -209,7 +209,7 @@ class ilObjOpencastEvent extends ilObjectPlugin
      *
      * @param int height
      */
-    public function setHeight($a_val)
+    public function setHeight($a_val): void
     {
         $this->height = $a_val ? intval($a_val) : null;
     }
@@ -219,9 +219,9 @@ class ilObjOpencastEvent extends ilObjectPlugin
      *
      * @return int height
      */
-    public function getHeight()
+    public function getHeight(): int
     {
-        return $this->height;
+        return !empty($this->height) ? $this->height : 0;
     }
 
     /**
@@ -229,7 +229,7 @@ class ilObjOpencastEvent extends ilObjectPlugin
      *
      * @param int new tab flag
      */
-    public function setNewTab($a_val)
+    public function setNewTab($a_val): void
     {
         $this->new_tab = $a_val;
     }
@@ -237,9 +237,9 @@ class ilObjOpencastEvent extends ilObjectPlugin
     /**
      * Get New Tab Flag
      *
-     * @return int new tab flag
+     * @return bool new tab flag
      */
-    public function getNewTab()
+    public function getNewTab(): bool
     {
         return $this->new_tab ? true : false;
     }
@@ -249,7 +249,7 @@ class ilObjOpencastEvent extends ilObjectPlugin
      *
      * @param int Maximize flag
      */
-    public function setMaximize($a_val)
+    public function setMaximize($a_val): void
     {
         $this->maximize = $a_val;
     }
@@ -257,9 +257,9 @@ class ilObjOpencastEvent extends ilObjectPlugin
     /**
      * Get Maximize Flag
      *
-     * @return int Maximize flag
+     * @return bool Maximize flag
      */
-    public function getMaximize()
+    public function getMaximize(): bool
     {
         return $this->maximize ? true : false;
     }

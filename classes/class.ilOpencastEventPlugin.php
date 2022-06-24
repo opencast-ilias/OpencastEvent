@@ -9,16 +9,16 @@ include_once("./Services/Repository/classes/class.ilRepositoryObjectPlugin.php")
  */
 class ilOpencastEventPlugin extends ilRepositoryObjectPlugin
 {
-    const ID = 'xoce';
-    const NAME = 'OpencastEvent';
-    const TABLE_NAME = 'rep_robj_' . self::ID . '_data';
+    public const ID = 'xoce';
+    public const NAME = 'OpencastEvent';
+    public const TABLE_NAME = 'rep_robj_' . self::ID . '_data';
 
-    public function getPluginName()
+    public function getPluginName(): string
     {
         return self::NAME;
     }
 
-    protected function uninstallCustom()
+    protected function uninstallCustom(): void
     {
         global $DIC;
         $db = $DIC->database();
@@ -28,7 +28,7 @@ class ilOpencastEventPlugin extends ilRepositoryObjectPlugin
     /**
      * @inheritdoc
      */
-    public function allowCopy()
+    public function allowCopy(): bool
     {
         return true;
     }
