@@ -267,7 +267,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
 
         $this->tpl->addCss($this->getPlugin()->getDirectory() . '/templates/css/player.min.css');
         $this->tpl->addJavaScript($this->getPlugin()->getDirectory() . '/templates/js/player.min.js');
-        $this->tpl->addOnLoadCode('OpencastEventPlayer.init(' .
+        $this->tpl->addOnLoadCode('il.OpencastEvent.player.init(' .
             json_encode($this->getPlayerJSConfig($event)) .
         ');');
         $stream_url = $this->ctrl->getLinkTarget($this, 'streamVideo');
@@ -460,12 +460,14 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
             $this->tpl->addCss($this->getPlugin()->getDirectory() . '/templates/css/ion.rangeSlider.min.css');
             $this->tpl->addJavaScript($this->getPlugin()->getDirectory() . '/templates/js/form.min.js');
             $cons_prop_text = $this->lng->txt('cont_constrain_proportions', 'content');
-            $this->tpl->addOnLoadCode('OpencastEvent.initForm(' .
-                self::DEFAULT_WIDTH * 2 . ', "' . $cons_prop_text . '"' .
+            $slider_config = json_encode($this->getRangeSliderConfig());
+            $this->tpl->addOnLoadCode('il.OpencastEvent.form.initForm(' .
+                self::DEFAULT_WIDTH * 2 . ', "' . $cons_prop_text . '", ' . $slider_config .
             ');');
         }
-        $this->tpl->addJavaScript($this->getPlugin()->getDirectory() . '/templates/js/table.min.js');
         $this->tpl->addCss($this->getPlugin()->getDirectory() . '/templates/css/table.min.css');
+        $this->tpl->addJavaScript($this->getPlugin()->getDirectory() . '/templates/js/table.min.js');
+        $this->tpl->addOnLoadCode('il.OpencastEvent.table.init();');
 
         $this->tpl->setContent($event_tpl->get());
     }
@@ -555,7 +557,6 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
             // slider
             $slider = new ilNonEditableValueGUI('', '', true);
             $slider_tpl = new ilTemplate($this->getPlugin()->getDirectory() . '/templates/html/tpl.OpencastEventInputSlider.html', false, false);
-            $slider_tpl->setVariable('CONFIG', json_encode($this->getRangeSliderConfig()));
             $slider->setValue($slider_tpl->get());
             $size_type_custom->addSubItem($slider);
 
