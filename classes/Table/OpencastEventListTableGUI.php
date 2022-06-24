@@ -126,10 +126,8 @@ class OpencastEventListTableGUI extends ilTable2GUI
 
             /** @var Event $object */
             $object = $row['object'];
-            if ($object->getProcessingState() == Event::STATE_SUCCEEDED) {
-                $this->tpl->setVariable('ADDITIONAL_CSS_CLASSES', $this->parent_obj->getType() . '_table_row_selectable');
-            }
 
+            $this->tpl->setVariable('SELECTABLE', $object->getProcessingState() == Event::STATE_SUCCEEDED);
             $this->tpl->setVariable('DATA_EVENT_ID', $row['identifier']);
             $this->tpl->setVariable('DATA_TITLE', $row['title']);
             $this->tpl->setVariable('DATA_DESCRIPTION', $row['description']);

@@ -17,6 +17,11 @@ il.OpencastEvent = il.OpencastEvent || {};
         };
 
         var initSelectedRow = function() {
+            $('.xoce_table_row_selectable').each(function (index, row) {
+                if ($(row).data('selectable') != true) {
+                    $(row).removeClass('xoce_table_row_selectable');
+                }
+            });
             $('.xoce_table_row_selectable').removeClass('selected');
             $(`.xoce_table_row_selectable[data-event_id="${$('#event_id').val()}"]`).addClass('selected');
         };
