@@ -60,7 +60,6 @@ il.OpencastEvent = il.OpencastEvent || {};
                     $('#event_id').val($('#current_event_id').val());
                     $('#event_id_display').text($('#current_event_id').val());
                     $('#title').text($('#current_title').val());
-                    $('#description').text($('#current_description').val());
                     initSelectedRow();
                 }
             });

@@ -527,10 +527,6 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
             $title->setInfo($this->txt('title_info'));
             $form->addItem($title);
 
-            $desc = new ilNonEditableValueGUI($this->txt('description'), 'description');
-            $desc->setInfo($this->txt('description_info'));
-            $form->addItem($desc);
-
             $size_type = new ilRadioGroupInputGUI($this->txt('size_type'), "size_type");
             $size_type->setRequired(true);
             $form->addItem($size_type);
@@ -581,8 +577,6 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
             $current_title = new ilHiddenInputGUI('current_title');
             $form->addItem($current_title);
 
-            $current_description = new ilHiddenInputGUI('current_description');
-            $form->addItem($current_description);
 
             $current_event_id = new ilHiddenInputGUI('current_event_id');
             $form->addItem($current_event_id);
@@ -628,7 +622,6 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
             'event_id' => $this->object->getEventId(),
             'event_id_display' => $this->object->getEventId(),
             'current_title' => $this->object->getTitle(),
-            'current_description' => $this->object->getDescription(),
             'current_event_id' => $this->object->getEventId(),
             'embed_size' => [
                 'width' => $this->object->getWidth() ? $this->object->getWidth() : self::DEFAULT_WIDTH,
