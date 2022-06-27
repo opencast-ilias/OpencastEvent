@@ -489,9 +489,8 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
     {
         $form = new ilPropertyFormGUI();
 
-        $form->setTitle($this->txt('obj_' . $this->getType()));
-
         if ($is_new) {
+            $form->setTitle($this->txt('obj_' . $this->getType()));
             $form->setId($this->getType() . '_event_new');
 
             $event_id = new ilHiddenInputGUI('event_id');
@@ -503,21 +502,25 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
         } else {
             $form->setId($this->getType() . '_event_edit');
 
-            $online = new ilCheckboxInputGUI($this->txt('online'), 'online');
-            $form->addItem($online);
+            //1. Settings Section
+            $setting_section = new ilFormSectionHeaderGUI();
+            $setting_section->setTitle($this->txt('settings_section'));
+            $form->addItem($setting_section);
 
-            $title = new ilNonEditableValueGUI($this->txt('title'), 'title');
-            $title->setInfo($this->txt('title_info'));
-            $form->addItem($title);
+            $online = new ilCheckboxInputGUI($this->txt('online'), 'online');
+            $online->setInfo($this->txt('online_info'));
+            $form->addItem($online);
 
             $size_type = new ilRadioGroupInputGUI($this->txt('size_type'), "size_type");
             $size_type->setRequired(true);
             $form->addItem($size_type);
 
             $size_type_maximize = new ilRadioOption($this->txt('maximize'), 'maximize');
+            $size_type_maximize->setInfo($this->txt('maximize_info'));
             $size_type->addOption($size_type_maximize);
 
             $size_type_custom = new ilRadioOption($this->txt('custome_size'), 'custom');
+            $size_type_custom->setInfo($this->txt('custome_size_info'));
             $size_type->addOption($size_type_custom);
 
             // preview image
@@ -546,7 +549,17 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
             $size_type_custom->addSubItem($slider);
 
             $new_tab = new ilCheckboxInputGUI($this->txt('new_tab'), 'new_tab');
+            $new_tab->setInfo($this->txt('new_tab_info'));
             $form->addItem($new_tab);
+
+            //2. Opencast Video Section
+            $oc_video_section = new ilFormSectionHeaderGUI();
+            $oc_video_section->setTitle($this->txt('oc_video_section'));
+            $form->addItem($oc_video_section);
+
+            $title = new ilNonEditableValueGUI($this->txt('title'), 'title');
+            $title->setInfo($this->txt('title_info'));
+            $form->addItem($title);
 
             $event_id = new ilHiddenInputGUI('event_id');
             $form->addItem($event_id);
@@ -559,7 +572,6 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
 
             $current_title = new ilHiddenInputGUI('current_title');
             $form->addItem($current_title);
-
 
             $current_event_id = new ilHiddenInputGUI('current_event_id');
             $form->addItem($current_event_id);
