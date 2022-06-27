@@ -246,14 +246,6 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
     }
 
     /**
-     * This method is used to redirect back to editEvent action, in case of reset.
-     */
-    protected function resetEdit(): void
-    {
-        $this->ctrl->redirect($this, 'editEvent');
-    }
-
-    /**
      * This is the main index action of the plugin, to display the opencast event object.
      */
     protected function showContent(): void
@@ -584,7 +576,6 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
             $form->setFormAction($this->ctrl->getFormAction($this, 'updateEvent'));
 
             $form->addCommandButton('updateEvent', $this->txt($this->getType() . '_write'));
-            $form->addCommandButton('resetEdit', $this->txt('reset'));
             $form->addCommandButton('cancelEdit', $this->lng->txt('cancel'));
         }
 
