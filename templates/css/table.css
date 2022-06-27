@@ -10,7 +10,7 @@ tr.xoce_table_row_selectable {
 }
 
 tr.xoce_table_row_selectable:hover, tr.xoce_table_row_selectable.selected:hover {
-	background-color: #557196;
+	background-color: #557196 !important;
 }
 
 tr.xoce_table_row_selectable.selected {
