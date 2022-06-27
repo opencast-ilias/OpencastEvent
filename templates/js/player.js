@@ -33,8 +33,18 @@ il.OpencastEvent = il.OpencastEvent || {};
         };
 
         var setSize = function(width, height) {
-            $('#xoce_player_container').width(width + 'px');
-            $('#xoce_player_container').height(height + 'px');
+            $('#xoce_player_container').css("maxWidth", width + 'px');
+            applyAspectRatio(width, height);
+            $(window).resize(function() {
+                applyAspectRatio(width, height);
+            });
+        };
+
+        var applyAspectRatio = function(width, height) {
+            var aspect_ratio = width / height;
+            var current_width = $('#xoce_player_container').width();
+            var current_height = current_width / aspect_ratio;
+            $('#xoce_player_container').height(current_height + 'px');
         };
 
         return {
