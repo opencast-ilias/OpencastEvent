@@ -448,10 +448,12 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
         $event_tpl = new ilTemplate($this->getPlugin()->getDirectory() . '/templates/html/tpl.OpencastEventCreate.html', true, true);
 
         $event_tpl->setCurrentBlock('form');
-        $target_replace = '<div class="ilFormFooter clearfix">';
-        $display_table = $is_new ? 'block' : 'none';
-        $table_div_replace = '<div id="event_table" style="display: ' . $display_table . ';">' . $table->getHTML() . '</div>' . $target_replace;
-        $form_with_table = str_replace($target_replace, $table_div_replace, $form->getHTML());
+        $footer_replace_tpl = new ilTemplate($this->getPlugin()->getDirectory() . '/templates/html/tpl.OpencastEventFooterReplace.html', true, false);
+        $event_table_replace_tpl = new ilTemplate($this->getPlugin()->getDirectory() . '/templates/html/tpl.OpencastEventFormEventTableReplace.html', true, true);
+        $event_table_replace_tpl->setVariable('TABLE', $table->getHTML());
+        $event_table_replace_tpl->setVariable('FOOTER', $footer_replace_tpl->get());
+
+        $form_with_table = str_replace($footer_replace_tpl->get(), $event_table_replace_tpl->get(), $form->getHTML());
         $event_tpl->setVariable('FORM', $form_with_table);
         $event_tpl->parseCurrentBlock();
 
@@ -539,14 +541,18 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
             $size_type_custom = new ilRadioOption($this->txt('custome_size'), 'custom');
             $size_type->addOption($size_type_custom);
 
-            // thumbnail
+            // preview image
             $event_id = $this->object->getEventId();
             $event = $this->event_repository->find($event_id);
-            $thumbnail = new ilNonEditableValueGUI($this->opencast_plugin->txt('event_preview'), '', true);
-            $thumbnail_width = $this->object->getWidth() ? $this->object->getWidth() : self::DEFAULT_WIDTH;
-            $thumbnail_height = $this->object->getHeight() ? $this->object->getHeight() : self::DEFAULT_HEIGHT;
-            $thumbnail->setValue('<img width="' . $thumbnail_width . 'px" height="' . $thumbnail_height . 'px" id="' . $this->getType() . '_thumbnail" src="' . $event->publications()->getThumbnailUrl() . '">');
-            $size_type_custom->addSubItem($thumbnail);
+            $preview_image = new ilNonEditableValueGUI($this->opencast_plugin->txt('event_preview'), '', true);
+            $preview_image_width = $this->object->getWidth() ? $this->object->getWidth() : self::DEFAULT_WIDTH;
+            $preview_image_height = $this->object->getHeight() ? $this->object->getHeight() : self::DEFAULT_HEIGHT;
+            $preview_image_tpl = new ilTemplate($this->getPlugin()->getDirectory() . '/templates/html/tpl.OpencastEventPreviewImage.html', false, false);
+            $preview_image_tpl->setVariable('DYNAMIC_WIDTH', $preview_image_width);
+            $preview_image_tpl->setVariable('DYNAMIC_HEIGHT', $preview_image_height);
+            $preview_image_tpl->setVariable('SRC', $event->publications()->getThumbnailUrl());
+            $preview_image->setValue($preview_image_tpl->get());
+            $size_type_custom->addSubItem($preview_image);
 
             // width height
             $width_height = new ilWidthHeightInputGUI($this->txt("height_width"), 'embed_size');

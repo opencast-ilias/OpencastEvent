@@ -22,29 +22,29 @@ il.OpencastEvent = il.OpencastEvent || {};
             $('input#prop_embed_size_width').change(function() {
                 let new_width = $(this).val();
                 if (keepAspectRatio()) {
-                    let current_width = $('#xoce_thumbnail').width();
-                    let current_height = $('#xoce_thumbnail').height();
+                    let current_width = $('#xoce_preview_image').width();
+                    let current_height = $('#xoce_preview_image').height();
                     let ratio = (current_width / current_height);
                     let new_height = new_width / ratio;
-                    $('#xoce_thumbnail').height(new_height);
+                    $('#xoce_preview_image').height(new_height);
                     $('input#prop_embed_size_height').val(new_height);
                 }
-                $('#xoce_thumbnail').width(new_width);
+                $('#xoce_preview_image').width(new_width);
                 updateSlider();
             });
 
             $('input#prop_embed_size_height').change(function() {
                 let new_height = $(this).val();
                 if (keepAspectRatio()) {
-                    let current_width = $('#xoce_thumbnail').width();
-                    let current_height = $('#xoce_thumbnail').height();
+                    let current_width = $('#xoce_preview_image').width();
+                    let current_height = $('#xoce_preview_image').height();
                     let ratio = (current_width / current_height);
                     let new_width = new_height * ratio;
-                    $('#xoce_thumbnail').width(new_width);
+                    $('#xoce_preview_image').width(new_width);
                     $('input#prop_embed_size_width').val(new_width);
                     updateSlider();
                 }
-                $('#xoce_thumbnail').height(new_height);
+                $('#xoce_preview_image').height(new_height);
             });
         }
 
@@ -65,17 +65,17 @@ il.OpencastEvent = il.OpencastEvent || {};
         };
 
         var sliderCallback = function(data) {
-            let current_width = $('#xoce_thumbnail').width();
-            let current_height = $('#xoce_thumbnail').height();
+            let current_width = $('#xoce_preview_image').width();
+            let current_height = $('#xoce_preview_image').height();
             let ratio = (current_width / current_height);
             let percentage = data.from;
 
             let new_width = max_width * (percentage / 100);
             let new_height = (new_width / ratio);
 
-            $('#xoce_thumbnail').width(new_width);
+            $('#xoce_preview_image').width(new_width);
             $('input#prop_embed_size_width').val(new_width);
-            $('#xoce_thumbnail').height(new_height);
+            $('#xoce_preview_image').height(new_height);
             $('input#prop_embed_size_height').val(new_height);
         };
 

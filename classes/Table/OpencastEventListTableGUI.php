@@ -238,8 +238,9 @@ class OpencastEventListTableGUI extends ilTable2GUI
             case 'thumbnail':
                 /** @var Event $object */
                 $object = $row['object'];
-
-                return '<img height="107.5px" width="200px" src="' . $object->publications()->getThumbnailUrl() . '">';
+                $thumbnail_img_tpl = new ilTemplate($this->plugin->getDirectory() . '/templates/html/tpl.OpencastEventTableThumbnail.html', false, false);
+                $thumbnail_img_tpl->setVariable('SRC', $object->publications()->getThumbnailUrl());
+                return $thumbnail_img_tpl->get();
             case 'title':
                 /** @var Event $object */
                 $object = $row['object'];
