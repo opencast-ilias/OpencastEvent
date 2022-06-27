@@ -238,14 +238,6 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
     }
 
     /**
-     * This method is used to redirect to showContent action, in case edit form is canceled.
-     */
-    protected function cancelEdit(): void
-    {
-        $this->ctrl->redirect($this, 'showContent');
-    }
-
-    /**
      * This is the main index action of the plugin, to display the opencast event object.
      */
     protected function showContent(): void
@@ -508,7 +500,6 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
             $form->setFormAction($this->ctrl->getFormAction($this, 'saveEvent'));
 
             $form->addCommandButton('saveEvent', $this->txt($this->getType() . '_new'));
-            $form->addCommandButton('cancel', $this->lng->txt('cancel'));
         } else {
             $form->setId($this->getType() . '_event_edit');
 
@@ -576,7 +567,6 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
             $form->setFormAction($this->ctrl->getFormAction($this, 'updateEvent'));
 
             $form->addCommandButton('updateEvent', $this->txt($this->getType() . '_write'));
-            $form->addCommandButton('cancelEdit', $this->lng->txt('cancel'));
         }
 
         return $form;
