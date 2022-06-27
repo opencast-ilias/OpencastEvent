@@ -44,3 +44,4 @@ maximize#:#Video is displayed as large as possible and can scale down if the use
 custome_size#:#The defined size acts as a maximum size, while the video can scale down if the user's window is smaller.
 title_info#:#Please use Opencast Object to change the title of the video
 description_info#:#Please use Opencast Object to change the description of the video
+table_row_tooltip_txt#:#Click on this row to select this video

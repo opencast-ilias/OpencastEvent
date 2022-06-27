@@ -44,3 +44,4 @@ maximize#:#Das Video wird so groß wie möglich dargestellt, passt sich allerdin
 custome_size#:#Die ausgewählte Größe entspricht der Maximalgröße des Videos, passt sich allerdings der Fenstergröße an.
 title_info#:#Bitte nutzen Sie das Opencast Objekt um den Titel des Videos anzupassen
 description_info#:#Bitte nutzen Sie das Opencast Objekt um die Beschreibung des Videos anzupassen
+table_row_tooltip_txt#:#Klicken Sie auf diese Zeile, um dieses Video auszuwählen

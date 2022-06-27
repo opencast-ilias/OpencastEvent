@@ -2,6 +2,7 @@
 
 include_once("./Services/Table/classes/class.ilTable2GUI.php");
 require_once("./Customizing/global/plugins/Services/Repository/RepositoryObject/OpenCast/classes/class.ilOpenCastPlugin.php");
+include_once("./Services/UIComponent/Tooltip/classes/class.ilTooltipGUI.php");
 
 use srag\Plugins\Opencast\Model\User\xoctUser;
 use srag\Plugins\Opencast\Model\Metadata\Definition\MDFieldDefinition;
@@ -82,6 +83,8 @@ class OpencastEventListTableGUI extends ilTable2GUI
         $this->setShowRowsSelector(false);
         $this->setEnableHeader(true);
         $this->setEnableTitle(true);
+
+        $this->addColumn('', '', 1);
         foreach ($this->getEventColumns() as $column_name => $column_txt) {
             $avialable_sorts = ['title', 'location', 'series', 'start'];
             $sort = '';
@@ -127,10 +130,18 @@ class OpencastEventListTableGUI extends ilTable2GUI
             /** @var Event $object */
             $object = $row['object'];
 
+            $row_id = 'xoce_tr_' . $row['identifier'];
+            $row_tooltip_txt = $this->plugin->txt('table_row_tooltip_txt');
+            ilTooltipGUI::addTooltip($row_id, $row_tooltip_txt);
+
+            $this->tpl->setVariable('ROW_ID', $row_id);
             $this->tpl->setVariable('SELECTABLE', $object->getProcessingState() == Event::STATE_SUCCEEDED);
             $this->tpl->setVariable('DATA_EVENT_ID', $row['identifier']);
             $this->tpl->setVariable('DATA_TITLE', $row['title']);
             $this->tpl->setVariable('DATA_DESCRIPTION', $row['description']);
+
+            $this->tpl->setVariable('UNSELECTED_ICON', ilUtil::getHtmlPath(ilUtil::getImagePath("radiobutton_unchecked.png")));
+            $this->tpl->setVariable('SELECTED_ICON', ilUtil::getHtmlPath(ilUtil::getImagePath("radiobutton_checked.png")));
 
             foreach ($this->getEventColumns() as $column_name => $column_txt) {
                 $column = $this->getColumnValue($column_name, $row);

@@ -14,5 +14,21 @@ tr.xoce_table_row_selectable:hover, tr.xoce_table_row_selectable.selected:hover 
 }
 
 tr.xoce_table_row_selectable.selected {
-	background-color: #808080 !important;
+	background-color: #86cb92 !important;
+}
+
+tr.xoce_table_row_selectable img.selected-icon {
+	display: none;
+}
+
+tr.xoce_table_row_selectable img.unselected-icon {
+	display: inline;
+}
+
+tr.xoce_table_row_selectable.selected img.selected-icon {
+	display: inline;
+}
+
+tr.xoce_table_row_selectable.selected img.unselected-icon {
+	display: none;
 }
