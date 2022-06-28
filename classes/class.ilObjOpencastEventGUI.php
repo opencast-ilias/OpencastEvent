@@ -426,6 +426,9 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
 
             // auto rating
             $this->handleAutoRating($newObj);
+
+            // set default permissions
+            ilObjOpencastEventAccess::setDefaultPerms($newObj->getRefId());
         }
 
         return $newObj;
