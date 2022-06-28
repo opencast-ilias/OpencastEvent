@@ -209,15 +209,19 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
             $this->ctrl->setParameter($this, 'new_type', '');
 
             $newEventObj = $this->createOpencastEventObject($form);
-            ilUtil::sendSuccess($this->txt('create_successful'), true);
+            if (!empty($newEventObj)) {
+                ilUtil::sendSuccess($this->txt('create_successful'), true);
 
-            $args = func_get_args();
-            if ($args) {
-                $this->afterSave($newEventObj, $args);
+                $args = func_get_args();
+                if ($args) {
+                    $this->afterSave($newEventObj, $args);
+                } else {
+                    $this->afterSave($newEventObj);
+                }
+                return;
             } else {
-                $this->afterSave($newEventObj);
+                ilUtil::sendFailure($this->txt('msg_creation_failed'));
             }
-            return;
         }
 
         $this->ctrl->redirect($this, 'create');
@@ -268,27 +272,29 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
     protected function showContent(): void
     {
         $this->tabs->activateTab('content');
-        $tpl_name = $this->object->getNewTab() ? 'tpl.OpencastEventPlayer.html' : 'tpl.OpencastEventPlayerEmbed.html';
-        $tpl = new ilTemplate($this->getPlugin()->getDirectory() . '/templates/html/' . $tpl_name, true, true);
-
+        $content_html = '';
         $event_id = $this->object->getEventId();
-        $event = $this->event_repository->find($event_id);
-
-        $this->tpl->addCss($this->getPlugin()->getDirectory() . '/templates/css/player.min.css');
-        $this->tpl->addJavaScript($this->getPlugin()->getDirectory() . '/templates/js/player.min.js');
-        $this->tpl->addOnLoadCode('il.OpencastEvent.player.init(' .
-            json_encode($this->getPlayerJSConfig($event)) .
-        ');');
-        $stream_url = $this->ctrl->getLinkTarget($this, 'streamVideo');
-
-        if ($this->object->getNewTab()) {
-            $tpl->setVariable('VIDEO_LINK', $stream_url);
-            $tpl->setVariable('THUMBNAIL_URL', $event->publications()->getThumbnailUrl());
-            $tpl->setVariable('OVERLAY_ICON_URL', $this->getPlugin()->getDirectory() . '/templates/images/play.svg');
-        } else {
-            $tpl->setVariable('URL', $stream_url);
+        $event = $this->getEvent($event_id);
+        if (!empty($event)) {
+            $this->tpl->addCss($this->getPlugin()->getDirectory() . '/templates/css/player.min.css');
+            $this->tpl->addJavaScript($this->getPlugin()->getDirectory() . '/templates/js/player.min.js');
+            $this->tpl->addOnLoadCode('il.OpencastEvent.player.init(' .
+                json_encode($this->getPlayerJSConfig($event)) .
+            ');');
+            $stream_url = $this->ctrl->getLinkTarget($this, 'streamVideo');
+            $tpl_name = $this->object->getNewTab() ? 'tpl.OpencastEventPlayer.html' : 'tpl.OpencastEventPlayerEmbed.html';
+            $tpl = new ilTemplate($this->getPlugin()->getDirectory() . '/templates/html/' . $tpl_name, true, true);
+            if ($this->object->getNewTab()) {
+                $tpl->setVariable('VIDEO_LINK', $stream_url);
+                $tpl->setVariable('THUMBNAIL_URL', $event->publications()->getThumbnailUrl());
+                $tpl->setVariable('OVERLAY_ICON_URL', $this->getPlugin()->getDirectory() . '/templates/images/play.svg');
+            } else {
+                $tpl->setVariable('URL', $stream_url);
+            }
+            $content_html = $tpl->get();
         }
-        $this->tpl->setContent($tpl->get());
+
+        $this->tpl->setContent($content_html);
     }
 
     /**
@@ -297,11 +303,10 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
     public function streamVideo(): void
     {
         $event_id = $this->object->getEventId();
-        $event = $this->event_repository->find($event_id);
-
-        // double check access
-        $event_id = $this->object->getEventId();
-        $event = $this->event_repository->find($event_id);
+        $event = $this->getEvent($event_id);
+        if (empty($event)) {
+            exit;
+        }
 
         if (!PluginConfig::getConfig(PluginConfig::F_INTERNAL_VIDEO_PLAYER) && !$event->isLiveEvent()) {
             // redirect to opencast
@@ -388,12 +393,15 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
      *
      * @param ilPropertyFormGUI $form
      *
-     * @return ilObjOpencastEvent $newObj
+     * @return ilObjOpencastEvent $newObj or null if event object cannot be found from xoct
      */
-    private function createOpencastEventObject($form): ilObjOpencastEvent
+    private function createOpencastEventObject($form): ?ilObjOpencastEvent
     {
         // create instance
-        $event = $this->event_repository->find($form->getInput('event_id'));
+        $event = $this->getEvent($form->getInput('event_id'));
+        if (empty($event)) {
+            return null;
+        }
         $objDefinition = $this->dic['objDefinition'];
         $class_name = 'ilObj' . $objDefinition->getClassName($this->getType());
         $location = $objDefinition->getLocation($this->getType());
@@ -430,7 +438,10 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
      */
     private function updateOpencastEventObject($form): void
     {
-        $event = $this->event_repository->find($form->getInput('event_id'));
+        $event = $this->getEvent($form->getInput('event_id'));
+        if (empty($event)) {
+            return;
+        }
         $this->object->setTitle($event->getTitle());
         $this->object->setDescription($event->getDescription());
         $this->object->setOnline($form->getInput('online') ? true : false);
@@ -549,15 +560,17 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
             $size_type->addOption($size_type_custom);
 
             // preview image
-            $event_id = $this->object->getEventId();
-            $event = $this->event_repository->find($event_id);
             $preview_image = new ilNonEditableValueGUI($this->opencast_plugin->txt('event_preview'), '', true);
             $preview_image_width = $this->object->getWidth() ? $this->object->getWidth() : self::DEFAULT_WIDTH;
             $preview_image_height = $this->object->getHeight() ? $this->object->getHeight() : self::DEFAULT_HEIGHT;
             $preview_image_tpl = new ilTemplate($this->getPlugin()->getDirectory() . '/templates/html/tpl.OpencastEventPreviewImage.html', false, false);
             $preview_image_tpl->setVariable('DYNAMIC_WIDTH', $preview_image_width);
             $preview_image_tpl->setVariable('DYNAMIC_HEIGHT', $preview_image_height);
-            $preview_image_tpl->setVariable('SRC', $event->publications()->getThumbnailUrl());
+            $event_id = $this->object->getEventId();
+            $event = $this->getEvent($event_id);
+            if (!empty($event)) {
+                $preview_image_tpl->setVariable('SRC', $event->publications()->getThumbnailUrl());
+            }
             $preview_image->setValue($preview_image_tpl->get());
             $size_type_custom->addSubItem($preview_image);
 
@@ -881,9 +894,27 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
         } catch (Exception $e) {
             $events = [];
             if ($e->getCode() !== 403) {
-                ilUtil::sendFailure($this->opencast_plugin->txt('failed_loading_events', 'msg', [$e->getMessage()]));
+                ilUtil::sendFailure($e->getMessage());
             }
         }
         return $events;
+    }
+
+    /**
+     * Gets the event object from xoct EventAPIRepository
+     *
+     * @param string $event_id the event identifier
+     *
+     * @return srag\Plugins\Opencast\Model\Event\Event|null return Event object or null if something went wrong
+     */
+    private function getEvent($event_id): ?Event
+    {
+        $event = null;
+        try {
+            $event = $this->event_repository->find($event_id);
+        } catch (Exception $e) {
+            ilUtil::sendFailure($e->getMessage());
+        }
+        return $event;
     }
 }

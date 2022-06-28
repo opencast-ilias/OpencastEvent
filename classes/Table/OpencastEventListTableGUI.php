@@ -194,14 +194,18 @@ class OpencastEventListTableGUI extends ilTable2GUI
     {
         $series_options = ['' => '-'];
         $xoctUser = xoctUser::getInstance($this->dic->user());
-        $this->series_repository->getOwnSeries($xoctUser);
-        foreach ($this->series_repository->getAllForUser($xoctUser->getUserRoleName()) as $series) {
-            $series_options[$series->getIdentifier()] =
-                $series->getMetadata()->getField(MDFieldDefinition::F_TITLE)->getValue()
-                . ' (...' . substr($series->getIdentifier(), -4, 4) . ')';
-        }
+        try {
+            $this->series_repository->getOwnSeries($xoctUser);
+            foreach ($this->series_repository->getAllForUser($xoctUser->getUserRoleName()) as $series) {
+                $series_options[$series->getIdentifier()] =
+                    $series->getMetadata()->getField(MDFieldDefinition::F_TITLE)->getValue()
+                    . ' (...' . substr($series->getIdentifier(), -4, 4) . ')';
+            }
 
-        natcasesort($series_options);
+            natcasesort($series_options);
+        } catch (Exception $th) {
+            $series_options = [];
+        }
 
         return $series_options;
     }

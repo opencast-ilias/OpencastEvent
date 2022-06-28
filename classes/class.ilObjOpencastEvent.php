@@ -82,17 +82,19 @@ class ilObjOpencastEvent extends ilObjectPlugin
         }
 
         $event_id = $this->getEventId();
-        $event = $this->event_repository->find($event_id);
-        $latest_title = $event->getTitle();
-        $latest_description = $event->getDescription();
-
-        if ($event) {
-            if ($latest_title != $this->getTitle()) {
-                $this->setTitle($latest_title);
+        try {
+            $event = $this->event_repository->find($event_id);
+            $latest_title = $event->getTitle();
+            $latest_description = $event->getDescription();
+            if ($event) {
+                if ($latest_title != $this->getTitle()) {
+                    $this->setTitle($latest_title);
+                }
+                if ($latest_description != $this->getDescription()) {
+                    $this->setDescription($latest_description);
+                }
             }
-            if ($latest_description != $this->getDescription()) {
-                $this->setDescription($latest_description);
-            }
+        } catch (Exception $e) {
         }
     }
 
