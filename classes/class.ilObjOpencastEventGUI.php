@@ -107,6 +107,31 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
     }
 
     /**
+     * executeCommand
+     */
+    public function executeCommand(): void
+    {
+        $this->setHeaderOfflineStatus();
+        parent::executeCommand();
+    }
+
+    /**
+     * Shows offline status in the header.
+     */
+    protected function setHeaderOfflineStatus(): void
+    {
+        if ($this->object &&
+            $this->object instanceof ilObjOpencastEvent &&
+            !$this->object->isOnline()) {
+            $this->tpl->setAlertProperties(array(
+                array("alert" => true,
+                    "property" => $this->lng->txt("status"),
+                    "value" => $this->lng->txt("offline"))
+            ));
+        }
+    }
+
+    /**
      * Command to be performed after creation.
     */
     public function getAfterCreationCmd(): string
