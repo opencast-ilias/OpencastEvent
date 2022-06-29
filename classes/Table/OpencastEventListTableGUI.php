@@ -83,6 +83,7 @@ class OpencastEventListTableGUI extends ilTable2GUI
         $this->setShowRowsSelector(false);
         $this->setEnableHeader(true);
         $this->setEnableTitle(true);
+        $this->setDefaultFilterVisiblity(true);
 
         $this->addColumn('', '', 1);
         foreach ($this->getEventColumns() as $column_name => $column_txt) {

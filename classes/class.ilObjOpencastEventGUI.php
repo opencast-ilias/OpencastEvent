@@ -684,7 +684,6 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
     {
         include_once($this->getPlugin()->getDirectory() . '/classes/Table/OpencastEventListTableGUI.php');
         $opencast_event_table = new OpencastEventListTableGUI($this, $is_new ? 'create' : 'editEvent', (int) $_GET['ref_id']);
-        $this->setDefaultFilterDisplay($opencast_event_table->getId(), true);
 
         $offset = isset($_GET['offset']) ? intval($_GET['offset']) : 0;
         $opencast_event_table->setOffset($offset);
@@ -695,25 +694,6 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
         $opencast_event_table->setResetCommand($reset_filter_cmd);
 
         return $this->handleTable($opencast_event_table, $is_new);
-    }
-
-    /**
-     * Helper function to set default display state of the table's filter section.
-     *
-     * @param int $table_id the id of the table
-     * @param bool $show whether to show the section or not
-     *
-     */
-    private function setDefaultFilterDisplay($table_id, $show = true): void
-    {
-        include_once("./Services/Table/classes/class.ilTablePropertiesStorage.php");
-        $tprop = new ilTablePropertiesStorage();
-        $tprop->storeProperty(
-            $table_id,
-            $this->dic->user()->getId(),
-            'filter',
-            $show
-        );
     }
 
     /**
