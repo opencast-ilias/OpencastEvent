@@ -1,0 +1,53 @@
+//
+// English Language File for OpencastEvent Plugin
+//
+<!-- language file start -->
+obj_xoce#:#Opencast Event
+objs_xoce#:#Opencast Events
+obj_xoce_duplicate#:#Copy
+objs_xoce_duplicate#:#Copy Opencast Events
+obj_xoce_select#:#Select Opencast Event
+xoce_add#:#Add Opencast Event
+xoce_new#:#Insert selected Opencast Video
+xoce_read#:#Read access to Opencast Event
+xoce_write#:#Save
+xoce_delete#:#Delete Opencast Event
+xoce_visible#:#Opencast Event is visible
+xoce_edit_permission#:#Change permission settings
+online#:#Online
+online_info#:#If online, participants can view the video.
+table_title#:#Select an existing video from Opencast
+textFilter#:#Text Filter
+status#:#Status
+offline#:#Offline
+edit#:#Edit
+title#:#Video Title
+description#:#Video Description
+event_id#:#Video Identifier
+show_event#:#Content
+event_settings#:#Event Settings
+msg_creation_failed#:#The Opencast Event object could not be created.
+no_event_id#:#An Opencast Video must be selected from the list.
+create_successful#:#Opencast event object successfully created.
+update_successful#:#Opencast event object successfully updated.
+no_title#A title for the event must be inserted.
+change_event#:#Replace by different Opencast Video
+display_type#:#Presentation Mode
+new_tab#:#Thumbnail als Link zum Video
+new_tab_info#:#If selected, clicking on the thumbnail will open the video in a new tab. Otherwise, the video is integrated into the page and a click on it starts the video directly.
+embed#:#Embed video in the content tab
+width#:#Width
+height#:#Height
+height_width#:#Max. width / height in pixels
+cont_constrain_proportions#:#Constrain Proportions
+size_type#:#Video Size
+maximize#:#Maximum and responsive
+maximize_info#:#Video is displayed as large as possible and can scale down if the user's window is smaller.
+custome_size#:#Custom and responsive
+custome_size_info#:#The defined size acts as a maximum size, while the video can scale down if the user's window is smaller.
+title_info#:#To change the title of the video, go to the Opencast Series which this video is part of.
+description_info#:#Please use Opencast Object to change the description of the video
+table_row_tooltip_txt#:#Click on this row to select this video
+table_row_tooltip_txt_not_selectable#:#This video cannot be selected because of ineligible processing state
+oc_video_section#:#Opencast Video
+settings_section#:#Settings

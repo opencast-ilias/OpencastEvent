@@ -1,0 +1,53 @@
+//
+// Deutsch Language File for OpencastEvent Plugin
+//
+<!-- language file start -->
+obj_xoce#:#Opencast Event
+objs_xoce#:#Opencast Events
+obj_xoce_duplicate#:#Kopieren
+objs_xoce_duplicate#:#Kopiere Opencast Events
+obj_xoce_select#:#Wähle Opencast Event
+xoce_add#:#Opencast Event hinzufügen
+xoce_new#:#Füge ausgewähltes Opencast Video ein
+xoce_read#:#Lesezugriff auf Opencast Event
+xoce_write#:#Speichern
+xoce_delete#:#Opencast Event löschen
+xoce_visible#:#Opencast Event ist sichtbar
+xoce_edit_permission#:#Zugriffsrecht bearbeiten
+online#:#Online
+online_info#:#Wenn das Objekt online ist können Teilnehmerinnen das Video sehen.
+table_title#:#Bestehendes Video aus Opencast auswählen
+textFilter#:#Text Filter
+status#:#Status
+offline#:#Offline
+edit#:#Bearbeiten
+title#:#Video Titel
+description#:#Video Beschreibung
+event_id#:#Video Identifier
+show_event#:#Content
+event_settings#:#Event Einstellungen
+msg_creation_failed#:#Das Opencast Event Objekt konnte nicht angelegt werden.
+no_event_id#:#Aus der Liste muss ein Opencast Event ausgewählt werden.
+create_successful#:#Opencast event object erfolgreich erstellt.
+update_successful#:#Opencast event object erfolgreich bearbeitet.
+no_title#Ein Titel für die Veranstaltung muss eingefügt werden.
+change_event#:#Durch anderes Opencast-Video ersetzen
+display_type#:#Präsentationsmodus
+new_tab#:#
+new_tab_info#:#Wenn ausgewählt wird ein Klick auf das Vorschaubild des Videos dieses in einem neuen Tab öffnen. Wenn nicht dann wird das Video in die Seite eingebettet und auf Klick direkt abgespielt.
+embed#:#Video im Inhaltstab einbetten
+width#:#Breite
+height#:#Höhe
+height_width#:#Maximale Breite / Höhe in Pixel
+cont_constrain_proportions#:#Seitenverhältnis beibehalten
+size_type#:#Video Größe
+maximize#:#Maximum und Responsive
+maximize_info#:#Das Video wird so groß wie möglich dargestellt, passt sich allerdings der Fenstergröße an.
+custome_size#:#Custom und Responsive
+custome_size_info#:#Die ausgewählte Größe entspricht der Maximalgröße des Videos, passt sich allerdings der Fenstergröße an.
+title_info#:#Um den Titel des Videos zu ändern, gehen Sie zu der Opencast-Serie, zu der dieses Video gehört.
+description_info#:#Bitte nutzen Sie das Opencast Objekt um die Beschreibung des Videos anzupassen
+table_row_tooltip_txt#:#Klicken Sie auf diese Zeile, um dieses Video auszuwählen
+table_row_tooltip_txt_not_selectable#:#Dieses Video kann aufgrund eines ungeeigneten Verarbeitungsstatus nicht ausgewählt werden
+oc_video_section#:#Opencast Video
+settings_section#:#Einstellungen
