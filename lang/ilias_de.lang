@@ -48,5 +48,6 @@ custome_size_info#:#Die ausgewählte Größe entspricht der Maximalgröße des V
 title_info#:#Um den Titel des Videos zu ändern, gehen Sie zu der Opencast-Serie, zu der dieses Video gehört.
 description_info#:#Bitte nutzen Sie das Opencast Objekt um die Beschreibung des Videos anzupassen
 table_row_tooltip_txt#:#Klicken Sie auf diese Zeile, um dieses Video auszuwählen
+table_row_tooltip_txt_not_selectable#:#Dieses Video kann aufgrund eines ungeeigneten Verarbeitungsstatus nicht ausgewählt werden
 oc_video_section#:#Opencast Video
 settings_section#:#Einstellungen

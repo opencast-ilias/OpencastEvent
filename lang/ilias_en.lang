@@ -48,5 +48,6 @@ custome_size_info#:#The defined size acts as a maximum size, while the video can
 title_info#:#To change the title of the video, go to the Opencast Series which this video is part of.
 description_info#:#Please use Opencast Object to change the description of the video
 table_row_tooltip_txt#:#Click on this row to select this video
+table_row_tooltip_txt_not_selectable#:#This video cannot be selected because of ineligible processing state
 oc_video_section#:#Opencast Video
 settings_section#:#Settings

@@ -132,11 +132,12 @@ class OpencastEventListTableGUI extends ilTable2GUI
             $object = $row['object'];
 
             $row_id = 'xoce_tr_' . $row['identifier'];
-            $row_tooltip_txt = $this->plugin->txt('table_row_tooltip_txt');
+            $selectable = $object->getProcessingState() == Event::STATE_SUCCEEDED;
+            $row_tooltip_txt = $selectable ? $this->plugin->txt('table_row_tooltip_txt') : $this->plugin->txt('table_row_tooltip_txt_not_selectable');
             ilTooltipGUI::addTooltip($row_id, $row_tooltip_txt);
 
             $this->tpl->setVariable('ROW_ID', $row_id);
-            $this->tpl->setVariable('SELECTABLE', $object->getProcessingState() == Event::STATE_SUCCEEDED);
+            $this->tpl->setVariable('SELECTABLE', $selectable);
             $this->tpl->setVariable('DATA_EVENT_ID', $row['identifier']);
             $this->tpl->setVariable('DATA_TITLE', $row['title']);
             $this->tpl->setVariable('DATA_DESCRIPTION', $row['description']);

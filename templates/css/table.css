@@ -17,11 +17,21 @@ tr.xoce_table_row_selectable.selected {
 	background-color: #86cb92 !important;
 }
 
-tr.xoce_table_row_selectable img.selected-icon {
+tr.xoce_table_row td.select-icon-td {
+	text-align: center;
+	vertical-align: middle;
+}
+
+tr.xoce_table_row img.select-icon {
+	width: 16px;
+	height: 16px;
+}
+
+tr.xoce_table_row img.selected-icon {
 	display: none;
 }
 
-tr.xoce_table_row_selectable img.unselected-icon {
+tr.xoce_table_row img.unselected-icon {
 	display: inline;
 }
 
