@@ -24,8 +24,8 @@ use srag\Plugins\Opencast\Model\User\xoctUser;
  */
 class ilObjOpencastEventGUI extends ilObjectPluginGUI
 {
-    public const DEFAULT_WIDTH = 320;
-    public const DEFAULT_HEIGHT = 180;
+    public const DEFAULT_WIDTH = 960;
+    public const DEFAULT_HEIGHT = 540;
     public const DEFAULT_LIMIT = 10;
 
     /** @var Container */
@@ -483,6 +483,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
         if (!$is_new) {
             $this->tpl->addJavaScript($this->getPlugin()->getDirectory() . '/templates/js/ion.rangeSlider.min.js');
             $this->tpl->addCss($this->getPlugin()->getDirectory() . '/templates/css/ion.rangeSlider.min.css');
+            $this->tpl->addCss($this->getPlugin()->getDirectory() . '/templates/css/form.min.css');
             $this->tpl->addJavaScript($this->getPlugin()->getDirectory() . '/templates/js/form.min.js');
             $cons_prop_text = $this->lng->txt('cont_constrain_proportions', 'content');
             $slider_config = json_encode($this->getRangeSliderConfig());
@@ -636,7 +637,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
             'max' => 100,
             'from' => 50,
             'from_min' => 10,
-            'step' => 1,
+            'step' => 5,
             'grid' => true,
             'postfix' => '%',
         ];
