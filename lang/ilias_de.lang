@@ -33,7 +33,7 @@ update_successful#:#Opencast event object erfolgreich bearbeitet.
 no_title#Ein Titel für die Veranstaltung muss eingefügt werden.
 change_event#:#Durch anderes Opencast-Video ersetzen
 display_type#:#Präsentationsmodus
-new_tab#:#
+new_tab#:#Vorschaubild als Link zum Video
 new_tab_info#:#Wenn ausgewählt wird ein Klick auf das Vorschaubild des Videos dieses in einem neuen Tab öffnen. Wenn nicht dann wird das Video in die Seite eingebettet und auf Klick direkt abgespielt.
 embed#:#Video im Inhaltstab einbetten
 width#:#Breite
