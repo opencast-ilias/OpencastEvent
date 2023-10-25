@@ -102,6 +102,8 @@ class OpencastEventListTableGUI extends ilTable2GUI
     }
 
     /**
+     * @inheritdoc
+     *
      * @param int $ref_id
      * @return OpencastEventListTableGUI
      */
@@ -112,6 +114,8 @@ class OpencastEventListTableGUI extends ilTable2GUI
     }
 
     /**
+     * @inheritdoc
+     *
      * @return int
      */
     public function getRefId(): int
@@ -120,8 +124,8 @@ class OpencastEventListTableGUI extends ilTable2GUI
     }
 
     /**
-    * Filling the row
-    */
+     * @inheritdoc
+     */
     protected function fillRow($row): void
     {
         if (!isset($row['object'])) {
@@ -158,8 +162,8 @@ class OpencastEventListTableGUI extends ilTable2GUI
     }
 
     /**
-    * Init filter
-    */
+     * @inheritdoc
+     */
     public function initFilter(): void
     {
         $title = $this->addFilterItemByMetaType(self::F_TEXTFILTER, self::FILTER_TEXT, false, $this->plugin->txt(self::F_TEXTFILTER));
@@ -177,6 +181,9 @@ class OpencastEventListTableGUI extends ilTable2GUI
         $this->filter[self::F_START_TO] = $start->getValue()['to'];
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getSelectableColumns(): array
     {
         return [];
@@ -249,7 +256,7 @@ class OpencastEventListTableGUI extends ilTable2GUI
      *
      * @return string the column value
      */
-    private function getColumnValue(string $column, $row): string
+    private function getColumnValue(string $column, array $row): string
     {
         switch ($column) {
             case 'thumbnail':

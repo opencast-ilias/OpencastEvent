@@ -72,6 +72,16 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
         $this->paellaConfigServiceFactory = $opencast_dic->paella_config_service_factory();
         $this->paellaConfigService = $this->paellaConfigServiceFactory->get();
         PluginConfig::setApiSettings();
+        // Preparation for ILIAS 8: Must-Package
+        if (isset($_GET['ref_id'])) {
+            $this->ref_id = filter_input(INPUT_GET, 'ref_id');
+        }
+        if (isset($_GET['change_event'])) {
+            $this->change_event = filter_input(INPUT_GET, 'change_event');
+        }
+        if (isset($_GET['offset'])) {
+            $this->offset = filter_input(INPUT_GET, 'offset');
+        }
     }
 
     /**
@@ -84,6 +94,8 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
 
     /**
      * Handles all commmands of this class, centralizes permission checks
+     *
+     * @param string $cmd Command
      */
     public function performCommand($cmd): void
     {
@@ -155,7 +167,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
     protected function initCreationForms($a_new_type): array
     {
         // To prevent using it out of course or groups.
-        if (!$this->checkParentGroupCourse($_GET['ref_id'])) {
+        if (!$this->checkParentGroupCourse()) {
             ilUtil::sendFailure($this->txt('msg_creation_failed'), true);
             $this->ctrl->redirectByClass('ilDashboardGUI', '');
         }
@@ -627,6 +639,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
     }
 
     /**
+     * Gets the config for range slider
      * @return array
      */
     private function getRangeSliderConfig(): array
@@ -667,7 +680,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
         ];
         $size_type = $this->object->getMaximize() ? 'maximize' : 'custom';
         $values_array['size_type'] = $size_type;
-        if ($_GET['change_event']) {
+        if (isset($this->change_event)) {
             $values_array['change_event'] = true;
         }
         $form->setValuesByArray($values_array);
@@ -684,9 +697,9 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
     protected function getTable($is_new = true): OpencastEventListTableGUI
     {
         include_once($this->getPlugin()->getDirectory() . '/classes/Table/OpencastEventListTableGUI.php');
-        $opencast_event_table = new OpencastEventListTableGUI($this, $is_new ? 'create' : 'editEvent', (int) $_GET['ref_id']);
+        $opencast_event_table = new OpencastEventListTableGUI($this, $is_new ? 'create' : 'editEvent', (int) $this->ref_id);
 
-        $offset = isset($_GET['offset']) ? intval($_GET['offset']) : 0;
+        $offset = isset($this->offset) ? intval($this->offset) : 0;
         $opencast_event_table->setOffset($offset);
 
         $apply_filter_cmd = $is_new ? 'applyFilter' : 'applyFilterEdit';
@@ -844,14 +857,13 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
     /**
      * Checks if the parent object is course or group, to prevent access otherwise!
      *
-     * @param string $ref_id
      * @return bool
      */
-    private function checkParentGroupCourse($ref_id): bool
+    private function checkParentGroupCourse(): bool
     {
         $is_checked = false;
-        if ($this->tree->checkForParentType($ref_id, 'grp') > 0 ||
-            $this->tree->checkForParentType($ref_id, 'crs') > 0) {
+        if (isset($this->ref_id) && $this->tree->checkForParentType($this->ref_id, 'grp') > 0 ||
+            $this->tree->checkForParentType($this->ref_id, 'crs') > 0) {
             $is_checked = true;
         }
         return $is_checked;
@@ -859,6 +871,11 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
 
     /**
      * Gets the events available to user to fill the table.
+     *
+     * @param array $filter Filter array
+     * @param int $offset Offset num
+     * @param int $limit Limit num
+     * @param string $sort the sort string
      *
      * @return array $events events list
      */

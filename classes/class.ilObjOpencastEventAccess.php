@@ -48,6 +48,7 @@ class ilObjOpencastEventAccess extends ilObjectPluginAccess
     }
 
     /**
+     * Checks whether the Object is online
      * @param $a_id int
      * @return bool
      */

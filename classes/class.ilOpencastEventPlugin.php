@@ -13,11 +13,17 @@ class ilOpencastEventPlugin extends ilRepositoryObjectPlugin
     public const NAME = 'OpencastEvent';
     public const TABLE_NAME = 'rep_robj_' . self::ID . '_data';
 
+    /**
+     * @inheritdoc
+     */
     public function getPluginName(): string
     {
         return self::NAME;
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function uninstallCustom(): void
     {
         global $DIC;
