@@ -56,12 +56,18 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
     private $paellaConfigService;
 
     /**
+     * @var HTTPServices
+     */
+    private $http;
+
+    /**
      * Initialisation
      */
     protected function afterConstructor(): void
     {
         global $DIC;
         $this->dic = $DIC;
+        $this->http = $DIC->http();
         $this->ctrl = $DIC->ctrl();
         $this->tabs = $DIC->tabs();
         $this->tree = $DIC->repositoryTree();
@@ -72,16 +78,9 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
         $this->paellaConfigServiceFactory = $opencast_dic->paella_config_service_factory();
         $this->paellaConfigService = $this->paellaConfigServiceFactory->get();
         PluginConfig::setApiSettings();
-        // Preparation for ILIAS 8: Must-Package
-        if (isset($_GET['ref_id'])) {
-            $this->ref_id = filter_input(INPUT_GET, 'ref_id');
-        }
-        if (isset($_GET['change_event'])) {
-            $this->change_event = filter_input(INPUT_GET, 'change_event');
-        }
-        if (isset($_GET['offset'])) {
-            $this->offset = filter_input(INPUT_GET, 'offset');
-        }
+        $this->ref_id = (int) $this->http->request()->getQueryParams()['ref_id'] ?? null;
+        $this->change_event = (bool) $this->http->request()->getQueryParams()['change_event'] ?? false;
+        $this->offset = (int) $this->http->request()->getQueryParams()['offset'] ?? 0;
     }
 
     /**
@@ -680,7 +679,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
         ];
         $size_type = $this->object->getMaximize() ? 'maximize' : 'custom';
         $values_array['size_type'] = $size_type;
-        if (isset($this->change_event)) {
+        if (isset($this->change_event) && $this->change_event) {
             $values_array['change_event'] = true;
         }
         $form->setValuesByArray($values_array);
