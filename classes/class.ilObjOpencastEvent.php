@@ -2,6 +2,7 @@
 
 include_once("./Services/Repository/classes/class.ilObjectPlugin.php");
 require_once("./Customizing/global/plugins/Services/Repository/RepositoryObject/OpencastEvent/classes/class.ilObjOpencastEventGUI.php");
+use srag\Plugins\Opencast\Model\Event\EventAPIRepository;
 use srag\Plugins\Opencast\DI\OpencastDIC;
 use srag\Plugins\Opencast\Model\Config\PluginConfig;
 
@@ -25,9 +26,10 @@ class ilObjOpencastEvent extends ilObjectPlugin
      */
     public function __construct($a_ref_id = 0)
     {
+        global $opencastContainer;
         $this->table_name = ilOpencastEventPlugin::TABLE_NAME;
         $opencast_dic = OpencastDIC::getInstance();
-        $this->event_repository = $opencast_dic->event_repository();
+        $this->event_repository = $opencastContainer[EventAPIRepository::class];
         PluginConfig::setApiSettings();
         parent::__construct($a_ref_id);
     }
