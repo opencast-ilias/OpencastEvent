@@ -29,7 +29,13 @@ class ilObjOpencastEvent extends ilObjectPlugin
         global $opencastContainer;
         $this->table_name = ilOpencastEventPlugin::TABLE_NAME;
         $opencast_dic = OpencastDIC::getInstance();
-        $this->event_repository = $opencastContainer[EventAPIRepository::class];
+
+        if (method_exists($opencast_dic, 'event_repository')) {
+            $this->event_repository = $opencast_dic->event_repository();
+        } else if (!empty($opencastContainer)) {
+            $this->event_repository = $opencastContainer[EventAPIRepository::class];
+        }
+
         PluginConfig::setApiSettings();
         parent::__construct($a_ref_id);
     }

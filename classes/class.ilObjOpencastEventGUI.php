@@ -13,6 +13,7 @@ use srag\Plugins\Opencast\Model\Config\PluginConfig;
 use srag\Plugins\Opencast\Util\Player\PlayerDataBuilderFactory;
 use srag\Plugins\Opencast\Model\Event\Event;
 use srag\Plugins\Opencast\Model\User\xoctUser;
+use srag\Plugins\Opencast\Model\Event\EventAPIRepository;
 
 /**
  * Class ilObjOpencastEventGUI
@@ -65,7 +66,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
      */
     protected function afterConstructor(): void
     {
-        global $DIC;
+        global $DIC, $opencastContainer;
         $this->dic = $DIC;
         $this->http = $DIC->http();
         $this->ctrl = $DIC->ctrl();
@@ -74,7 +75,13 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
         $this->tpl = $DIC['tpl'];
         $this->opencast_plugin = ilOpenCastPlugin::getInstance();
         $opencast_dic = OpencastDIC::getInstance();
-        $this->event_repository = $opencast_dic->event_repository();
+
+        if (method_exists($opencast_dic, 'event_repository')) {
+            $this->event_repository = $opencast_dic->event_repository();
+        } else if (!empty($opencastContainer)) {
+            $this->event_repository = $opencastContainer[EventAPIRepository::class];
+        }
+
         $this->paellaConfigServiceFactory = $opencast_dic->paella_config_service_factory();
         $this->paellaConfigService = $this->paellaConfigServiceFactory->get();
         PluginConfig::setApiSettings();
@@ -316,6 +323,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
         $event_id = $this->object->getEventId();
         $event = $this->getEvent($event_id);
         if (empty($event)) {
+            echo "Error: Event not found";
             exit;
         }
 
@@ -334,11 +342,23 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
         }
 
         $paella_player_tpl = $this->opencast_plugin->getTemplate('paella_player.html', true, true);
+
+        // The Opencast Plugin versions > 5.3.0 has a new way of providing js.
+        $main_opencast_js_path = $this->opencast_plugin->getDirectory() . '/js/opencast/dist/index.js';
+        $new_paella_player = true;
+        if (file_exists($main_opencast_js_path)) {
+            $jquery_path = iljQueryUtil::getLocaljQueryPath();
+            $ilias_basic_js_path = './Services/JavaScript/js/Basic.js';
+            $paella_player_tpl->setVariable("JQUERY_PATH", $jquery_path);
+            $paella_player_tpl->setVariable("ILIAS_BASIC_JS_PATH", $ilias_basic_js_path);
+        } else {
+            $new_paella_player = false;
+            $paella_player_tpl->setVariable('PAELLA_PLAYER_FOLDER', $this->opencast_plugin->getDirectory()
+                . '/node_modules/paellaplayer/build/player');
+        }
         $paella_player_tpl->setVariable('TITLE', $event->getTitle());
-        $paella_player_tpl->setVariable('PAELLA_PLAYER_FOLDER', $this->opencast_plugin->getDirectory()
-            . '/node_modules/paellaplayer/build/player');
         $paella_player_tpl->setVariable('DATA', json_encode($data));
-        $paella_player_tpl->setVariable('JS_CONFIG', json_encode($this->buildJSConfig($event)));
+        $paella_player_tpl->setVariable('JS_CONFIG', json_encode($this->buildJSConfig($event, $new_paella_player)));
 
         if ($event->isLiveEvent()) {
             $paella_player_tpl->setVariable('LIVE_WAITING_TEXT', $this->opencast_plugin->translate(
@@ -364,17 +384,37 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
      * Creates the config object for the Paella player.
      *
      * @param Event $event the Event object
+     * @param bool $new_paella_player if the paella player is new
      *
      * @return stdClass $js_config
      */
-    protected function buildJSConfig(Event $event): stdClass
+    protected function buildJSConfig(Event $event, bool $new_paella_player = true): stdClass
     {
         $js_config = new stdClass();
-        $paella_config = $this->paellaConfigService->getEffectivePaellaPlayerUrl($event->isLiveEvent());
+        $paella_config = [];
+        if ($new_paella_player) {
+            $paella_config = $this->paellaConfigService->getEffectivePaellaPlayerUrl();
+            $js_config->paella_config_livestream_type = PluginConfig::getConfig(PluginConfig::F_LIVESTREAM_TYPE) ?? 'hls';
+            $js_config->paella_config_livestream_buffered =
+                PluginConfig::getConfig(PluginConfig::F_LIVESTREAM_BUFFERED) ?? false;
+            $js_config->paella_config_resources_path = PluginConfig::PAELLA_RESOURCES_PATH;
+            $js_config->paella_config_fallback_captions = PluginConfig::getConfig(PluginConfig::F_PAELLA_FALLBACK_CAPTIONS) ?? [];
+            $js_config->paella_config_fallback_langs = PluginConfig::getConfig(PluginConfig::F_PAELLA_FALLBACK_LANGS) ?? [] ;
+
+            $paella_themes = $this->paellaConfigService->getPaellaPlayerThemeUrl($event->isLiveEvent());
+            $js_config->paella_theme = $paella_themes['theme_url'];
+            $js_config->paella_theme_live = $paella_themes['theme_live_url'];
+            $js_config->paella_theme_info = $paella_themes['info'];
+
+            $js_config->paella_preview_fallback = $this->paellaConfigService->getPaellaPlayerPreviewFallback();
+        } else {
+            $paella_config = $this->paellaConfigService->getEffectivePaellaPlayerUrl($event->isLiveEvent());
+            $js_config->paella_player_folder = $this->opencast_plugin->getDirectory() . '/node_modules/paellaplayer/build/player';
+        }
+
         $js_config->paella_config_file = $paella_config['url'];
         $js_config->paella_config_info = $paella_config['info'];
         $js_config->paella_config_is_warning = $paella_config['warn'];
-        $js_config->paella_player_folder = $this->opencast_plugin->getDirectory() . '/node_modules/paellaplayer/build/player';
 
         if ($event->isLiveEvent()) {
             $js_config->check_script_hls = $this->opencast_plugin->directory() . '/src/Util/check_hls_status.php'; // script to check live stream availability
