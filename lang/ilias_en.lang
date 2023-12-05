@@ -33,7 +33,7 @@ update_successful#:#Opencast event object successfully updated.
 no_title#A title for the event must be inserted.
 change_event#:#Replace by different Opencast Video
 display_type#:#Presentation Mode
-new_tab#:#Thumbnail als Link zum Video
+new_tab#:#Thumbnail as a link to the video
 new_tab_info#:#If selected, clicking on the thumbnail will open the video in a new tab. Otherwise, the video is integrated into the page and a click on it starts the video directly.
 embed#:#Embed video in the content tab
 width#:#Width
