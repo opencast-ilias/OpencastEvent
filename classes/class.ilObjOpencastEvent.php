@@ -2,6 +2,8 @@
 
 include_once("./Services/Repository/classes/class.ilObjectPlugin.php");
 require_once("./Customizing/global/plugins/Services/Repository/RepositoryObject/OpencastEvent/classes/class.ilObjOpencastEventGUI.php");
+include_once(__DIR__ . "/../src/Config/PluginConfig.php");
+use \elanev\OpencastEvent\Config\PluginConfig as LocalPluginConfig;
 use srag\Plugins\Opencast\Model\Event\EventAPIRepository;
 use srag\Plugins\Opencast\DI\OpencastDIC;
 use srag\Plugins\Opencast\Model\Config\PluginConfig;
@@ -55,15 +57,19 @@ class ilObjOpencastEvent extends ilObjectPlugin
     {
         global $ilDB;
 
+        // Getting new_tab default value from configs.
+        $default_new_tab = (bool) LocalPluginConfig::getConfig(LocalPluginConfig::F_THUMBNAIL_LINK);
+
         $values = [
             $ilDB->quote($this->getId(), "integer"),
             $ilDB->quote(0, "integer"),
             $ilDB->quote($this->getEventId(), "string"),
-            $ilDB->quote(1, "integer"),
+            $ilDB->quote(($default_new_tab ? 1 : 0), "integer"),
             $ilDB->quote(1, "integer"),
         ];
 
-        $insert_sql = "INSERT INTO {$this->table_name} (id, is_online, event_id, new_tab, maximize) VALUES (" . implode(', ', $values) . ")";
+        $insert_sql = "INSERT INTO {$this->table_name} (id, is_online, event_id, new_tab, maximize) VALUES (" .
+            implode(', ', $values) . ")";
 
         $ilDB->manipulate($insert_sql);
     }

@@ -43,3 +43,23 @@ if (!$ilDB->tableExists("rep_robj_xoce_data")) {
     $ilDB->addPrimaryKey("rep_robj_xoce_data", array("id"));
 }
 ?>
+<#2>
+<?php
+// introducing configuration table.
+if (!$ilDB->tableExists("rep_robj_xoce_config")) {
+    $fields = array(
+        'name' => array(
+            'type' => 'text',
+            'length' => 250,
+            'notnull' => true
+        ),
+        'value' => array(
+            'type' => 'text',
+            'length' => 4000,
+            'notnull' => false
+        )
+    );
+    $ilDB->createTable("rep_robj_xoce_config", $fields);
+    $ilDB->addPrimaryKey("rep_robj_xoce_config", array("name"));
+}
+?>
