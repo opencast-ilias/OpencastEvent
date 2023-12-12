@@ -1,3 +1,5 @@
 CI/
 libs/
 .vscode/
+/vendor/
+.phpunit*

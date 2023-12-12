@@ -1,0 +1,31 @@
+{
+    "name": "elan-ev/opencastevent",
+    "description": "",
+    "type": "project",
+    "license": "GPL-3.0",
+    "authors": [
+        {
+            "name": "Farbod Zamani Boroujeni",
+            "email": "zamani@elan-ev.de"
+        }
+    ],
+    "support": {
+        "email": "zamani@elan-ev.de"
+    },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "*",
+        "phpcompatibility/php-compatibility": "*",
+        "phpunit/phpunit": "^9.6",
+        "mockery/mockery": "^1.6"
+    },
+    "autoload": {
+        "classmap": [
+            "./classes/"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "OpencastEvent\\Tests\\": "tests/"
+        }
+    }
+}

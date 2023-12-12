@@ -10,7 +10,8 @@ use srag\Plugins\Opencast\DI\OpencastDIC;
 use srag\Plugins\Opencast\Model\Config\PluginConfig;
 use srag\Plugins\Opencast\Model\Event\Event;
 
-// use srag\Plugins\Opencast\Model\Event\EventAPIRepository;
+use srag\Plugins\Opencast\Model\Series\SeriesRepository;
+use srag\Plugins\Opencast\Model\Series\SeriesAPIRepository;
 
 /**
  * OpencastEventListTableGUI class for event selection
@@ -60,14 +61,20 @@ class OpencastEventListTableGUI extends ilTable2GUI
     */
     public function __construct($a_parent_obj, $a_parent_cmd, $ref_id = 0)
     {
-        global $DIC;
+        global $DIC, $opencastContainer;
 
         $this->dic = $DIC;
         $this->parent_obj = $a_parent_obj;
         $this->plugin = $a_parent_obj->getPlugin();
         $this->opencast_plugin = ilOpenCastPlugin::getInstance();
         $opencast_dic = OpencastDIC::getInstance();
-        $this->series_repository = $opencast_dic->series_repository();
+
+        if (method_exists($opencast_dic, 'series_repository')) {
+            $this->series_repository = $opencast_dic->series_repository();
+        } else if (!empty($opencastContainer)) {
+            $this->series_repository = $opencastContainer->get(SeriesAPIRepository::class);
+        }
+
         PluginConfig::setApiSettings();
         $this->setRefId($ref_id);
         $this->setId($this->parent_obj->getType() . '_event_table_' . $this->dic->user()->getId() . '_' . $this->getRefId());
@@ -102,6 +109,8 @@ class OpencastEventListTableGUI extends ilTable2GUI
     }
 
     /**
+     * @inheritdoc
+     *
      * @param int $ref_id
      * @return OpencastEventListTableGUI
      */
@@ -112,6 +121,8 @@ class OpencastEventListTableGUI extends ilTable2GUI
     }
 
     /**
+     * @inheritdoc
+     *
      * @return int
      */
     public function getRefId(): int
@@ -120,8 +131,8 @@ class OpencastEventListTableGUI extends ilTable2GUI
     }
 
     /**
-    * Filling the row
-    */
+     * @inheritdoc
+     */
     protected function fillRow($row): void
     {
         if (!isset($row['object'])) {
@@ -158,8 +169,8 @@ class OpencastEventListTableGUI extends ilTable2GUI
     }
 
     /**
-    * Init filter
-    */
+     * @inheritdoc
+     */
     public function initFilter(): void
     {
         $title = $this->addFilterItemByMetaType(self::F_TEXTFILTER, self::FILTER_TEXT, false, $this->plugin->txt(self::F_TEXTFILTER));
@@ -177,6 +188,9 @@ class OpencastEventListTableGUI extends ilTable2GUI
         $this->filter[self::F_START_TO] = $start->getValue()['to'];
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getSelectableColumns(): array
     {
         return [];
@@ -249,7 +263,7 @@ class OpencastEventListTableGUI extends ilTable2GUI
      *
      * @return string the column value
      */
-    private function getColumnValue(string $column, $row): string
+    private function getColumnValue(string $column, array $row): string
     {
         switch ($column) {
             case 'thumbnail':
