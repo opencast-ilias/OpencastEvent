@@ -1,8 +1,4 @@
 <?php
-
-include_once("./Services/Repository/classes/class.ilObjectPluginAccess.php");
-require_once("./Customizing/global/plugins/Services/Repository/RepositoryObject/OpencastEvent/classes/class.ilObjOpencastEvent.php");
-
 /**
  * Class ilObjOpencastEventAccess
  *

@@ -1,7 +1,4 @@
 <?php
-
-include_once "./Services/Repository/classes/class.ilObjectPluginListGUI.php";
-
 /**
  * Class ilObjOpencastEventListGUI
  *

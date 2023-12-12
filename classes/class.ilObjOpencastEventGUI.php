@@ -1,13 +1,7 @@
 <?php
+require_once __DIR__ . '/../vendor/autoload.php';
 
-include_once('./Services/Repository/classes/class.ilObjectPluginGUI.php');
-require_once('./Services/Form/classes/class.ilPropertyFormGUI.php');
-require_once('./Services/Form/classes/class.ilTextInputGUI.php');
-require_once('./Services/Form/classes/class.ilCheckboxInputGUI.php');
-require_once('./Customizing/global/plugins/Services/Repository/RepositoryObject/OpencastEvent/classes/class.ilOpencastEventPlugin.php');
-require_once('./Customizing/global/plugins/Services/Repository/RepositoryObject/OpencastEvent/classes/class.ilObjOpencastEventAccess.php');
-require_once('./Customizing/global/plugins/Services/Repository/RepositoryObject/OpencastEvent/classes/class.ilObjOpencastEvent.php');
-require_once('./Customizing/global/plugins/Services/Repository/RepositoryObject/OpenCast/classes/class.ilOpenCastPlugin.php');
+use ilOpenCastPlugin;
 use srag\Plugins\Opencast\DI\OpencastDIC;
 use srag\Plugins\Opencast\Model\Config\PluginConfig;
 use srag\Plugins\Opencast\Util\Player\PlayerDataBuilderFactory;

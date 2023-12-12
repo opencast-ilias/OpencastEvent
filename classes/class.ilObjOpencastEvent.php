@@ -1,7 +1,4 @@
 <?php
-
-include_once("./Services/Repository/classes/class.ilObjectPlugin.php");
-require_once("./Customizing/global/plugins/Services/Repository/RepositoryObject/OpencastEvent/classes/class.ilObjOpencastEventGUI.php");
 use srag\Plugins\Opencast\Model\Event\EventAPIRepository;
 use srag\Plugins\Opencast\DI\OpencastDIC;
 use srag\Plugins\Opencast\Model\Config\PluginConfig;

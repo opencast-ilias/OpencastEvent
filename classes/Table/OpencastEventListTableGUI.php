@@ -1,9 +1,5 @@
 <?php
-
-include_once("./Services/Table/classes/class.ilTable2GUI.php");
-require_once("./Customizing/global/plugins/Services/Repository/RepositoryObject/OpenCast/classes/class.ilOpenCastPlugin.php");
-include_once("./Services/UIComponent/Tooltip/classes/class.ilTooltipGUI.php");
-
+use ilOpenCastPlugin;
 use srag\Plugins\Opencast\Model\User\xoctUser;
 use srag\Plugins\Opencast\Model\Metadata\Definition\MDFieldDefinition;
 use srag\Plugins\Opencast\DI\OpencastDIC;
