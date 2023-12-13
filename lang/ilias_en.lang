@@ -51,3 +51,7 @@ table_row_tooltip_txt#:#Click on this row to select this video
 table_row_tooltip_txt_not_selectable#:#This video cannot be selected because of ineligible processing state
 oc_video_section#:#Opencast Video
 settings_section#:#Settings
+config_header#:#Configurations
+config_saved#:#Settings have been successfully saved.
+config_thumbnail_link#:#"Thumbnail as a link" default value
+config_thumbnail_link_info#:#The default value for the "Thumbnail as a link to the video" setting option. Admins are able to set the default value for this setting option that is displayed to the users upon creating an Opencast Event object.
