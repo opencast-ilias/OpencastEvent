@@ -8,9 +8,11 @@ $baseDir = dirname($vendorDir);
 return array(
     'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
     'OpencastEventListTableGUI' => $baseDir . '/classes/Table/OpencastEventListTableGUI.php',
+    'elanev\\OpencastEvent\\Config\\PluginConfig' => $baseDir . '/src/Config/PluginConfig.php',
     'ilObjOpencastEvent' => $baseDir . '/classes/class.ilObjOpencastEvent.php',
     'ilObjOpencastEventAccess' => $baseDir . '/classes/class.ilObjOpencastEventAccess.php',
     'ilObjOpencastEventGUI' => $baseDir . '/classes/class.ilObjOpencastEventGUI.php',
     'ilObjOpencastEventListGUI' => $baseDir . '/classes/class.ilObjOpencastEventListGUI.php',
+    'ilOpencastEventConfigGUI' => $baseDir . '/classes/class.ilOpencastEventConfigGUI.php',
     'ilOpencastEventPlugin' => $baseDir . '/classes/class.ilOpencastEventPlugin.php',
 );
