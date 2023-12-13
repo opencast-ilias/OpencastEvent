@@ -576,6 +576,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
         if ($is_new) {
             $form->setTitle($this->txt('obj_' . $this->getType()));
             $form->setId($this->getType() . '_event_new');
+            $form->setForceTopButtons(true);
 
             $event_id = new ilHiddenInputGUI('event_id');
             $form->addItem($event_id);
