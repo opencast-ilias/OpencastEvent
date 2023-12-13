@@ -2,3 +2,4 @@ CI/
 libs/
 .vscode/
 .phpunit*
+.DS_Store

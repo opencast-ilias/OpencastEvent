@@ -148,8 +148,8 @@ class OpencastEventListTableGUI extends ilTable2GUI
             $this->tpl->setVariable('DATA_TITLE', $row['title']);
             $this->tpl->setVariable('DATA_DESCRIPTION', $row['description']);
 
-            $this->tpl->setVariable('UNSELECTED_ICON', ilUtil::getHtmlPath(ilUtil::getImagePath("radiobutton_unchecked.png")));
-            $this->tpl->setVariable('SELECTED_ICON', ilUtil::getHtmlPath(ilUtil::getImagePath("radiobutton_checked.png")));
+            $this->tpl->setVariable('UNSELECTED_ICON', $this->plugin->getDirectory() . '/templates/images/circle.svg');
+            $this->tpl->setVariable('SELECTED_ICON', $this->plugin->getDirectory() . '/templates/images/circle-dot-filled.svg');
 
             foreach ($this->getEventColumns() as $column_name => $column_txt) {
                 $column = $this->getColumnValue($column_name, $row);
