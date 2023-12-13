@@ -35,8 +35,6 @@ class ilOpencastEventConfigGUI extends ilPluginConfigGUI
         $this->main_tpl = $DIC->ui()->mainTemplate();
         $this->language = $DIC->language();
         $this->tabs = $DIC->tabs();
-
-        include_once(__DIR__ . "/../src/Config/PluginConfig.php");
         $this->config_object = new \elanev\OpencastEvent\Config\PluginConfig();
     }
 
