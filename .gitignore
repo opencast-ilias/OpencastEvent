@@ -1,5 +1,7 @@
 CI/
 libs/
 .vscode/
-/vendor/
 .phpunit*
+.DS_Store
+js/opencastEvent/package-lock.json
+js/opencastEvent/package.json

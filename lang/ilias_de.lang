@@ -51,3 +51,7 @@ table_row_tooltip_txt#:#Klicken Sie auf diese Zeile, um dieses Video auszuwähle
 table_row_tooltip_txt_not_selectable#:#Dieses Video kann aufgrund eines ungeeigneten Verarbeitungsstatus nicht ausgewählt werden
 oc_video_section#:#Opencast Video
 settings_section#:#Einstellungen
+config_header#:#Konfigurationen
+config_saved#:#Die Einstellungen wurden erfolgreich gespeichert.
+config_thumbnail_link#:#Standardwert für "Vorschaubild als Link"
+config_thumbnail_link_info#:#Der Standardwert für die Einstellungsoption "Vorschaubild als Link zum Video". Administratoren können den Standardwert für diese Einstellungsoption festlegen, der den Benutzern beim Erstellen eines Opencast-Ereignisobjekts angezeigt wird.

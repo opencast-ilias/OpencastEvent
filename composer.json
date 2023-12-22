@@ -1,6 +1,6 @@
 {
-    "name": "elan-ev/opencastevent",
-    "description": "",
+    "name": "opencast-ilias/opencast-event",
+    "description": "ILIAS Opencast Event Object Plugin",
     "type": "project",
     "license": "GPL-3.0",
     "authors": [
@@ -12,6 +12,7 @@
     "support": {
         "email": "zamani@elan-ev.de"
     },
+    "minimum-stability": "beta",
     "require-dev": {
         "squizlabs/php_codesniffer": "*",
         "phpcompatibility/php-compatibility": "*",
@@ -20,12 +21,19 @@
     },
     "autoload": {
         "classmap": [
-            "./classes/"
+            "./classes/",
+            "./src/"
+        ],
+        "files": [
+            "../OpenCast/vendor/autoload.php"
         ]
+    },
+    "config": {
+        "optimize-autoloader": true
     },
     "autoload-dev": {
         "psr-4": {
-            "OpencastEvent\\Tests\\": "tests/"
+            "elanev\\OpencastEvent\\Tests\\": "tests/"
         }
     }
 }

@@ -1,13 +1,6 @@
 <?php
+require_once __DIR__ . '/../vendor/autoload.php';
 
-include_once('./Services/Repository/classes/class.ilObjectPluginGUI.php');
-require_once('./Services/Form/classes/class.ilPropertyFormGUI.php');
-require_once('./Services/Form/classes/class.ilTextInputGUI.php');
-require_once('./Services/Form/classes/class.ilCheckboxInputGUI.php');
-require_once('./Customizing/global/plugins/Services/Repository/RepositoryObject/OpencastEvent/classes/class.ilOpencastEventPlugin.php');
-require_once('./Customizing/global/plugins/Services/Repository/RepositoryObject/OpencastEvent/classes/class.ilObjOpencastEventAccess.php');
-require_once('./Customizing/global/plugins/Services/Repository/RepositoryObject/OpencastEvent/classes/class.ilObjOpencastEvent.php');
-require_once('./Customizing/global/plugins/Services/Repository/RepositoryObject/OpenCast/classes/class.ilOpenCastPlugin.php');
 use srag\Plugins\Opencast\DI\OpencastDIC;
 use srag\Plugins\Opencast\Model\Config\PluginConfig;
 use srag\Plugins\Opencast\Util\Player\PlayerDataBuilderFactory;
@@ -88,6 +81,8 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
         $this->ref_id = (int) $this->http->request()->getQueryParams()['ref_id'] ?? null;
         $this->change_event = (bool) $this->http->request()->getQueryParams()['change_event'] ?? false;
         $this->offset = (int) $this->http->request()->getQueryParams()['offset'] ?? 0;
+
+        $this->tpl->addJavaScript($this->getPlugin()->getDirectory() . '/js/opencastEvent/dist/index.js');
     }
 
     /**
@@ -295,7 +290,6 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
         $event = $this->getEvent($event_id);
         if (!empty($event)) {
             $this->tpl->addCss($this->getPlugin()->getDirectory() . '/templates/css/player.min.css');
-            $this->tpl->addJavaScript($this->getPlugin()->getDirectory() . '/templates/js/player.min.js');
             $this->tpl->addOnLoadCode('il.OpencastEvent.player.init(' .
                 json_encode($this->getPlayerJSConfig($event)) .
             ');');
@@ -532,18 +526,16 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
         $event_tpl->parseCurrentBlock();
 
         if (!$is_new) {
-            $this->tpl->addJavaScript($this->getPlugin()->getDirectory() . '/templates/js/ion.rangeSlider.min.js');
-            $this->tpl->addCss($this->getPlugin()->getDirectory() . '/templates/css/ion.rangeSlider.min.css');
+            $this->tpl->addJavaScript($this->getPlugin()->getDirectory() . '/js/opencastEvent/external-libs/ion.rangeSlider.min.js');
+            $this->tpl->addCss($this->getPlugin()->getDirectory() . '/js/opencastEvent/external-libs/ion.rangeSlider.min.css');
             $this->tpl->addCss($this->getPlugin()->getDirectory() . '/templates/css/form.min.css');
-            $this->tpl->addJavaScript($this->getPlugin()->getDirectory() . '/templates/js/form.min.js');
             $cons_prop_text = $this->lng->txt('cont_constrain_proportions', 'content');
             $slider_config = json_encode($this->getRangeSliderConfig());
-            $this->tpl->addOnLoadCode('il.OpencastEvent.form.initForm(' .
+            $this->tpl->addOnLoadCode('il.OpencastEvent.form.initSettingsForm(' .
                 self::DEFAULT_WIDTH * 2 . ', "' . $cons_prop_text . '", ' . $slider_config .
             ');');
         }
         $this->tpl->addCss($this->getPlugin()->getDirectory() . '/templates/css/table.min.css');
-        $this->tpl->addJavaScript($this->getPlugin()->getDirectory() . '/templates/js/table.min.js');
         $this->tpl->addOnLoadCode('il.OpencastEvent.table.init();');
 
         $this->tpl->setContent($event_tpl->get());
@@ -583,6 +575,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
         if ($is_new) {
             $form->setTitle($this->txt('obj_' . $this->getType()));
             $form->setId($this->getType() . '_event_new');
+            $form->setForceTopButtons(true);
 
             $event_id = new ilHiddenInputGUI('event_id');
             $form->addItem($event_id);
