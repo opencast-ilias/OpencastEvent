@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * Class ilObjOpencastEventListGUI
  *
@@ -41,18 +44,18 @@ class ilObjOpencastEventListGUI extends ilObjectPluginListGUI
         $this->cut_enabled = true;
         $this->copy_enabled = true;
 
-        $commands = array(
-            array(
+        $commands = [
+            [
                 'permission' => 'read',
                 'cmd' => 'showContent',
                 'default' => true,
-            ),
-            array(
+            ],
+            [
                 'permission' => 'write',
                 'cmd' => 'editEvent',
                 "txt" => $this->txt('event_settings')
-            )
-        );
+            ],
+        ];
 
         return $commands;
     }
@@ -67,17 +70,15 @@ class ilObjOpencastEventListGUI extends ilObjectPluginListGUI
      */
     public function getProperties(): array
     {
-        global $lng, $ilUser;
+        $props = [];
 
-        $props = array();
-
-        $this->plugin->includeClass('class.ilObjOpencastEventAccess.php');
+        // $this->plugin->includeClass('class.ilObjOpencastEventAccess.php');
         if (!ilObjOpencastEventAccess::checkOnline($this->obj_id)) {
-            $props[] = array(
+            $props[] = [
                 'alert' => true,
                 'property' => $this->txt('status'),
-                'value' => $this->txt('offline')
-            );
+                'value' => $this->txt('offline'),
+            ];
         }
 
         return $props;
@@ -89,23 +90,23 @@ class ilObjOpencastEventListGUI extends ilObjectPluginListGUI
     * @access	public
     * @param	int			$a_ref_id		item reference id
     * @param	int			$a_obj_id		item object id
-    * @param	int			$a_title		item title
-    * @param	int			$a_description	item description
+    * @param	string		$a_title		item title
+    * @param	string		$a_description	item description
     * @param	bool		$a_use_asynch
     * @param	bool		$a_get_asynch_commands
     * @param	string		$a_asynch_url
-    * @param	bool		$a_context	    workspace/tree context
+    * @param	int		$a_context	    workspace/tree context
     * @return	string		html code
     */
     public function getListItemHTML(
-        $a_ref_id,
-        $a_obj_id,
-        $a_title,
-        $a_description,
-        $a_use_asynch = false,
-        $a_get_asynch_commands = false,
-        $a_asynch_url = "",
-        $a_context = self::CONTEXT_REPOSITORY
+        int $a_ref_id,
+        int $a_obj_id,
+        string $a_title,
+        string $a_description,
+        bool $a_use_asynch = false,
+        bool $a_get_asynch_commands = false,
+        string $a_asynch_url = "",
+        int $a_context = self::CONTEXT_REPOSITORY
     ): string {
         $event_obj = new ilObjOpencastEvent($a_ref_id);
 

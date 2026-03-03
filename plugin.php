@@ -1,8 +1,9 @@
 <?php
 $id = "xoce";
-$version = "1.1.0";
-$ilias_min_version = "6.0";
-$ilias_max_version = "7.999";
-$responsible = "ELAN e.V.";
+$version = "9.0.0";
+$ilias_min_version = "9.0";
+$ilias_max_version = "9.999";
+$responsible = "elan e.V.";
 $responsible_mail = "zamani@elan-ev.de";
+$supports_cli_setup = true;
 ?>
