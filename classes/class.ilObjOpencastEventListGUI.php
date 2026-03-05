@@ -72,7 +72,6 @@ class ilObjOpencastEventListGUI extends ilObjectPluginListGUI
     {
         $props = [];
 
-        // $this->plugin->includeClass('class.ilObjOpencastEventAccess.php');
         if (!ilObjOpencastEventAccess::checkOnline($this->obj_id)) {
             $props[] = [
                 'alert' => true,
@@ -95,7 +94,7 @@ class ilObjOpencastEventListGUI extends ilObjectPluginListGUI
     * @param	bool		$a_use_asynch
     * @param	bool		$a_get_asynch_commands
     * @param	string		$a_asynch_url
-    * @param	int		$a_context	    workspace/tree context
+    * @param	int		    $a_context	    workspace/tree context
     * @return	string		html code
     */
     public function getListItemHTML(

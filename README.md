@@ -1,31 +1,99 @@
 # Opencast Event Object
 
-This ILIAS plugin for Opencast is operated and developed collaboratively by a community. The University of Cologne acts as coordinative maintainer. The first version of this plugin will developed by the ELAN e.V.. Until then this repository will be a placeholder and considered beta.
+This repository plugin provides a single Opencast event as an individual repository object inside a course or group. It allows users to watch a specific video directly.
 
-Introduces a new object in which a single Opencast video can be selected.
+In contrast, the main Opencast repository plugin lists all videos within a series. This plugin focuses on displaying one selected event.
+
+---
+
+# Project Background
+
+This Opencast plugin is developed and maintained collaboratively by the ILIAS Opencast community.
+
+The original idea and first stable release were sponsored by the University of Cologne. Development and long-term maintenance are coordinated by elan e.V.
+
+---
 
 # Usage
 
-This plugin is meant to provide the ability to create an object in a course or a group that displays an opencast event, by choosing this event among all the available events in a form of a table list.
-It relies on the main [ILIAS-Plugin Opencast](https://github.com/opencast-ilias/OpenCast) to get the events, check accessibility and display the selected event using Paella player.
+The plugin enables course or group administrators to create an "Opencast Event" repository object. During creation, a table-based selection interface lists all accessible Opencast events. The selected event is then embedded and displayed using the Paella player.
 
-## Getting Started
+The plugin depends on the main Opencast plugin for:
 
-### Requirements
-* ILIAS 6.x / 7.x
-* ILIAS-Plugin Opencast (version >= 4)
+* Retrieving available events according to sorting and filters etc.
+* Handling player integration
 
-### Installation
-Start at your ILIAS root directory
+Repository:
+[https://github.com/opencast-ilias/OpenCast](https://github.com/opencast-ilias/OpenCast)
+
+---
+
+# Getting Started
+
+## Requirements
+
+* ILIAS 10.x
+* ILIAS Opencast Plugin (branch `release_10`)
+* PHP version compatible with your ILIAS 10 installation
+
+---
+
+## Installation
+
+From your ILIAS root directory:
 ```bash
-mkdir -p Customizing/global/plugins/Services/Repository/RepositoryObject/
-cd Customizing/global/plugins/Services/Repository/RepositoryObject/
+mkdir -p public/Customizing/global/plugins/Services/Repository/RepositoryObject/
+cd public/Customizing/global/plugins/Services/Repository/RepositoryObject/
 git clone https://github.com/opencast-ilias/OpencastEvent.git
 ```
-As ILIAS administrator go to "Administration"->"Plugins" and install/activate the plugin.
 
-### Creation
-#### 1. Adding a repository object of Opencast Event to the course/group.
-#### 2. Upon creating a list of available events are displayed to select from, which can be filtered after series, start date and text title.
-#### 3. After creating, user can check through the properties and set the object online as well as applying the permissions and so on.
-#### 4. When a user is landed on the content page, he/she could see the video player if the access right is permitted!
+Return to the ILIAS root directory and run:
+
+```bash
+composer dump-autoload
+php cli/setup.php install --legacy-plugin OpencastEvent
+```
+
+---
+
+# Creating an Opencast Event Object
+
+## 1. Add Repository Object
+
+Add a new repository object of type "Opencast Event" to a course or group.
+
+![Add Repository Object](./docs/addrepo.png)
+
+---
+
+## 2. Select an Event
+
+A list of available Opencast events is displayed. The table can be filtered by:
+
+* Series
+* Start date
+* Title text
+
+Select the desired event and complete the creation process.
+
+![Select Event](./docs/createlist.png)
+
+---
+
+## 3. Configure Object
+
+After creation, you can:
+
+* Set the object online/offline
+* Configure permissions
+* Adjust standard repository settings
+
+![Object Settings](./docs/aftercreatesettings.png)
+
+---
+
+## 4. View Event
+
+If the user has sufficient permissions and the event is accessible, the embedded video player is displayed on the content page.
+
+![Event Display](./docs/show.png)

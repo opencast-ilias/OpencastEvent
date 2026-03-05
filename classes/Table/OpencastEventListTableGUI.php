@@ -63,14 +63,6 @@ class OpencastEventListTableGUI extends ilTable2GUI
         $opencast_dic = Init::init();
         $this->opencast_plugin = $opencast_dic[ilOpenCastPlugin::class];
         $this->series_repository = $opencast_dic[SeriesAPIRepository::class];
-        // $this->series_repository = $opencast_dic[SeriesRepository::class];
-        // $this->opencast_plugin = ilOpenCastPlugin::getInstance();
-        // $opencast_dic = OpencastDIC::getInstance();
-
-        // if (method_exists($opencast_dic, 'series_repository')) {
-        //     $this->series_repository = $opencast_dic->series_repository();
-        // } else if (!empty($opencastContainer)) {
-        // }
 
         PluginConfig::setApiSettings();
         $this->setRefId($ref_id);
@@ -100,7 +92,6 @@ class OpencastEventListTableGUI extends ilTable2GUI
             }
             $this->addColumn($column_txt, $sort, '', false, $class);
         }
-        // $this->setRowTemplate($this->plugin->getDirectory() . '/templates/default/tpl.OpencastEventTabeFull.html');
         $this->setRowTemplate(
             'tpl.OpencastEventTabeFull.html',
             $this->plugin->getDirectory()
@@ -154,8 +145,8 @@ class OpencastEventListTableGUI extends ilTable2GUI
             $this->tpl->setVariable('DATA_TITLE', $row['title']);
             $this->tpl->setVariable('DATA_DESCRIPTION', $row['description']);
 
-            $this->tpl->setVariable('UNSELECTED_ICON', $this->plugin->getDirectory() . '/templates/images/circle.svg');
-            $this->tpl->setVariable('SELECTED_ICON', $this->plugin->getDirectory() . '/templates/images/circle-dot-filled.svg');
+            $this->tpl->setVariable('UNSELECTED_ICON', $this->plugin->getResourcesPath() . '/templates/images/circle.svg');
+            $this->tpl->setVariable('SELECTED_ICON', $this->plugin->getResourcesPath() . '/templates/images/circle-dot-filled.svg');
 
             foreach ($this->getEventColumns() as $column_name => $column_txt) {
                 $column = $this->getColumnValue($column_name, $row);
