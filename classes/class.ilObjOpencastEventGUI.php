@@ -12,6 +12,7 @@ use srag\Plugins\Opencast\Model\User\xoctUser;
 use srag\Plugins\Opencast\Model\Event\EventAPIRepository;
 use srag\Plugins\Opencast\Util\Player\PaellaConfigServiceFactory;
 use srag\Plugins\Opencast\Util\Player\PaellaConfigService;
+use srag\Plugins\Opencast\Util\Locale\Translator;
 
 /**
  * Class ilObjOpencastEventGUI
@@ -68,6 +69,8 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
      * @var bool change_event a flag to determine whether the event change is requested.
      */
     private bool $change_event = false;
+    /** @var Translator */
+    private Translator $opencast_translator;
 
     /**
      * Initialisation
@@ -84,11 +87,11 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
         $opencast_dic = Init::init();
 
         $this->opencast_plugin = $opencast_dic[ilOpenCastPlugin::class];
+        $this->opencast_translator = $opencast_dic->translator();
         $this->event_repository = $opencast_dic[EventAPIRepository::class];
 
         $this->paellaConfigServiceFactory = $opencast_dic->legacy()->paella_config_service_factory();
         $this->paellaConfigService = $this->paellaConfigServiceFactory->get();
-        PluginConfig::setApiSettings();
         $this->ref_id = (int) $this->http->request()->getQueryParams()['ref_id'] ?? null;
         $this->change_event = (bool) ($this->http->request()->getQueryParams()['change_event'] ?? false);
         $this->offset = (int) ($this->http->request()->getQueryParams()['offset'] ?? 0);
@@ -368,13 +371,13 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
         $paella_player_tpl->setVariable('JS_CONFIG', json_encode($this->buildJSConfig($event, $new_paella_player)));
 
         if ($event->isLiveEvent()) {
-            $paella_player_tpl->setVariable('LIVE_WAITING_TEXT', $this->opencast_plugin->translate(
+            $paella_player_tpl->setVariable('LIVE_WAITING_TEXT', $this->opencast_translator->translate(
                 'live_waiting_text',
                 'event',
                 [date('H:i', $event->getScheduling()->getStart()->getTimestamp())]
             ));
-            $paella_player_tpl->setVariable('LIVE_INTERRUPTED_TEXT', $this->opencast_plugin->translate('live_interrupted_text', 'event'));
-            $paella_player_tpl->setVariable('LIVE_OVER_TEXT', $this->opencast_plugin->translate('live_over_text', 'event'));
+            $paella_player_tpl->setVariable('LIVE_INTERRUPTED_TEXT', $this->opencast_translator->translate('live_interrupted_text', 'event'));
+            $paella_player_tpl->setVariable('LIVE_OVER_TEXT', $this->opencast_translator->translate('live_over_text', 'event'));
         }
 
         $paella_player_tpl->setVariable('STYLE_SHEET_LOCATION', ILIAS_HTTP_PATH . '/' . $this->opencast_plugin->getDirectory() . '/templates/default/player.css');

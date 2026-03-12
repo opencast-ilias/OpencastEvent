@@ -5,11 +5,11 @@ declare(strict_types=1);
 use srag\Plugins\Opencast\Model\User\xoctUser;
 use srag\Plugins\Opencast\Model\Metadata\Definition\MDFieldDefinition;
 use srag\Plugins\Opencast\Container\Init;
-use srag\Plugins\Opencast\Model\Config\PluginConfig;
 use srag\Plugins\Opencast\Model\Event\Event;
 
 use srag\Plugins\Opencast\Model\Series\SeriesRepository;
 use srag\Plugins\Opencast\Model\Series\SeriesAPIRepository;
+use srag\Plugins\Opencast\Util\Locale\Translator;
 
 /**
  * OpencastEventListTableGUI class for event selection
@@ -29,10 +29,6 @@ class OpencastEventListTableGUI extends ilTable2GUI
      */
     protected \ILIAS\DI\Container $dic;
     /**
-     * @var ilOpenCastPlugin
-     */
-    private ilOpenCastPlugin $opencast_plugin;
-    /**
      * @var ilOpencastEventPlugin
      */
     protected ilOpencastEventPlugin $plugin;
@@ -48,6 +44,8 @@ class OpencastEventListTableGUI extends ilTable2GUI
      * @var int
      */
     protected int $ref_id = 0;
+    /** @var Translator */
+    private Translator $opencast_translator;
 
     /**
     * Constructor
@@ -61,10 +59,9 @@ class OpencastEventListTableGUI extends ilTable2GUI
         $this->parent_obj = $a_parent_obj;
         $this->plugin = $a_parent_obj->getPlugin();
         $opencast_dic = Init::init();
-        $this->opencast_plugin = $opencast_dic[ilOpenCastPlugin::class];
         $this->series_repository = $opencast_dic[SeriesAPIRepository::class];
+        $this->opencast_translator = $opencast_dic->translator();
 
-        PluginConfig::setApiSettings();
         $this->setRefId($ref_id);
         $this->setId($this->parent_obj->getType() . '_event_table_' . $this->dic->user()->getId() . '_' . $this->getRefId());
 
@@ -170,12 +167,12 @@ class OpencastEventListTableGUI extends ilTable2GUI
         $title->readFromSession();
         $this->filter[self::F_TEXTFILTER] = $title->getValue();
 
-        $series = $this->addFilterItemByMetaType(self::F_SERIES, self::FILTER_SELECT, false, $this->opencast_plugin->txt('event_series'));
+        $series = $this->addFilterItemByMetaType(self::F_SERIES, self::FILTER_SELECT, false, $this->opencast_translator->translate('event_series'));
         $series->setOptions($this->getSeriesFilterOptions());
         $series->readFromSession();
         $this->filter[self::F_SERIES] = $series->getValue();
 
-        $start = $this->addFilterItemByMetaType(self::F_START, self::FILTER_DATE_RANGE, false, $this->opencast_plugin->txt('event_start'));
+        $start = $this->addFilterItemByMetaType(self::F_START, self::FILTER_DATE_RANGE, false, $this->opencast_translator->translate('event_start'));
         $start->readFromSession();
         $this->filter[self::F_START_FROM] = $start->getValue()['from'];
         $this->filter[self::F_START_TO] = $start->getValue()['to'];
@@ -295,11 +292,11 @@ class OpencastEventListTableGUI extends ilTable2GUI
     private function getEventColumns(): array
     {
         return [
-            'thumbnail' => $this->opencast_plugin->txt('event_preview'),
-            'title' => $this->opencast_plugin->txt('event_title'),
-            'series' => $this->opencast_plugin->txt('event_series'),
-            'start' => $this->opencast_plugin->txt('event_start'),
-            'location' => $this->opencast_plugin->txt('event_location'),
+            'thumbnail' => $this->opencast_translator->translate('event_preview'),
+            'title' => $this->opencast_translator->translate('event_title'),
+            'series' => $this->opencast_translator->translate('event_series'),
+            'start' => $this->opencast_translator->translate('event_start'),
+            'location' => $this->opencast_translator->translate('event_location'),
         ];
     }
 }

@@ -5,7 +5,6 @@ declare(strict_types=1);
 use \elanev\OpencastEvent\Config\PluginConfig as LocalPluginConfig;
 use srag\Plugins\Opencast\Model\Event\EventAPIRepository;
 use srag\Plugins\Opencast\Container\Init;
-use srag\Plugins\Opencast\Model\Config\PluginConfig;
 
 /**
  * Class ilObjOpencastEventAccess
@@ -31,7 +30,6 @@ class ilObjOpencastEvent extends ilObjectPlugin
         $opencast_dic = Init::init();
         $this->event_repository = $opencast_dic[EventAPIRepository::class];
 
-        PluginConfig::setApiSettings();
         parent::__construct($a_ref_id);
     }
 
