@@ -16,7 +16,7 @@ xoce_visible#:#Opencast Event is visible
 xoce_edit_permission#:#Change permission settings
 online#:#Online
 online_info#:#If online, participants can view the video.
-table_title#:#Select an existing video from Opencast
+listing_title#:#Select an existing video from Opencast
 textFilter#:#Text Filter
 status#:#Status
 offline#:#Offline
@@ -55,3 +55,15 @@ config_header#:#Configurations
 config_saved#:#Settings have been successfully saved.
 config_thumbnail_link#:#"Thumbnail as a link" default value
 config_thumbnail_link_info#:#The default value for the "Thumbnail as a link to the video" setting option. Admins are able to set the default value for this setting option that is displayed to the users upon creating an Opencast Event object.
+title_asc#:#Title [A-Z]
+title_desc#:#Title [Z-A]
+series_name_asc#:#Series [A-Z]
+series_name_desc#:#Series [Z-A]
+start_date_asc#:#Oldest first
+start_date_desc#:#Newest first
+location_asc#:#Location [A-Z]
+location_desc#:#Location [Z-A]
+list_item_status_txt#:#Ready to select
+list_item_status_txt_not_selectable#:#Not selectable due to an ongoing processing.
+list_item_status_selected_txt#:#Currently selected!
+list_status_prop#:#Status

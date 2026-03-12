@@ -16,7 +16,7 @@ xoce_visible#:#Opencast Event ist sichtbar
 xoce_edit_permission#:#Zugriffsrecht bearbeiten
 online#:#Online
 online_info#:#Wenn das Objekt online ist können Teilnehmerinnen das Video sehen.
-table_title#:#Bestehendes Video aus Opencast auswählen
+listing_title#:#Bestehendes Video aus Opencast auswählen
 textFilter#:#Text Filter
 status#:#Status
 offline#:#Offline
@@ -55,3 +55,15 @@ config_header#:#Konfigurationen
 config_saved#:#Die Einstellungen wurden erfolgreich gespeichert.
 config_thumbnail_link#:#Standardwert für "Vorschaubild als Link"
 config_thumbnail_link_info#:#Der Standardwert für die Einstellungsoption "Vorschaubild als Link zum Video". Administratoren können den Standardwert für diese Einstellungsoption festlegen, der den Benutzern beim Erstellen eines Opencast-Ereignisobjekts angezeigt wird.
+title_asc#:#Titel [A-Z]
+title_desc#:#Titel [Z-A]
+series_name_asc#:#Series [A-Z]
+series_name_desc#:#Series [Z-A]
+start_date_asc#:#Neuste zuerst
+start_date_desc#:#Älteste zuerst
+location_asc#:#Standort [A-Z]
+location_desc#:#Standort [Z-A]
+list_item_status_txt#:#Bereit zur Auswahl
+list_item_status_txt_not_selectable#:#Aufgrund einer laufenden Verarbeitung nicht auswählbar.
+list_item_status_selected_txt#:#Aktuell ausgewählt!
+list_status_prop#:#Status

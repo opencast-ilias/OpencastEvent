@@ -19,6 +19,13 @@ class ilObjOpencastEvent extends ilObjectPlugin
     /** @var EventAPIRepository*/
     private EventAPIRepository $event_repository;
 
+    private bool $online = false;
+    private string $event_id = '';
+    private ?int $width = null;
+    private ?int $height = null;
+    private bool $new_tab = false;
+    private bool $maximize = false;
+
     /**
      * Constructor
      *
@@ -31,7 +38,6 @@ class ilObjOpencastEvent extends ilObjectPlugin
         $opencast_dic = Init::init();
         $this->event_repository = $opencast_dic[EventAPIRepository::class];
 
-        PluginConfig::setApiSettings();
         parent::__construct($a_ref_id);
     }
 

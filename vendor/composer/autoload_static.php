@@ -12,8 +12,8 @@ class ComposerStaticInit2391f46432f708d71f265dca539f33b4
 
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
-        'OpencastEventListTableGUI' => __DIR__ . '/../..' . '/classes/Table/OpencastEventListTableGUI.php',
         'elanev\\OpencastEvent\\Config\\PluginConfig' => __DIR__ . '/../..' . '/src/Config/PluginConfig.php',
+        'elanev\\OpencastEvent\\Listing\\OpencastEventListing' => __DIR__ . '/../..' . '/classes/Listing/OpencastEventListing.php',
         'ilObjOpencastEvent' => __DIR__ . '/../..' . '/classes/class.ilObjOpencastEvent.php',
         'ilObjOpencastEventAccess' => __DIR__ . '/../..' . '/classes/class.ilObjOpencastEventAccess.php',
         'ilObjOpencastEventGUI' => __DIR__ . '/../..' . '/classes/class.ilObjOpencastEventGUI.php',
