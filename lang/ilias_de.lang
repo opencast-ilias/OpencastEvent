@@ -2,56 +2,56 @@
 // Deutsch Language File for OpencastEvent Plugin
 //
 <!-- language file start -->
-obj_xoce#:#Opencast Event
-objs_xoce#:#Opencast Events
+obj_xoce#:#Opencast-Video
+objs_xoce#:#Opencast-Videos
 obj_xoce_duplicate#:#Kopieren
-objs_xoce_duplicate#:#Kopiere Opencast Events
-obj_xoce_select#:#Wähle Opencast Event
-xoce_add#:#Opencast Event hinzufügen
-xoce_new#:#Füge ausgewähltes Opencast Video ein
-xoce_read#:#Lesezugriff auf Opencast Event
+objs_xoce_duplicate#:#Kopiere Opencast-Videos
+obj_xoce_select#:#Wähle Opencast-Video
+xoce_add#:#Opencast-Video hinzufügen
+xoce_new#:#Füge ausgewähltes Opencast-Video ein
+xoce_read#:#Lesezugriff auf Opencast-Video
 xoce_write#:#Speichern
-xoce_delete#:#Opencast Event löschen
-xoce_visible#:#Opencast Event ist sichtbar
+xoce_delete#:#Opencast-Video löschen
+xoce_visible#:#Opencast-Video ist sichtbar
 xoce_edit_permission#:#Zugriffsrecht bearbeiten
 online#:#Online
-online_info#:#Wenn das Objekt online ist können Teilnehmerinnen das Video sehen.
+online_info#:#Wenn das Objekt online ist, können Teilnehmerinnen das Video sehen.
 table_title#:#Bestehendes Video aus Opencast auswählen
-textFilter#:#Text Filter
+textFilter#:#Text-Filter
 status#:#Status
 offline#:#Offline
 edit#:#Bearbeiten
-title#:#Video Titel
-description#:#Video Beschreibung
-event_id#:#Video Identifier
-show_event#:#Content
-event_settings#:#Event Einstellungen
-msg_creation_failed#:#Das Opencast Event Objekt konnte nicht angelegt werden.
-no_event_id#:#Aus der Liste muss ein Opencast Event ausgewählt werden.
-create_successful#:#Opencast event object erfolgreich erstellt.
-update_successful#:#Opencast event object erfolgreich bearbeitet.
-no_title#Ein Titel für die Veranstaltung muss eingefügt werden.
+title#:#Video-Titel
+description#:#Video-Beschreibung
+event_id#:#Video-Identifier
+show_event#:#Video
+event_settings#:#Einstellungen
+msg_creation_failed#:#Das Opencast-Video-Objekt konnte nicht angelegt werden.
+no_event_id#:#Aus der Liste muss ein Opencast-Video ausgewählt werden.
+create_successful#:#Opencast-Video-Objekt erfolgreich erstellt.
+update_successful#:#Opencast-Video-Objekt erfolgreich bearbeitet.
+no_title#Ein Titel für das Video muss eingefügt werden.
 change_event#:#Durch anderes Opencast-Video ersetzen
 display_type#:#Präsentationsmodus
 new_tab#:#Vorschaubild als Link zum Video
-new_tab_info#:#Wenn ausgewählt wird ein Klick auf das Vorschaubild des Videos dieses in einem neuen Tab öffnen. Wenn nicht dann wird das Video in die Seite eingebettet und auf Klick direkt abgespielt.
-embed#:#Video im Inhaltstab einbetten
+new_tab_info#:#Wenn ausgewählt, wird ein Klick auf das Vorschaubild des Videos dieses in einem neuen Tab öffnen. Wenn nicht, dann wird das Video in die Seite eingebettet und auf Klick direkt abgespielt.
+embed#:#Video im Video-Tab einbetten
 width#:#Breite
 height#:#Höhe
 height_width#:#Maximale Breite / Höhe in Pixel
 cont_constrain_proportions#:#Seitenverhältnis beibehalten
-size_type#:#Video Größe
+size_type#:#Video-Größe
 maximize#:#Maximum und Responsive
-maximize_info#:#Das Video wird so groß wie möglich dargestellt, passt sich allerdings der Fenstergröße an.
+maximize_info#:#Das Video wird so groß wie möglich dargestellt, passt sich allerdings der Fenstergröße an. Videos mit geringer Auflösung erscheinen mitunter pixelig.
 custome_size#:#Custom und Responsive
 custome_size_info#:#Die ausgewählte Größe entspricht der Maximalgröße des Videos, passt sich allerdings der Fenstergröße an.
 title_info#:#Um den Titel des Videos zu ändern, gehen Sie zu der Opencast-Serie, zu der dieses Video gehört.
-description_info#:#Bitte nutzen Sie das Opencast Objekt um die Beschreibung des Videos anzupassen
-table_row_tooltip_txt#:#Klicken Sie auf diese Zeile, um dieses Video auszuwählen
-table_row_tooltip_txt_not_selectable#:#Dieses Video kann aufgrund eines ungeeigneten Verarbeitungsstatus nicht ausgewählt werden
-oc_video_section#:#Opencast Video
+description_info#:#Um die Beschreibung des Videos zu ändern, gehen Sie zu der Opencast-Serie, zu der dieses Video gehört.
+table_row_tooltip_txt#:#Klicken Sie auf diese Zeile, um dieses Video auszuwählen.
+table_row_tooltip_txt_not_selectable#:#Dieses Video kann aufgrund eines ungeeigneten Verarbeitungsstatus nicht ausgewählt werden.
+oc_video_section#:#Opencast-Video
 settings_section#:#Einstellungen
 config_header#:#Konfigurationen
 config_saved#:#Die Einstellungen wurden erfolgreich gespeichert.
 config_thumbnail_link#:#Standardwert für "Vorschaubild als Link"
-config_thumbnail_link_info#:#Der Standardwert für die Einstellungsoption "Vorschaubild als Link zum Video". Administratoren können den Standardwert für diese Einstellungsoption festlegen, der den Benutzern beim Erstellen eines Opencast-Ereignisobjekts angezeigt wird.
+config_thumbnail_link_info#:#Der Standardwert für die Einstellungsoption "Vorschaubild als Link zum Video". Administratoren können den Standardwert für diese Einstellungsoption festlegen, der den Benutzern beim Erstellen eines Opencast-Video-Objekts angezeigt wird.
