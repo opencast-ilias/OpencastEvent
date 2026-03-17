@@ -97,6 +97,8 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
         $this->offset = (int) ($this->http->request()->getQueryParams()['offset'] ?? 0);
 
         $this->main_tpl->addJavaScript($this->getPlugin()->getDirectory() . '/js/opencastEvent/dist/index.js');
+
+        $this->main_tpl->setPermanentLink($this->getType(), $this->ref_id);
     }
 
     /**
@@ -215,7 +217,11 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
             $this->tabs->addTab('event_settings', $this->txt('event_settings'), $this->ctrl->getLinkTarget($this, 'editEvent'));
         }
 
-        $this->addInfoTab();
+        // Make sure the info tab is not there when accessing anonymously.
+        if (!ilObjOpencastEventAccess::isAnonymousUser()) {
+            $this->addInfoTab();
+        }
+
         $this->addPermissionTab();
     }
 

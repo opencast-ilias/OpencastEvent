@@ -55,3 +55,9 @@ config_header#:#Konfigurationen
 config_saved#:#Die Einstellungen wurden erfolgreich gespeichert.
 config_thumbnail_link#:#Standardwert für "Vorschaubild als Link"
 config_thumbnail_link_info#:#Der Standardwert für die Einstellungsoption "Vorschaubild als Link zum Video". Administratoren können den Standardwert für diese Einstellungsoption festlegen, der den Benutzern beim Erstellen eines Opencast-Video-Objekts angezeigt wird.
+xoce_copy#:#Kopieren: Opencast-Video-Objekt kopieren
+crs_create_xoce#:#Opencast-Video-Objekt anlegen
+root_create_xoce#:#Opencast-Video-Objekt anlegen
+cat_create_xoce#:#Opencast-Video-Objekt anlegen
+grp_create_xoce#:#Opencast-Video-Objekt anlegen
+fold_create_xoce#:#Opencast-Video-Objekt anlegen

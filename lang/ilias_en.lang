@@ -55,3 +55,9 @@ config_header#:#Configurations
 config_saved#:#Settings have been successfully saved.
 config_thumbnail_link#:#"Thumbnail as a link" default value
 config_thumbnail_link_info#:#The default value for the "Thumbnail as a link to the video" setting option. Admins are able to set the default value for this setting option that is displayed to the users upon creating an Opencast Video object.
+xoce_copy#:#Copy Opencast Video Object
+crs_create_xoce#:#Create Opencast Video Object
+root_create_xoce#:#Create Opencast Video Object
+cat_create_xoce#:#Create Opencast Video Object
+grp_create_xoce#:#Create Opencast Video Object
+fold_create_xoce#:#Create Opencast Video Object
