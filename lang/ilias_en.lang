@@ -66,3 +66,9 @@ list_item_status_txt#:#Ready to select
 list_item_status_txt_not_selectable#:#Not selectable due to an ongoing processing.
 list_item_status_selected_txt#:#Currently selected!
 list_status_prop#:#Status
+xoce_copy#:#Copy Opencast Video Object
+crs_create_xoce#:#Create Opencast Video Object
+root_create_xoce#:#Create Opencast Video Object
+cat_create_xoce#:#Create Opencast Video Object
+grp_create_xoce#:#Create Opencast Video Object
+fold_create_xoce#:#Create Opencast Video Object

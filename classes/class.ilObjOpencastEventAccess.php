@@ -135,4 +135,14 @@ class ilObjOpencastEventAccess extends ilObjectPluginAccess
         }
         $DIC->rbac()->admin()->grantPermission($admin_role_id, $ops_ids, $ref_id);
     }
+
+    /**
+     * Checks if the user is anonymous.
+     * @return bool
+     */
+    public static function isAnonymousUser(): bool
+    {
+        global $ilUser;
+        return $ilUser->getId() === ANONYMOUS_USER_ID;
+    }
 }
