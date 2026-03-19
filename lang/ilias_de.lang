@@ -42,12 +42,13 @@ cont_constrain_proportions#:#Seitenverhältnis beibehalten
 size_type#:#Video-Größe
 maximize#:#Maximum und Responsive
 maximize_info#:#Das Video wird so groß wie möglich dargestellt, passt sich allerdings der Fenstergröße an. Videos mit geringer Auflösung erscheinen mitunter pixelig.
-custome_size_info#:#Die ausgewählte Größe entspricht der Maximalgröße des Videos, passt sich allerdings der Fenstergröße an.
+custom_size#:#Benutzerdefiniert und responsiv
+custom_size_info#:#Die ausgewählte Größe entspricht der Maximalgröße des Videos, passt sich allerdings der Fenstergröße an.
 title_info#:#Um den Titel des Videos zu ändern, gehen Sie zu der Opencast-Serie, zu der dieses Video gehört.
 description_info#:#Um die Beschreibung des Videos zu ändern, gehen Sie zu der Opencast-Serie, zu der dieses Video gehört.
 table_row_tooltip_txt#:#Klicken Sie auf diese Zeile, um dieses Video auszuwählen.
 table_row_tooltip_txt_not_selectable#:#Dieses Video kann aufgrund eines ungeeigneten Verarbeitungsstatus nicht ausgewählt werden.
-oc_video_section#:#Opencast Video
+oc_video_section#:#Opencast-Video
 settings_section#:#Einstellungen
 config_header#:#Konfigurationen
 config_saved#:#Die Einstellungen wurden erfolgreich gespeichert.

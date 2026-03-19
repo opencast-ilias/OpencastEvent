@@ -631,8 +631,8 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
             $size_type_maximize->setInfo($this->txt('maximize_info'));
             $size_type->addOption($size_type_maximize);
 
-            $size_type_custom = new ilRadioOption($this->txt('custome_size'), 'custom');
-            $size_type_custom->setInfo($this->txt('custome_size_info'));
+            $size_type_custom = new ilRadioOption($this->txt('custom_size'), 'custom');
+            $size_type_custom->setInfo($this->txt('custom_size_info'));
             $size_type->addOption($size_type_custom);
 
             // preview image
