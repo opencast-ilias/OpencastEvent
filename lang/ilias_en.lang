@@ -43,8 +43,8 @@ cont_constrain_proportions#:#Constrain Proportions
 size_type#:#Video Size
 maximize#:#Maximum and responsive
 maximize_info#:#Video is displayed as large as possible and can scale down if the user's window is smaller. Low-resolution videos sometimes appear pixelated.
-custome_size#:#Custom and responsive
-custome_size_info#:#The defined size acts as a maximum size, while the video can scale down if the user's window is smaller.
+custom_size#:#Custom and responsive
+custom_size_info#:#The defined size acts as a maximum size, while the video can scale down if the user's window is smaller.
 title_info#:#To change the title of the video, go to the Opencast Series which this video is part of.
 description_info#:#To change the description of the video, go to the Opencast Series which this video is part of.
 table_row_tooltip_txt#:#Click on this row to select this video.
