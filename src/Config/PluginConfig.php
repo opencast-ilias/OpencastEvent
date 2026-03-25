@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 namespace elanev\OpencastEvent\Config;
 
 use ActiveRecord;
@@ -16,7 +18,7 @@ class PluginConfig extends ActiveRecord
     /**
      * @return string
      */
-    public static function returnDbTableName()
+    public static function returnDbTableName(): string
     {
         return self::TABLE_NAME;
     }
@@ -24,7 +26,7 @@ class PluginConfig extends ActiveRecord
     /**
      * @return string
      */
-    public function getConnectorContainerName()
+    public function getConnectorContainerName(): string
     {
         return self::TABLE_NAME;
     }
@@ -51,7 +53,7 @@ class PluginConfig extends ActiveRecord
     /**
      * @param string $name
      */
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
@@ -59,7 +61,7 @@ class PluginConfig extends ActiveRecord
     /**
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -67,7 +69,7 @@ class PluginConfig extends ActiveRecord
     /**
      * @param string $value
      */
-    public function setValue($value): void
+    public function setValue(string $value): void
     {
         $this->value = $value;
     }
@@ -75,16 +77,16 @@ class PluginConfig extends ActiveRecord
     /**
      * @return string
      */
-    public function getValue()
+    public function getValue(): string
     {
         return $this->value;
     }
 
     /**
-     * @param $name
+     * @param string $name
      * @return mixed
      */
-    public static function getConfig($name)
+    public static function getConfig(string $name): mixed
     {
         if (!isset(self::$cached_config[$name])) {
             if (self::where(['name' => $name])->hasSets()) {
@@ -103,10 +105,10 @@ class PluginConfig extends ActiveRecord
     }
 
     /**
-     * @param $name
-     * @param $value
+     * @param string $name
+     * @param mixed $value
      */
-    public static function setConfig($name, $value): void
+    public static function setConfig(?string $name, mixed $value): void
     {
         if (self::where(['name' => $name])->hasSets()) {
             $obj = new self($name);

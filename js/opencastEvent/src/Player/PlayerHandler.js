@@ -34,11 +34,11 @@ export default class PlayerHandler {
     setMaxSize() {
         $('#xoce_player_container').width('100%');
         $('#xoce_player_container').height('0px');
-        let spacekeepr_height = $('#mainspacekeeper').outerHeight();
-        spacekeepr_height = parseInt(spacekeepr_height, 10);
         let main_height = $('main.il-layout-page-content').outerHeight();
+        let mainscrolldiv = $('#mainscrolldiv').outerHeight();
+        mainscrolldiv = parseInt(mainscrolldiv, 10);
         main_height = parseInt(main_height, 10);
-        let remaining_height = main_height - spacekeepr_height;
+        let remaining_height = main_height - mainscrolldiv;
         if (remaining_height > 0) {
             $('#xoce_player_container').height(remaining_height);
             $('main.il-layout-page-content').animate({
