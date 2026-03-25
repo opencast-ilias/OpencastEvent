@@ -1,32 +1,37 @@
 <?php
+
+declare(strict_types=1);
+
+use elanev\OpencastEvent\Config\PluginConfig as LocalPluginConfig;
 /**
  * ilOpencastEventConfigGUI
  *
  * @author Farbod Zamani Boroujeni <zamani@elan-ev.de>
- * @extends ilPluginConfigGUI
+ *
+ * @ilCtrl_IsCalledBy ilOpencastEventConfigGUI: ilObjComponentSettingsGUI
  */
 class ilOpencastEventConfigGUI extends ilPluginConfigGUI
 {
     /**
      * @var elanev\OpencastEvent\Config\PluginConfig
      */
-    protected $config_object;
+    protected LocalPluginConfig $config_object;
     /**
      * @var \ilCtrlInterface
      */
-    private $ctrl;
+    protected ilCtrlInterface $ctrl;
     /**
      * @var \ilGlobalTemplateInterface
      */
-    private $main_tpl;
+    protected ilGlobalTemplateInterface $main_tpl;
     /**
      * @var \ilLanguage
      */
-    private $language;
+    protected ilLanguage $language;
     /**
      * @var \ilTabsGUI
      */
-    private $tabs;
+    protected ilTabsGUI $tabs;
 
     public function __construct()
     {
@@ -35,14 +40,14 @@ class ilOpencastEventConfigGUI extends ilPluginConfigGUI
         $this->main_tpl = $DIC->ui()->mainTemplate();
         $this->language = $DIC->language();
         $this->tabs = $DIC->tabs();
-        $this->config_object = new \elanev\OpencastEvent\Config\PluginConfig();
+        $this->config_object = new LocalPluginConfig();
     }
 
 
     /**
      * @return array
      */
-    public function getFields()
+    public function getFields(): array
     {
         return [
             $this->config_object::F_THUMBNAIL_LINK => [
@@ -99,7 +104,7 @@ class ilOpencastEventConfigGUI extends ilPluginConfigGUI
      */
     public function initConfigurationForm(): \ilPropertyFormGUI
     {
-        $this->form = new ilPropertyFormGUI();
+        $this->form = new \ilPropertyFormGUI();
 
         foreach ($this->getFields() as $key => $item) {
             $field = new $item['type']($this->txt($key), $key);
@@ -138,10 +143,7 @@ class ilOpencastEventConfigGUI extends ilPluginConfigGUI
                     }
                 }
             }
-            ilUtil::sendSuccess(
-                $this->txt("saved"),
-                true
-            );
+            $this->main_tpl->setOnScreenMessage('success', $this->txt("saved"), true);
             $this->ctrl->redirect($this, "configure");
         } else {
             $this->form->setValuesByPost();
@@ -153,7 +155,7 @@ class ilOpencastEventConfigGUI extends ilPluginConfigGUI
      * @param string $key the key lang string
      * @return string
      */
-    public function txt($key): string
+    public function txt(string $key): string
     {
         return $this->plugin_object->txt('config_' . $key);
     }

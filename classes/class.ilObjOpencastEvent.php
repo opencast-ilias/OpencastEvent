@@ -1,8 +1,10 @@
 <?php
+
+declare(strict_types=1);
+
 use \elanev\OpencastEvent\Config\PluginConfig as LocalPluginConfig;
 use srag\Plugins\Opencast\Model\Event\EventAPIRepository;
-use srag\Plugins\Opencast\DI\OpencastDIC;
-use srag\Plugins\Opencast\Model\Config\PluginConfig;
+use srag\Plugins\Opencast\Container\Init;
 
 /**
  * Class ilObjOpencastEventAccess
@@ -14,7 +16,7 @@ class ilObjOpencastEvent extends ilObjectPlugin
     protected $table_name;
 
     /** @var EventAPIRepository*/
-    private $event_repository;
+    private EventAPIRepository $event_repository;
 
     /**
      * Constructor
@@ -22,19 +24,12 @@ class ilObjOpencastEvent extends ilObjectPlugin
      * @access        public
      * @param int $a_ref_id
      */
-    public function __construct($a_ref_id = 0)
+    public function __construct(int $a_ref_id = 0)
     {
-        global $opencastContainer;
         $this->table_name = ilOpencastEventPlugin::TABLE_NAME;
-        $opencast_dic = OpencastDIC::getInstance();
+        $opencast_dic = Init::init();
+        $this->event_repository = $opencast_dic[EventAPIRepository::class];
 
-        if (method_exists($opencast_dic, 'event_repository')) {
-            $this->event_repository = $opencast_dic->event_repository();
-        } else if (!empty($opencastContainer)) {
-            $this->event_repository = $opencastContainer[EventAPIRepository::class];
-        }
-
-        PluginConfig::setApiSettings();
         parent::__construct($a_ref_id);
     }
 
@@ -49,7 +44,7 @@ class ilObjOpencastEvent extends ilObjectPlugin
     /**
      * Create object
      */
-    public function doCreate(): void
+    public function doCreate(bool $clone_mode = false): void
     {
         global $ilDB;
 
@@ -83,12 +78,12 @@ class ilObjOpencastEvent extends ilObjectPlugin
         $set = $ilDB->query($select_sql);
 
         while ($rec = $ilDB->fetchAssoc($set)) {
-            $this->setOnline($rec["is_online"]);
+            $this->setOnline(!empty($rec["is_online"]));
             $this->setEventId($rec["event_id"]);
-            $this->setWidth($rec["width"]);
-            $this->setHeight($rec["height"]);
-            $this->setNewTab($rec["new_tab"]);
-            $this->setMaximize($rec["maximize"]);
+            $this->setWidth($rec["width"] ? intval($rec["width"]) : 0);
+            $this->setHeight($rec["height"] ? intval($rec["height"]) : 0);
+            $this->setNewTab(!empty($rec["new_tab"]));
+            $this->setMaximize(!empty($rec["maximize"]));
         }
 
         $event_id = $this->getEventId();
@@ -161,7 +156,7 @@ class ilObjOpencastEvent extends ilObjectPlugin
      *
      * @param bool online
      */
-    public function setOnline($a_val): void
+    public function setOnline(bool $a_val): void
     {
         $this->online = $a_val;
     }
@@ -181,7 +176,7 @@ class ilObjOpencastEvent extends ilObjectPlugin
      *
      * @param string event id
      */
-    public function setEventId($a_val): void
+    public function setEventId(string $a_val): void
     {
         $this->event_id = $a_val;
     }
@@ -201,7 +196,7 @@ class ilObjOpencastEvent extends ilObjectPlugin
      *
      * @param int width
      */
-    public function setWidth($a_val): void
+    public function setWidth(int $a_val): void
     {
         $this->width = $a_val ? intval($a_val) : null;
     }
@@ -221,7 +216,7 @@ class ilObjOpencastEvent extends ilObjectPlugin
      *
      * @param int height
      */
-    public function setHeight($a_val): void
+    public function setHeight(int $a_val): void
     {
         $this->height = $a_val ? intval($a_val) : null;
     }
@@ -239,9 +234,9 @@ class ilObjOpencastEvent extends ilObjectPlugin
     /**
      * Set New Tab Flag
      *
-     * @param int new tab flag
+     * @param bool new tab flag
      */
-    public function setNewTab($a_val): void
+    public function setNewTab(bool $a_val): void
     {
         $this->new_tab = $a_val;
     }
@@ -259,9 +254,9 @@ class ilObjOpencastEvent extends ilObjectPlugin
     /**
      * Set Maximize Flag
      *
-     * @param int Maximize flag
+     * @param bool Maximize flag
      */
-    public function setMaximize($a_val): void
+    public function setMaximize(bool $a_val): void
     {
         $this->maximize = $a_val;
     }

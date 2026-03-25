@@ -2,17 +2,17 @@
 // English Language File for OpencastEvent Plugin
 //
 <!-- language file start -->
-obj_xoce#:#Opencast Event
-objs_xoce#:#Opencast Events
+obj_xoce#:#Opencast Video
+objs_xoce#:#Opencast Videos
 obj_xoce_duplicate#:#Copy
-objs_xoce_duplicate#:#Copy Opencast Events
-obj_xoce_select#:#Select Opencast Event
-xoce_add#:#Add Opencast Event
+objs_xoce_duplicate#:#Copy Opencast Videos
+obj_xoce_select#:#Select Opencast Video
+xoce_add#:#Add Opencast Video
 xoce_new#:#Insert selected Opencast Video
-xoce_read#:#Read access to Opencast Event
+xoce_read#:#Read access to Opencast Video
 xoce_write#:#Save
-xoce_delete#:#Delete Opencast Event
-xoce_visible#:#Opencast Event is visible
+xoce_delete#:#Delete Opencast Video
+xoce_visible#:#Opencast Video is visible
 xoce_edit_permission#:#Change permission settings
 online#:#Online
 online_info#:#If online, participants can view the video.
@@ -24,13 +24,13 @@ edit#:#Edit
 title#:#Video Title
 description#:#Video Description
 event_id#:#Video Identifier
-show_event#:#Content
-event_settings#:#Event Settings
-msg_creation_failed#:#The Opencast Event object could not be created.
+show_event#:#Video
+event_settings#:#Settings
+msg_creation_failed#:#The Opencast Video object could not be created.
 no_event_id#:#An Opencast Video must be selected from the list.
-create_successful#:#Opencast event object successfully created.
-update_successful#:#Opencast event object successfully updated.
-no_title#A title for the event must be inserted.
+create_successful#:#Opencast Video object successfully created.
+update_successful#:#Opencast Video object successfully updated.
+no_title#A title for the video must be inserted.
 change_event#:#Replace by different Opencast Video
 display_type#:#Presentation Mode
 new_tab#:#Thumbnail as a link to the video
@@ -42,16 +42,22 @@ height_width#:#Max. width / height in pixels
 cont_constrain_proportions#:#Constrain Proportions
 size_type#:#Video Size
 maximize#:#Maximum and responsive
-maximize_info#:#Video is displayed as large as possible and can scale down if the user's window is smaller.
-custome_size#:#Custom and responsive
-custome_size_info#:#The defined size acts as a maximum size, while the video can scale down if the user's window is smaller.
+maximize_info#:#Video is displayed as large as possible and can scale down if the user's window is smaller. Low-resolution videos sometimes appear pixelated.
+custom_size#:#Custom and responsive
+custom_size_info#:#The defined size acts as a maximum size, while the video can scale down if the user's window is smaller.
 title_info#:#To change the title of the video, go to the Opencast Series which this video is part of.
-description_info#:#Please use Opencast Object to change the description of the video
-table_row_tooltip_txt#:#Click on this row to select this video
-table_row_tooltip_txt_not_selectable#:#This video cannot be selected because of ineligible processing state
+description_info#:#To change the description of the video, go to the Opencast Series which this video is part of.
+table_row_tooltip_txt#:#Click on this row to select this video.
+table_row_tooltip_txt_not_selectable#:#This video cannot be selected because of ineligible processing state.
 oc_video_section#:#Opencast Video
 settings_section#:#Settings
 config_header#:#Configurations
 config_saved#:#Settings have been successfully saved.
 config_thumbnail_link#:#"Thumbnail as a link" default value
-config_thumbnail_link_info#:#The default value for the "Thumbnail as a link to the video" setting option. Admins are able to set the default value for this setting option that is displayed to the users upon creating an Opencast Event object.
+config_thumbnail_link_info#:#The default value for the "Thumbnail as a link to the video" setting option. Admins are able to set the default value for this setting option that is displayed to the users upon creating an Opencast Video object.
+xoce_copy#:#Copy Opencast Video Object
+crs_create_xoce#:#Create Opencast Video Object
+root_create_xoce#:#Create Opencast Video Object
+cat_create_xoce#:#Create Opencast Video Object
+grp_create_xoce#:#Create Opencast Video Object
+fold_create_xoce#:#Create Opencast Video Object

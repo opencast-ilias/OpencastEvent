@@ -1,65 +1,65 @@
 <#1>
 <?php
 if (!$ilDB->tableExists("rep_robj_xoce_data")) {
-    $fields = array(
-        'id' => array(
+    $fields = [
+        'id' => [
             'type' => 'integer',
             'length' => 8,
-            'notnull' => true
-        ),
-        'is_online' => array(
+            'notnull' => true,
+        ],
+        'is_online' => [
             'type' => 'integer',
             'length' => 1,
-            'notnull' => false
-        ),
-        'event_id' => array(
+            'notnull' => false,
+        ],
+        'event_id' => [
             'type' => 'text',
             'length' => 64,
             'fixed' => false,
-            'notnull' => false
-        ),
-        'new_tab' => array(
+            'notnull' => false,
+        ],
+        'new_tab' => [
             'type' => 'integer',
             'length' => 1,
-            'notnull' => false
-        ),
-        'maximize' => array(
+            'notnull' => false,
+        ],
+        'maximize' => [
             'type' => 'integer',
             'length' => 1,
-            'notnull' => false
-        ),
-        'width' => array(
+            'notnull' => false,
+        ],
+        'width' => [
             'type' => 'integer',
             'length' => 4,
-            'notnull' => false
-        ),
-        'height' => array(
+            'notnull' => false,
+        ],
+        'height' => [
             'type' => 'integer',
             'length' => 4,
-            'notnull' => false
-        )
-    );
+            'notnull' => false,
+        ],
+    ];
     $ilDB->createTable("rep_robj_xoce_data", $fields);
-    $ilDB->addPrimaryKey("rep_robj_xoce_data", array("id"));
+    $ilDB->addPrimaryKey("rep_robj_xoce_data", ["id"]);
 }
 ?>
 <#2>
 <?php
 // introducing configuration table.
 if (!$ilDB->tableExists("rep_robj_xoce_config")) {
-    $fields = array(
-        'name' => array(
+    $fields = [
+        'name' => [
             'type' => 'text',
             'length' => 250,
-            'notnull' => true
-        ),
-        'value' => array(
+            'notnull' => true,
+        ],
+        'value' => [
             'type' => 'text',
             'length' => 4000,
-            'notnull' => false
-        )
-    );
+            'notnull' => false,
+        ],
+    ];
     $ilDB->createTable("rep_robj_xoce_config", $fields);
-    $ilDB->addPrimaryKey("rep_robj_xoce_config", array("name"));
+    $ilDB->addPrimaryKey("rep_robj_xoce_config", ["name"]);
 }
 ?>

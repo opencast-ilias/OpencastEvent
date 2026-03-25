@@ -1,17 +1,19 @@
 <?php
+
+declare(strict_types=1);
+
 use srag\Plugins\Opencast\Model\User\xoctUser;
 use srag\Plugins\Opencast\Model\Metadata\Definition\MDFieldDefinition;
-use srag\Plugins\Opencast\DI\OpencastDIC;
-use srag\Plugins\Opencast\Model\Config\PluginConfig;
+use srag\Plugins\Opencast\Container\Init;
 use srag\Plugins\Opencast\Model\Event\Event;
 
 use srag\Plugins\Opencast\Model\Series\SeriesRepository;
 use srag\Plugins\Opencast\Model\Series\SeriesAPIRepository;
+use srag\Plugins\Opencast\Util\Locale\Translator;
 
 /**
  * OpencastEventListTableGUI class for event selection
  *
- * @extends ilTable2GUI
  * @author Farbod Zamani Boroujeni <zamani@elan-ev.de>
  */
 class OpencastEventListTableGUI extends ilTable2GUI
@@ -23,54 +25,43 @@ class OpencastEventListTableGUI extends ilTable2GUI
     public const F_START = 'start';
 
     /**
-     * @var ilObjOpencastEventGUI
+     * @var \ILIAS\DI\Container
      */
-    protected $parent_obj;
-    /**
-     * @var Container
-     */
-    protected $dic;
-    /**
-     * @var ilOpenCastPlugin
-     */
-    private $opencast_plugin;
+    protected \ILIAS\DI\Container $dic;
     /**
      * @var ilOpencastEventPlugin
      */
-    protected $plugin;
+    protected ilOpencastEventPlugin $plugin;
     /**
      * @var SeriesRepository
      */
-    private $series_repository;
+    private SeriesRepository $series_repository;
     /**
      * @var array
      */
-    protected $filter = [];
+    protected array $filter = [];
     /**
      * @var int
      */
-    protected $ref_id = 0;
+    protected int $ref_id = 0;
+    /** @var Translator */
+    private Translator $opencast_translator;
 
     /**
     * Constructor
     */
-    public function __construct($a_parent_obj, $a_parent_cmd, $ref_id = 0)
+    public function __construct(ilObjOpencastEventGUI $a_parent_obj, string $a_parent_cmd, int $ref_id = 0)
     {
-        global $DIC, $opencastContainer;
+        parent::__construct($a_parent_obj, $a_parent_cmd);
+        global $DIC;
 
         $this->dic = $DIC;
         $this->parent_obj = $a_parent_obj;
         $this->plugin = $a_parent_obj->getPlugin();
-        $this->opencast_plugin = ilOpenCastPlugin::getInstance();
-        $opencast_dic = OpencastDIC::getInstance();
+        $opencast_dic = Init::init();
+        $this->series_repository = $opencast_dic[SeriesAPIRepository::class];
+        $this->opencast_translator = $opencast_dic->translator();
 
-        if (method_exists($opencast_dic, 'series_repository')) {
-            $this->series_repository = $opencast_dic->series_repository();
-        } else if (!empty($opencastContainer)) {
-            $this->series_repository = $opencastContainer->get(SeriesAPIRepository::class);
-        }
-
-        PluginConfig::setApiSettings();
         $this->setRefId($ref_id);
         $this->setId($this->parent_obj->getType() . '_event_table_' . $this->dic->user()->getId() . '_' . $this->getRefId());
 
@@ -87,7 +78,7 @@ class OpencastEventListTableGUI extends ilTable2GUI
         $this->setEnableTitle(true);
         $this->setDefaultFilterVisiblity(true);
 
-        $this->addColumn('', '', 1);
+        $this->addColumn('', '', "1px");
         foreach ($this->getEventColumns() as $column_name => $column_txt) {
             $avialable_sorts = ['title', 'location', 'series', 'start'];
             $sort = '';
@@ -98,7 +89,11 @@ class OpencastEventListTableGUI extends ilTable2GUI
             }
             $this->addColumn($column_txt, $sort, '', false, $class);
         }
-        $this->setRowTemplate($this->plugin->getDirectory() . '/templates/html/tpl.OpencastEventTabeFull.html');
+
+        $this->setRowTemplate(
+            'tpl.OpencastEventTabeFull.html',
+            $this->plugin->getDirectory()
+        );
 
         $this->setFormAction($this->dic->ctrl()->getFormAction($a_parent_obj));
     }
@@ -109,7 +104,7 @@ class OpencastEventListTableGUI extends ilTable2GUI
      * @param int $ref_id
      * @return OpencastEventListTableGUI
      */
-    public function setRefId($ref_id): OpencastEventListTableGUI
+    public function setRefId(int $ref_id): OpencastEventListTableGUI
     {
         $this->ref_id = $ref_id;
         return $this;
@@ -128,7 +123,7 @@ class OpencastEventListTableGUI extends ilTable2GUI
     /**
      * @inheritdoc
      */
-    protected function fillRow($row): void
+    protected function fillRow(array $row): void
     {
         if (!isset($row['object'])) {
             $this->tpl->setVariable("TXT_EMPTY_INFO", $row);
@@ -172,12 +167,12 @@ class OpencastEventListTableGUI extends ilTable2GUI
         $title->readFromSession();
         $this->filter[self::F_TEXTFILTER] = $title->getValue();
 
-        $series = $this->addFilterItemByMetaType(self::F_SERIES, self::FILTER_SELECT, false, $this->opencast_plugin->txt('event_series'));
+        $series = $this->addFilterItemByMetaType(self::F_SERIES, self::FILTER_SELECT, false, $this->opencast_translator->translate('event_series'));
         $series->setOptions($this->getSeriesFilterOptions());
         $series->readFromSession();
         $this->filter[self::F_SERIES] = $series->getValue();
 
-        $start = $this->addFilterItemByMetaType(self::F_START, self::FILTER_DATE_RANGE, false, $this->opencast_plugin->txt('event_start'));
+        $start = $this->addFilterItemByMetaType(self::F_START, self::FILTER_DATE_RANGE, false, $this->opencast_translator->translate('event_start'));
         $start->readFromSession();
         $this->filter[self::F_START_FROM] = $start->getValue()['from'];
         $this->filter[self::F_START_TO] = $start->getValue()['to'];
@@ -264,7 +259,7 @@ class OpencastEventListTableGUI extends ilTable2GUI
             case 'thumbnail':
                 /** @var Event $object */
                 $object = $row['object'];
-                $thumbnail_img_tpl = new ilTemplate($this->plugin->getDirectory() . '/templates/html/tpl.OpencastEventTableThumbnail.html', false, false);
+                $thumbnail_img_tpl = new ilTemplate($this->plugin->getDirectory() . '/templates/default/tpl.OpencastEventTableThumbnail.html', false, false);
                 $thumbnail_img_tpl->setVariable('SRC', $object->publications()->getThumbnailUrl());
                 return $thumbnail_img_tpl->get();
             case 'title':
@@ -275,8 +270,12 @@ class OpencastEventListTableGUI extends ilTable2GUI
             case 'series':
                 /** @var Event $object */
                 $object = $row['object'];
-                $series_title = $this->series_repository->find($object->getSeries())->getMetadata()->getField('title')->getValue();
-                return $series_title . ' (' . $object->getSeries() . ')';
+                try {
+                    $series_title = $this->series_repository->find($object->getSeries())->getMetadata()->getField('title')->getValue();
+                    return $series_title . ' (' . $object->getSeries() . ')';
+                } catch (Exception $e) {
+                    return $object->getSeries();
+                }
             case 'start':
                 $start_timestamp = !empty($row['start_unix']) ? $row['start_unix'] : strtotime($row['startDate']);
                 return date('d.m.Y H:i', $start_timestamp);
@@ -293,11 +292,11 @@ class OpencastEventListTableGUI extends ilTable2GUI
     private function getEventColumns(): array
     {
         return [
-            'thumbnail' => $this->opencast_plugin->txt('event_preview'),
-            'title' => $this->opencast_plugin->txt('event_title'),
-            'series' => $this->opencast_plugin->txt('event_series'),
-            'start' => $this->opencast_plugin->txt('event_start'),
-            'location' => $this->opencast_plugin->txt('event_location'),
+            'thumbnail' => $this->opencast_translator->translate('event_preview'),
+            'title' => $this->opencast_translator->translate('event_title'),
+            'series' => $this->opencast_translator->translate('event_series'),
+            'start' => $this->opencast_translator->translate('event_start'),
+            'location' => $this->opencast_translator->translate('event_location'),
         ];
     }
 }

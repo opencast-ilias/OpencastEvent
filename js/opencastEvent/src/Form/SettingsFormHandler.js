@@ -39,7 +39,6 @@ export default class SettingsFormHandler {
         let self = this;
 
         $('input#prop_embed_size_width').on('change', function() {
-            console.log('HERE... prop_embed_size_width');
             let new_width = $(this).val();
             new_width = parseInt(new_width, 10);
             if (self.keepAspectRatio()) {
@@ -57,8 +56,6 @@ export default class SettingsFormHandler {
         });
 
         $('input#prop_embed_size_height').on('change', function() {
-            console.log('HERE... prop_embed_size_height');
-
             let new_height = $(this).val();
             new_height = parseInt(new_height, 10);
             if (self.keepAspectRatio()) {
