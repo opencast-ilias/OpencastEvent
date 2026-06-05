@@ -10,10 +10,6 @@ declare(strict_types=1);
 class ilObjOpencastEventListGUI extends ilObjectPluginListGUI
 {
     /**
-     * @var bool
-     */
-    public $payment_enabled;
-    /**
      * Init type
      */
     public function initType(): void
