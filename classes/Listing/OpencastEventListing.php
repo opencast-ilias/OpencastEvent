@@ -104,6 +104,37 @@ class OpencastEventListing
     }
 
     /**
+     * Create an ilTemplate from the plugin's default template directory.
+     *
+     * @param string $file Template file name.
+     * @param bool $remove_unknown_variables Strip unresolved template variables.
+     */
+    private function template(string $file, bool $remove_unknown_variables = true): ilTemplate
+    {
+        return new ilTemplate(
+            $this->plugin->getDirectory() . '/templates/default/' . $file,
+            true,
+            $remove_unknown_variables
+        );
+    }
+
+    /**
+     * Set the given variables on a template block and parse it.
+     *
+     * @param ilTemplate $tpl Target template.
+     * @param string $block Block name to fill.
+     * @param array<string, string> $variables Variable name => value pairs.
+     */
+    private function fillBlock(ilTemplate $tpl, string $block, array $variables): void
+    {
+        $tpl->setCurrentBlock($block);
+        foreach ($variables as $name => $value) {
+            $tpl->setVariable($name, $value);
+        }
+        $tpl->parseCurrentBlock();
+    }
+
+    /**
      * Build and return the standard UI filter component for event listing.
      *
      * Includes fields for text search, series selection, and start date range.
@@ -303,44 +334,20 @@ class OpencastEventListing
             }
 
             // Preparing the ID property with extra spans to be used by js functions.
-            $span_id_tpl = new ilTemplate(
-                $this->plugin->getDirectory() . '/templates/default/tpl.OpencastEventListPropSpanId.html',
-                true,
-                true
-            );
-            $span_id_tpl->setCurrentBlock('id');
-            $span_id_tpl->setVariable('ID', $event->getIdentifier());
-            $span_id_tpl->parseCurrentBlock();
-
-            $span_id_tpl->setCurrentBlock('title');
-            $span_id_tpl->setVariable('TITLE', $event->getTitle());
-            $span_id_tpl->parseCurrentBlock();
-
-            $span_id_tpl->setCurrentBlock('desc');
-            $span_id_tpl->setVariable('DESC', $event->getDescription());
-            $span_id_tpl->parseCurrentBlock();
+            $span_id_tpl = $this->template('tpl.OpencastEventListPropSpanId.html');
+            $this->fillBlock($span_id_tpl, 'id', ['ID' => $event->getIdentifier()]);
+            $this->fillBlock($span_id_tpl, 'title', ['TITLE' => $event->getTitle()]);
+            $this->fillBlock($span_id_tpl, 'desc', ['DESC' => $event->getDescription()]);
 
             // Preparing the Status property with extra spans to be used by js functions.
             $selectable = $event->getProcessingState() == Event::STATE_SUCCEEDED;
-            $span_status_tpl = new ilTemplate(
-                $this->plugin->getDirectory() . '/templates/default/tpl.OpencastEventListPropSpanStatus.html',
-                true,
-                true
-            );
-            $span_status_tpl->setCurrentBlock('selectable');
-            $span_status_tpl->setVariable('SELECTABLE', $selectable ? 'true' : 'false');
-            $span_status_tpl->parseCurrentBlock();
-
-            $span_status_tpl->setCurrentBlock('text');
             $item_status_txt = $selectable ?
                 $this->plugin->txt('list_item_status_txt') :
                 $this->plugin->txt('list_item_status_txt_not_selectable');
-            $span_status_tpl->setVariable('TEXT', $item_status_txt);
-            $span_status_tpl->parseCurrentBlock();
-
-            $span_status_tpl->setCurrentBlock('selected');
-            $span_status_tpl->setVariable('SELECTED', $this->plugin->txt('list_item_status_selected_txt'));
-            $span_status_tpl->parseCurrentBlock();
+            $span_status_tpl = $this->template('tpl.OpencastEventListPropSpanStatus.html');
+            $this->fillBlock($span_status_tpl, 'selectable', ['SELECTABLE' => $selectable ? 'true' : 'false']);
+            $this->fillBlock($span_status_tpl, 'text', ['TEXT' => $item_status_txt]);
+            $this->fillBlock($span_status_tpl, 'selected', ['SELECTED' => $this->plugin->txt('list_item_status_selected_txt')]);
 
             /** @disregard P1013 The method "withLeadImage" exists but intelephense cannot find it! */
             $items[] = $item->withProperties([
@@ -440,23 +447,11 @@ class OpencastEventListing
      */
     protected function renderListingAfterForm(string $listing_html, string $filter_html): string
     {
-        $edit_event_form_tpl = new ilTemplate(
-            $this->plugin->getDirectory() . '/templates/default/tpl.OpencastEventEdit.html',
-            true,
-            true
-        );
+        $edit_event_form_tpl = $this->template('tpl.OpencastEventEdit.html');
 
-        $edit_event_form_tpl->setCurrentBlock('form');
-        $edit_event_form_tpl->setVariable('FORM', $this->form->getHTML());
-        $edit_event_form_tpl->parseCurrentBlock();
-
-        $edit_event_form_tpl->setCurrentBlock('filter');
-        $edit_event_form_tpl->setVariable('FILTER', $filter_html);
-        $edit_event_form_tpl->parseCurrentBlock();
-
-        $edit_event_form_tpl->setCurrentBlock('listing');
-        $edit_event_form_tpl->setVariable('LISTING', $listing_html);
-        $edit_event_form_tpl->parseCurrentBlock();
+        $this->fillBlock($edit_event_form_tpl, 'form', ['FORM' => $this->form->getHTML()]);
+        $this->fillBlock($edit_event_form_tpl, 'filter', ['FILTER' => $filter_html]);
+        $this->fillBlock($edit_event_form_tpl, 'listing', ['LISTING' => $listing_html]);
 
         return $edit_event_form_tpl->get();
     }
@@ -473,27 +468,13 @@ class OpencastEventListing
      */
     protected function renderListingWithingForm(string $listing_html, string $filter_html): string
     {
-        $new_event_form_tpl = new ilTemplate(
-            $this->plugin->getDirectory() . '/templates/default/tpl.OpencastEventCreate.html',
-            true,
-            true
-        );
+        $new_event_form_tpl = $this->template('tpl.OpencastEventCreate.html');
 
-        $new_event_form_tpl->setCurrentBlock('filter');
-        $new_event_form_tpl->setVariable('FILTER', $filter_html);
-        $new_event_form_tpl->parseCurrentBlock();
+        $this->fillBlock($new_event_form_tpl, 'filter', ['FILTER' => $filter_html]);
 
         $new_event_form_tpl->setCurrentBlock('form');
-        $footer_replace_tpl = new ilTemplate(
-            $this->plugin->getDirectory() . '/templates/default/tpl.OpencastEventFooterReplace.html',
-            true,
-            false
-        );
-        $event_listing_replace_tpl = new ilTemplate(
-            $this->plugin->getDirectory() . '/templates/default/tpl.OpencastEventFormEventListingReplace.html',
-            true,
-            true
-        );
+        $footer_replace_tpl = $this->template('tpl.OpencastEventFooterReplace.html', false);
+        $event_listing_replace_tpl = $this->template('tpl.OpencastEventFormEventListingReplace.html');
 
         $event_listing_replace_tpl->setVariable('LISTING', $listing_html);
         $event_listing_replace_tpl->setVariable('FOOTER', $footer_replace_tpl->get());
