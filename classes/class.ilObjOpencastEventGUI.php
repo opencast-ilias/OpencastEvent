@@ -842,18 +842,10 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
         \ILIAS\Refinery\Transformation $transformation,
         mixed $default = null
     ): mixed {
-        if (
-            $this->http->wrapper()->query()->has($key) &&
-            $this->http->wrapper()->query()->retrieve(
-                $key,
-                $transformation
-            )
-        ) {
-            return $this->http->wrapper()->query()->retrieve(
-                $key,
-                $transformation
-            );
+        $query = $this->http->wrapper()->query();
+        if (!$query->has($key)) {
+            return $default;
         }
-        return $default;
+        return $query->retrieve($key, $transformation) ?: $default;
     }
 }

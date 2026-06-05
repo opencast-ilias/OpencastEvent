@@ -191,19 +191,32 @@ class OpencastEventListing
      */
     protected function getListingSortValue(): string
     {
-        if (
-            $this->dic->http()->wrapper()->query()->has(self::F_SORT_QUERY_PARAM) &&
-            $this->dic->http()->wrapper()->query()->retrieve(
-                self::F_SORT_QUERY_PARAM,
-                $this->dic->refinery()->kindlyTo()->string()
-            )
-        ) {
-            return $this->dic->http()->wrapper()->query()->retrieve(
-                self::F_SORT_QUERY_PARAM,
-                $this->dic->refinery()->kindlyTo()->string()
-            );
+        return $this->retrieveQueryParam(
+            self::F_SORT_QUERY_PARAM,
+            $this->dic->refinery()->kindlyTo()->string(),
+            self::F_SORT_START_DESC
+        );
+    }
+
+    /**
+     * Retrieve and transform a query parameter, falling back to a default
+     * when the parameter is absent or its transformed value is empty.
+     *
+     * @param string $key Query parameter name.
+     * @param \ILIAS\Refinery\Transformation $transformation Transformation to apply.
+     * @param mixed $default Default returned when the parameter is missing/empty.
+     * @return mixed Transformed value or default.
+     */
+    private function retrieveQueryParam(
+        string $key,
+        \ILIAS\Refinery\Transformation $transformation,
+        mixed $default
+    ): mixed {
+        $query = $this->dic->http()->wrapper()->query();
+        if (!$query->has($key)) {
+            return $default;
         }
-        return self::F_SORT_START_DESC;
+        return $query->retrieve($key, $transformation) ?: $default;
     }
 
     /**
@@ -232,14 +245,11 @@ class OpencastEventListing
      */
     protected function getCurrentPage(): int
     {
-        $current_page = 0;
-        if ($this->dic->http()->wrapper()->query()->has(self::F_PAGINATION_QUERY_PARAM)) {
-            $current_page = $this->dic->http()->wrapper()->query()->retrieve(
-                self::F_PAGINATION_QUERY_PARAM,
-                $this->dic->refinery()->kindlyTo()->int()
-            );
-        }
-        return (int) $current_page;
+        return (int) $this->retrieveQueryParam(
+            self::F_PAGINATION_QUERY_PARAM,
+            $this->dic->refinery()->kindlyTo()->int(),
+            0
+        );
     }
     /**
      * Calculate the API page offset for event fetch requests.
