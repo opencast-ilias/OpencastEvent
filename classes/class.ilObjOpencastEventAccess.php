@@ -10,6 +10,17 @@ declare(strict_types=1);
 class ilObjOpencastEventAccess extends ilObjectPluginAccess
 {
     /**
+     * Default RBAC permissions granted per parent-course role on creation.
+     *
+     * @var array<string, list<string>>
+     */
+    private const DEFAULT_PERMISSIONS = [
+        'member' => ['visible', 'read'],
+        'tutor' => ['visible', 'read', 'copy'],
+        'admin' => ['visible', 'read', 'copy', 'write', 'delete'],
+    ];
+
+    /**
      * Checks whether a user may invoke a command or not
      * (this method is called by ilAccessHandler::checkAccess)
      *
@@ -25,21 +36,23 @@ class ilObjOpencastEventAccess extends ilObjectPluginAccess
      */
     public function _checkAccess(string $a_cmd, string $a_permission, int $a_ref_id, int $a_obj_id, ?int $a_user_id = null): bool
     {
-        global $ilUser, $ilAccess;
+        global $DIC;
 
-        if ($a_user_id == 0) {
-            $a_user_id = $ilUser->getId();
+        if (!$a_user_id) {
+            $a_user_id = $DIC->user()->getId();
         }
+
+        $access = $DIC->access();
 
         switch ($a_permission) {
             case "read":
-                if (!ilObjOpencastEventAccess::checkOnline($a_obj_id) &&
-                    !$ilAccess->checkAccessOfUser($a_user_id, "write", "", $a_ref_id)) {
+                if (!self::checkOnline($a_obj_id) &&
+                    !$access->checkAccessOfUser($a_user_id, "write", "", $a_ref_id)) {
                     return false;
                 }
                 break;
             case "write":
-                return $ilAccess->checkAccessOfUser($a_user_id, "write", "", $a_ref_id);
+                return $access->checkAccessOfUser($a_user_id, "write", "", $a_ref_id);
         }
 
         return true;
@@ -50,15 +63,17 @@ class ilObjOpencastEventAccess extends ilObjectPluginAccess
      */
     public static function checkOnline(int $a_id): bool
     {
-        global $ilDB;
+        global $DIC;
 
-        $object_id = $ilDB->quote($a_id, "integer");
-        $select_sql = "SELECT is_online FROM " . ilOpencastEventPlugin::TABLE_NAME . " WHERE id = $object_id";
+        $db = $DIC->database();
+        $set = $db->queryF(
+            'SELECT is_online FROM ' . ilOpencastEventPlugin::TABLE_NAME . ' WHERE id = %s',
+            ['integer'],
+            [$a_id]
+        );
 
-        $set = $ilDB->query($select_sql);
-
-        $rec = $ilDB->fetchAssoc($set);
-        return (bool) $rec["is_online"];
+        $rec = $db->fetchAssoc($set);
+        return (bool) ($rec["is_online"] ?? false);
     }
 
     /**
@@ -71,66 +86,31 @@ class ilObjOpencastEventAccess extends ilObjectPluginAccess
         global $DIC;
         $parent_id = $DIC->repositoryTree()->getParentId($ref_id);
         $parent_obj = ilObjectFactory::getInstanceByRefId($parent_id);
-        if (!$parent_obj instanceof \ilObject) {
+        if (!$parent_obj instanceof ilObjCourse) {
             return;
         }
-        self::setDefaultMemberPerms($ref_id, $parent_obj);
-        self::setDefaultTutorPerms($ref_id, $parent_obj);
-        self::setDefaultAdminPerms($ref_id, $parent_obj);
+
+        self::grantPermissions($ref_id, $parent_obj->getDefaultMemberRole(), self::DEFAULT_PERMISSIONS['member']);
+        self::grantPermissions($ref_id, $parent_obj->getDefaultTutorRole(), self::DEFAULT_PERMISSIONS['tutor']);
+        self::grantPermissions($ref_id, $parent_obj->getDefaultAdminRole(), self::DEFAULT_PERMISSIONS['admin']);
     }
 
     /**
-     * Sets default RBAC permissions for members
+     * Grants the given named permissions to a role on a reference.
      *
      * @param int $ref_id ref id
-     * @param ilObjCourse $parent_obj the parent object
+     * @param int $role_id role to grant the permissions to
+     * @param list<string> $permissions permission operation names
      */
-    private static function setDefaultMemberPerms(int $ref_id, ilObjCourse $parent_obj): void
+    private static function grantPermissions(int $ref_id, int $role_id, array $permissions): void
     {
         global $DIC;
-        $member_role_id = $parent_obj->getDefaultMemberRole();
-        $member_roles = ['visible', 'read'];
-        $ops_ids = [];
-        foreach ($member_roles as $role_name) {
-            $ops_ids[] = $DIC->rbac()->review()->_getOperationIdByName($role_name);
-        }
-        $DIC->rbac()->admin()->grantPermission($member_role_id, $ops_ids, $ref_id);
-    }
-
-    /**
-     * Sets default RBAC permissions for tutors
-     *
-     * @param int $ref_id ref id
-     * @param ilObjCourse $parent_obj the parent object
-     */
-    private static function setDefaultTutorPerms(int $ref_id, ilObjCourse $parent_obj): void
-    {
-        global $DIC;
-        $tutor_role_id = $parent_obj->getDefaultTutorRole();
-        $tutor_roles = ['visible', 'read', 'copy'];
-        $ops_ids = [];
-        foreach ($tutor_roles as $role_name) {
-            $ops_ids[] = $DIC->rbac()->review()->_getOperationIdByName($role_name);
-        }
-        $DIC->rbac()->admin()->grantPermission($tutor_role_id, $ops_ids, $ref_id);
-    }
-
-    /**
-     * Sets default RBAC permissions for admins
-     *
-     * @param int $ref_id ref id
-     * @param ilObjCourse $parent_obj the parent object
-     */
-    private static function setDefaultAdminPerms(int $ref_id, ilObjCourse $parent_obj): void
-    {
-        global $DIC;
-        $admin_role_id = $parent_obj->getDefaultAdminRole();
-        $admin_roles = ['visible', 'read', 'copy', 'write', 'delete'];
-        $ops_ids = [];
-        foreach ($admin_roles as $role_name) {
-            $ops_ids[] = $DIC->rbac()->review()->_getOperationIdByName($role_name);
-        }
-        $DIC->rbac()->admin()->grantPermission($admin_role_id, $ops_ids, $ref_id);
+        $review = $DIC->rbac()->review();
+        $ops_ids = array_map(
+            static fn(string $name): int => $review->_getOperationIdByName($name),
+            $permissions
+        );
+        $DIC->rbac()->admin()->grantPermission($role_id, $ops_ids, $ref_id);
     }
 
     /**
@@ -138,7 +118,7 @@ class ilObjOpencastEventAccess extends ilObjectPluginAccess
      */
     public static function isAnonymousUser(): bool
     {
-        global $ilUser;
-        return $ilUser->getId() === ANONYMOUS_USER_ID;
+        global $DIC;
+        return $DIC->user()->getId() === ANONYMOUS_USER_ID;
     }
 }
