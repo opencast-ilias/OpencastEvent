@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace elanev\OpencastEvent\Listing;
 
 use ilOpencastEventPlugin;
-use ilOpenCastPlugin;
 use ilTemplate;
 use ILIAS\UI\Factory;
 use ILIAS\UI\Renderer;
@@ -77,38 +76,21 @@ class OpencastEventListing
     /** @var int the default constant for API limit of events */
     public const F_PAGINATION_API_LIMIT = 1000;
 
-    /**
-     * @var \ILIAS\DI\Container
-     */
     protected \ILIAS\DI\Container $dic;
-    /**
-     * @var Factory
-     */
     private Factory $ui_factory;
-    /**
-     * @var Renderer
-     */
     private Renderer $renderer;
-    /**
-     * @var ilOpencastEventPlugin
-     */
     protected ilOpencastEventPlugin $plugin;
-    /**
-     * @var ilOpenCastPlugin
-     */
-    private ilOpenCastPlugin $opencast_plugin;
 
     /** @var string the filter id */
     public string $filter_id;
 
-    /** @var Translator */
     private Translator $opencast_translator;
 
 
     function __construct(
         protected \ilObjOpencastEventGUI $gui,
         protected ilPropertyFormGUI $form,
-        private int $ref_id = 0,
+        int $ref_id = 0,
         private bool $is_new = true
     ) {
         global $DIC;
@@ -117,7 +99,6 @@ class OpencastEventListing
         $this->renderer = $DIC->ui()->renderer();
         $this->plugin = $this->gui->getPlugin();
         $opencast_dic = Init::init();
-        $this->opencast_plugin = $opencast_dic[ilOpenCastPlugin::class];
         $this->opencast_translator = $opencast_dic->translator();
         $this->filter_id = $this->gui::class . '_filter_' . $ref_id;
     }
@@ -127,8 +108,6 @@ class OpencastEventListing
      *
      * Includes fields for text search, series selection, and start date range.
      * The filter is bound to the current listing action link.
-     *
-     * @return \ILIAS\UI\Component\Input\Container\Filter\Standard
      */
     protected function getListingFilter(): StandardFilter
     {
@@ -147,7 +126,7 @@ class OpencastEventListing
 
         $action = $this->getActionLink('filter');
 
-        $filter = $this->dic->uiService()->filter()->standard(
+        return $this->dic->uiService()->filter()->standard(
             $this->filter_id,
             $action,
             $filter_inputs,
@@ -155,14 +134,11 @@ class OpencastEventListing
             true,
             true
         );
-
-        return $filter;
     }
 
     /**
      * Extract selected filter values from a standard filter component.
      *
-     * @param \ILIAS\UI\Component\Input\Container\Filter\Standard $filter
      * @return array|null Filter values as associative array or null when no data.
      */
     protected function getListingFilterData(StandardFilter $filter): ?array
@@ -173,7 +149,6 @@ class OpencastEventListing
     /**
      * Render the filter component into HTML.
      *
-     * @param \ILIAS\UI\Component\Input\Container\Filter\Standard $filter
      * @return string HTML output for the filter bar.
      */
     protected function renderListingFilters(StandardFilter $filter): string
@@ -189,12 +164,10 @@ class OpencastEventListing
      * - title asc/desc
      * - series asc/desc
      * - location asc/desc
-     *
-     * @return \ILIAS\UI\Component\ViewControl\Sortation
      */
     protected function getListingSort(): \ILIAS\UI\Component\ViewControl\Sortation
     {
-        $sortation = $this->ui_factory->viewControl()->sortation(
+        return $this->ui_factory->viewControl()->sortation(
             [
                 self::F_SORT_START_ASC      => $this->plugin->txt(self::F_SORT_START_ASC),
                 self::F_SORT_START_DESC     => $this->plugin->txt(self::F_SORT_START_DESC),
@@ -207,8 +180,6 @@ class OpencastEventListing
             ],
             $this->getListingSortValue()
         )->withTargetURL($this->getActionLink('sortation'), self::F_SORT_QUERY_PARAM);
-
-        return $sortation;
     }
 
     /**
@@ -220,7 +191,6 @@ class OpencastEventListing
      */
     protected function getListingSortValue(): string
     {
-        $selected = self::F_SORT_START_DESC;
         if (
             $this->dic->http()->wrapper()->query()->has(self::F_SORT_QUERY_PARAM) &&
             $this->dic->http()->wrapper()->query()->retrieve(
@@ -228,23 +198,22 @@ class OpencastEventListing
                 $this->dic->refinery()->kindlyTo()->string()
             )
         ) {
-            $selected = $this->dic->http()->wrapper()->query()->retrieve(
+            return $this->dic->http()->wrapper()->query()->retrieve(
                 self::F_SORT_QUERY_PARAM,
                 $this->dic->refinery()->kindlyTo()->string()
             );
         }
-        return $selected;
+        return self::F_SORT_START_DESC;
     }
 
     /**
      * Create pagination controls for event listing.
      *
      * @param int $total Total number of items (for pagination calculation).
-     * @return \ILIAS\UI\Component\ViewControl\Pagination
      */
     protected function getListingPagination(int $total): \ILIAS\UI\Component\ViewControl\Pagination
     {
-        $pagination = $this->ui_factory->viewControl()->pagination()
+        return $this->ui_factory->viewControl()->pagination()
             ->withTargetURL(
                 $this->getActionLink('pagination'), self::F_PAGINATION_QUERY_PARAM
             )
@@ -252,7 +221,6 @@ class OpencastEventListing
             ->withPageSize(self::F_PAGINATION_PER_PAGE)
             ->withMaxPaginationButtons(2)
             ->withCurrentPage($this->getCurrentPage());
-        return $pagination;
     }
 
     /**
@@ -284,8 +252,7 @@ class OpencastEventListing
     protected function getApiOffset(): int
     {
         $global_offset = $this->getCurrentPage() * self::F_PAGINATION_PER_PAGE;
-        $api_page = intdiv($global_offset, self::F_PAGINATION_API_LIMIT);
-        return $api_page;
+        return intdiv($global_offset, self::F_PAGINATION_API_LIMIT);
     }
 
     /**

@@ -40,7 +40,6 @@ class ilObjOpencastEventAccess extends ilObjectPluginAccess
                 break;
             case "write":
                 return $ilAccess->checkAccessOfUser($a_user_id, "write", "", $a_ref_id);
-                break;
         }
 
         return true;
@@ -48,8 +47,6 @@ class ilObjOpencastEventAccess extends ilObjectPluginAccess
 
     /**
      * Checks whether the Object is online
-     * @param int $a_id
-     * @return bool
      */
     public static function checkOnline(int $a_id): bool
     {
@@ -74,7 +71,7 @@ class ilObjOpencastEventAccess extends ilObjectPluginAccess
         global $DIC;
         $parent_id = $DIC->repositoryTree()->getParentId($ref_id);
         $parent_obj = ilObjectFactory::getInstanceByRefId($parent_id);
-        if (!$parent_obj) {
+        if (!$parent_obj instanceof \ilObject) {
             return;
         }
         self::setDefaultMemberPerms($ref_id, $parent_obj);
@@ -138,7 +135,6 @@ class ilObjOpencastEventAccess extends ilObjectPluginAccess
 
     /**
      * Checks if the user is anonymous.
-     * @return bool
      */
     public static function isAnonymousUser(): bool
     {
