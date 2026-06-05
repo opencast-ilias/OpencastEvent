@@ -118,6 +118,14 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
     }
 
     /**
+     * Return the stored dimension or the given default when none is set.
+     */
+    private function effectiveDimension(int $value, int $default): int
+    {
+        return $value ?: $default;
+    }
+
+    /**
      * Handles all commmands of this class, centralizes permission checks
      *
      * @param string $cmd Command
@@ -477,8 +485,8 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
         $event_obj = $this->getEventObject();
         $js_config = new stdClass();
         $js_config->maximize = $event_obj->getMaximize();
-        $js_config->width = $event_obj->getWidth() ?: self::DEFAULT_WIDTH;
-        $js_config->height = $event_obj->getHeight() ?: self::DEFAULT_HEIGHT;
+        $js_config->width = $this->effectiveDimension($event_obj->getWidth(), self::DEFAULT_WIDTH);
+        $js_config->height = $this->effectiveDimension($event_obj->getHeight(), self::DEFAULT_HEIGHT);
         return $js_config;
     }
 
@@ -611,8 +619,8 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
             // preview image
             $event_obj = $this->getEventObject();
             $preview_image = new ilNonEditableValueGUI($this->opencast_translator->translate('event_preview'), '', true);
-            $preview_image_width = $event_obj->getWidth() ?: self::DEFAULT_WIDTH;
-            $preview_image_height = $event_obj->getHeight() ?: self::DEFAULT_HEIGHT;
+            $preview_image_width = $this->effectiveDimension($event_obj->getWidth(), self::DEFAULT_WIDTH);
+            $preview_image_height = $this->effectiveDimension($event_obj->getHeight(), self::DEFAULT_HEIGHT);
             $preview_image_tpl = new ilTemplate($this->getPlugin()->getDirectory() . '/templates/default/tpl.OpencastEventPreviewImage.html', false, false);
             $preview_image_tpl->setVariable('DYNAMIC_WIDTH', $preview_image_width);
             $preview_image_tpl->setVariable('DYNAMIC_HEIGHT', $preview_image_height);
@@ -706,8 +714,8 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
             'current_title' => $event_obj->getTitle(),
             'current_event_id' => $event_obj->getEventId(),
             'embed_size' => [
-                'width' => $event_obj->getWidth() ?: self::DEFAULT_WIDTH,
-                'height' => $event_obj->getHeight() ?: self::DEFAULT_HEIGHT,
+                'width' => $this->effectiveDimension($event_obj->getWidth(), self::DEFAULT_WIDTH),
+                'height' => $this->effectiveDimension($event_obj->getHeight(), self::DEFAULT_HEIGHT),
                 'constr_prop' => true
             ],
             'new_tab' => $event_obj->getNewtab()
