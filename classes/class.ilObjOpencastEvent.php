@@ -50,23 +50,16 @@ class ilObjOpencastEvent extends ilObjectPlugin
      */
     public function doCreate(bool $clone_mode = false): void
     {
-        global $ilDB;
-
         // Getting new_tab default value from configs.
         $default_new_tab = (bool) LocalPluginConfig::getConfig(LocalPluginConfig::F_THUMBNAIL_LINK);
 
-        $values = [
-            $ilDB->quote($this->getId(), "integer"),
-            $ilDB->quote(0, "integer"),
-            $ilDB->quote($this->getEventId(), "string"),
-            $ilDB->quote(($default_new_tab ? 1 : 0), "integer"),
-            $ilDB->quote(1, "integer"),
-        ];
-
-        $insert_sql = "INSERT INTO {$this->table_name} (id, is_online, event_id, new_tab, maximize) VALUES (" .
-            implode(', ', $values) . ")";
-
-        $ilDB->manipulate($insert_sql);
+        $this->db->insert($this->table_name, [
+            'id' => ['integer', $this->getId()],
+            'is_online' => ['integer', 0],
+            'event_id' => ['text', $this->getEventId()],
+            'new_tab' => ['integer', $default_new_tab ? 1 : 0],
+            'maximize' => ['integer', 1],
+        ]);
     }
 
     /**
@@ -74,18 +67,17 @@ class ilObjOpencastEvent extends ilObjectPlugin
      */
     public function doRead(): void
     {
-        global $ilDB;
+        $set = $this->db->queryF(
+            'SELECT * FROM ' . $this->table_name . ' WHERE id = %s',
+            ['integer'],
+            [$this->getId()]
+        );
 
-        $object_id = $ilDB->quote($this->getId(), "integer");
-        $select_sql = "SELECT * FROM {$this->table_name} WHERE id = $object_id";
-
-        $set = $ilDB->query($select_sql);
-
-        while ($rec = $ilDB->fetchAssoc($set)) {
+        while ($rec = $this->db->fetchAssoc($set)) {
             $this->setOnline(!empty($rec["is_online"]));
             $this->setEventId($rec["event_id"]);
-            $this->setWidth($rec["width"] ? intval($rec["width"]) : 0);
-            $this->setHeight($rec["height"] ? intval($rec["height"]) : 0);
+            $this->setWidth((int) $rec["width"]);
+            $this->setHeight((int) $rec["height"]);
             $this->setNewTab(!empty($rec["new_tab"]));
             $this->setMaximize(!empty($rec["maximize"]));
         }
@@ -112,20 +104,16 @@ class ilObjOpencastEvent extends ilObjectPlugin
      */
     public function doUpdate(): void
     {
-        global $ilDB;
-
-        $values = [
-            'is_online = ' . $ilDB->quote($this->isOnline(), "integer"),
-            'event_id = ' . $ilDB->quote($this->getEventId(), "string"),
-            'new_tab = ' . $ilDB->quote($this->getNewTab(), "integer"),
-            'width = ' . $ilDB->quote($this->getWidth(), "integer"),
-            'height = ' . $ilDB->quote($this->getHeight(), "integer"),
-            'maximize = ' . $ilDB->quote($this->getMaximize(), "integer"),
-        ];
-        $object_id = $ilDB->quote($this->getId(), "integer");
-
-        $update_sql = "UPDATE {$this->table_name} SET " . implode(', ', $values) . " WHERE id = $object_id";
-        $ilDB->manipulate($up = $update_sql);
+        $this->db->update($this->table_name, [
+            'is_online' => ['integer', (int) $this->isOnline()],
+            'event_id' => ['text', $this->getEventId()],
+            'new_tab' => ['integer', (int) $this->getNewTab()],
+            'width' => ['integer', $this->getWidth()],
+            'height' => ['integer', $this->getHeight()],
+            'maximize' => ['integer', (int) $this->getMaximize()],
+        ], [
+            'id' => ['integer', $this->getId()],
+        ]);
     }
 
     /**
@@ -133,12 +121,11 @@ class ilObjOpencastEvent extends ilObjectPlugin
      */
     public function doDelete(): void
     {
-        global $ilDB;
-
-        $object_id = $ilDB->quote($this->getId(), "integer");
-
-        $delete_sql = "DELETE FROM {$this->table_name} WHERE id = $object_id";
-        $ilDB->manipulate($delete_sql);
+        $this->db->manipulateF(
+            'DELETE FROM ' . $this->table_name . ' WHERE id = %s',
+            ['integer'],
+            [$this->getId()]
+        );
     }
 
     /**
