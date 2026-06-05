@@ -12,7 +12,7 @@ use elanev\OpencastEvent\Config\PluginConfig as LocalPluginConfig;
  */
 class ilOpencastEventConfigGUI extends ilPluginConfigGUI
 {
-    public $form;
+    protected ilPropertyFormGUI $form;
     protected LocalPluginConfig $config_object;
     protected ilCtrlInterface $ctrl;
     protected ilGlobalTemplateInterface $main_tpl;

@@ -10,10 +10,6 @@ declare(strict_types=1);
 class ilObjOpencastEventListGUI extends ilObjectPluginListGUI
 {
     /**
-     * @var bool
-     */
-    public $payment_enabled;
-    /**
      * Init type
      */
     public function initType(): void
@@ -37,7 +33,6 @@ class ilObjOpencastEventListGUI extends ilObjectPluginListGUI
         // Always set
         $this->timings_enabled = true;
         $this->subscribe_enabled = true;
-        $this->payment_enabled = false;
         $this->link_enabled = true;
         $this->info_screen_enabled = true;
         $this->delete_enabled = true;
