@@ -107,6 +107,17 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
     }
 
     /**
+     * Typed accessor for the current object, so plugin-specific methods are
+     * resolvable without per-call type hints.
+     */
+    private function getEventObject(): ilObjOpencastEvent
+    {
+        /** @var ilObjOpencastEvent $object */
+        $object = $this->object;
+        return $object;
+    }
+
+    /**
      * Handles all commmands of this class, centralizes permission checks
      *
      * @param string $cmd Command
@@ -318,8 +329,8 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
     {
         $this->tabs->activateTab('content');
         $content_html = '';
-        /** @disregard P1013 The method "getEventId" exists in ilObjOpencastEvent::getEventId */
-        $event_id = $this->object->getEventId();
+        $event_obj = $this->getEventObject();
+        $event_id = $event_obj->getEventId();
         $event = $this->getEvent($event_id);
         if (!empty($event)) {
             $this->main_tpl->addCss($this->getPlugin()->getResourcesPath() . '/templates/css/player.min.css');
@@ -327,11 +338,9 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
                 json_encode($this->getPlayerJSConfig()) .
             ');');
             $stream_url = $this->ctrl->getLinkTarget($this, 'streamVideo');
-            /** @disregard P1013 The method "getNewTab" exists in ilObjOpencastEvent::getNewTab */
-            $tpl_name = $this->object->getNewTab() ? 'tpl.OpencastEventPlayer.html' : 'tpl.OpencastEventPlayerEmbed.html';
+            $tpl_name = $event_obj->getNewTab() ? 'tpl.OpencastEventPlayer.html' : 'tpl.OpencastEventPlayerEmbed.html';
             $tpl = new ilTemplate($this->getPlugin()->getDirectory() . '/templates/default/' . $tpl_name, true, true);
-            /** @disregard P1013 The method "getNewTab" exists in ilObjOpencastEvent::getNewTab */
-            if ($this->object->getNewTab()) {
+            if ($event_obj->getNewTab()) {
                 $tpl->setVariable('VIDEO_LINK', $stream_url);
                 $tpl->setVariable('THUMBNAIL_URL', $event->publications()->getThumbnailUrl());
                 $tpl->setVariable('OVERLAY_ICON_URL', $this->getPlugin()->getResourcesPath() . '/templates/images/play.svg');
@@ -349,8 +358,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
      */
     public function streamVideo(): void
     {
-        /** @disregard P1013 The method "getEventId" exists in ilObjOpencastEvent::getEventId */
-        $event_id = $this->object->getEventId();
+        $event_id = $this->getEventObject()->getEventId();
         $event = $this->getEvent($event_id);
         if (empty($event)) {
             echo "Error: Event not found";
@@ -466,13 +474,11 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
      */
     protected function getPlayerJSConfig(): stdClass
     {
+        $event_obj = $this->getEventObject();
         $js_config = new stdClass();
-        /** @disregard P1013 The method "getMaximize" exists in ilObjOpencastEvent::getMaximize */
-        $js_config->maximize = $this->object->getMaximize();
-        /** @disregard P1013 The method "getWidth" exists in ilObjOpencastEvent::getWidth */
-        $js_config->width = $this->object->getWidth() ?: self::DEFAULT_WIDTH;
-        /** @disregard P1013 The method "getHeight" exists in ilObjOpencastEvent::getHeight */
-        $js_config->height = $this->object->getHeight() ?: self::DEFAULT_HEIGHT;
+        $js_config->maximize = $event_obj->getMaximize();
+        $js_config->width = $event_obj->getWidth() ?: self::DEFAULT_WIDTH;
+        $js_config->height = $event_obj->getHeight() ?: self::DEFAULT_HEIGHT;
         return $js_config;
     }
 
@@ -521,24 +527,19 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
         if (empty($event)) {
             return;
         }
-        $this->object->setTitle($event->getTitle());
-        $this->object->setDescription($event->getDescription());
-        /** @disregard P1013 The method "setOnline" exists in ilObjOpencastEvent::setOnline */
-        $this->object->setOnline((bool) $form->getInput('online'));
-        /** @disregard P1013 The method "setEventId" exists in ilObjOpencastEvent::setEventId */
-        $this->object->setEventId($form->getInput('event_id'));
-        /** @disregard P1013 The method "setNewTab" exists in ilObjOpencastEvent::setNewTab */
-        $this->object->setNewTab((bool) $form->getInput('new_tab'));
-        /** @disregard P1013 The method "setMaximize" exists in ilObjOpencastEvent::setMaximize */
-        $this->object->setMaximize($form->getInput('size_type') == 'maximize');
+        $event_obj = $this->getEventObject();
+        $event_obj->setTitle($event->getTitle());
+        $event_obj->setDescription($event->getDescription());
+        $event_obj->setOnline((bool) $form->getInput('online'));
+        $event_obj->setEventId($form->getInput('event_id'));
+        $event_obj->setNewTab((bool) $form->getInput('new_tab'));
+        $event_obj->setMaximize($form->getInput('size_type') == 'maximize');
         if ($form->getInput('size_type') == 'custom') {
             $embed_size = $form->getInput('embed_size');
-            /** @disregard P1013 The method "setWidth" exists in ilObjOpencastEvent::setWidth */
-            $this->object->setWidth(intval($embed_size['width'], 10));
-            /** @disregard P1013 The method "setHeight" exists in ilObjOpencastEvent::setHeight */
-            $this->object->setHeight(intval($embed_size['height'], 10));
+            $event_obj->setWidth((int) $embed_size['width']);
+            $event_obj->setHeight((int) $embed_size['height']);
         }
-        $this->object->update();
+        $event_obj->update();
     }
 
     /**
@@ -608,16 +609,14 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
             $size_type->addOption($size_type_custom);
 
             // preview image
+            $event_obj = $this->getEventObject();
             $preview_image = new ilNonEditableValueGUI($this->opencast_translator->translate('event_preview'), '', true);
-            /** @disregard P1013 The method "setWidth" exists in ilObjOpencastEvent::setWidth */
-            $preview_image_width = $this->object->getWidth() ?: self::DEFAULT_WIDTH;
-            /** @disregard P1013 The method "getHeight" exists in ilObjOpencastEvent::getHeight */
-            $preview_image_height = $this->object->getHeight() ?: self::DEFAULT_HEIGHT;
+            $preview_image_width = $event_obj->getWidth() ?: self::DEFAULT_WIDTH;
+            $preview_image_height = $event_obj->getHeight() ?: self::DEFAULT_HEIGHT;
             $preview_image_tpl = new ilTemplate($this->getPlugin()->getDirectory() . '/templates/default/tpl.OpencastEventPreviewImage.html', false, false);
             $preview_image_tpl->setVariable('DYNAMIC_WIDTH', $preview_image_width);
             $preview_image_tpl->setVariable('DYNAMIC_HEIGHT', $preview_image_height);
-            /** @disregard P1013 The method "getEventId" exists in ilObjOpencastEvent::getEventId */
-            $event_id = $this->object->getEventId();
+            $event_id = $event_obj->getEventId();
             $event = $this->getEvent($event_id);
             if (!empty($event)) {
                 $preview_image_tpl->setVariable('SRC', $event->publications()->getThumbnailUrl());
@@ -697,24 +696,23 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
      */
     protected function addValuesToForm(ilPropertyFormGUI &$form): void
     {
-        /** @disregard P1013 The methods exist in ilObjOpencastEvent class */
+        $event_obj = $this->getEventObject();
         $values_array = [
-            'title' => $this->object->getTitle(),
-            'description' => $this->object->getDescription(),
-            'online' => $this->object->isOnline(),
-            'event_id' => $this->object->getEventId(),
-            'event_id_display' => $this->object->getEventId(),
-            'current_title' => $this->object->getTitle(),
-            'current_event_id' => $this->object->getEventId(),
+            'title' => $event_obj->getTitle(),
+            'description' => $event_obj->getDescription(),
+            'online' => $event_obj->isOnline(),
+            'event_id' => $event_obj->getEventId(),
+            'event_id_display' => $event_obj->getEventId(),
+            'current_title' => $event_obj->getTitle(),
+            'current_event_id' => $event_obj->getEventId(),
             'embed_size' => [
-                'width' => $this->object->getWidth() ?: self::DEFAULT_WIDTH,
-                'height' => $this->object->getHeight() ?: self::DEFAULT_HEIGHT,
+                'width' => $event_obj->getWidth() ?: self::DEFAULT_WIDTH,
+                'height' => $event_obj->getHeight() ?: self::DEFAULT_HEIGHT,
                 'constr_prop' => true
             ],
-            'new_tab' => $this->object->getNewtab()
+            'new_tab' => $event_obj->getNewtab()
         ];
-        /** @disregard P1013 The method "getMaximize" exists in ilObjOpencastEvent::getMaximize */
-        $size_type = $this->object->getMaximize() ? 'maximize' : 'custom';
+        $size_type = $event_obj->getMaximize() ? 'maximize' : 'custom';
         $values_array['size_type'] = $size_type;
         if (isset($this->change_event) && $this->change_event) {
             $values_array['change_event'] = true;
