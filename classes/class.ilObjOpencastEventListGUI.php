@@ -10,6 +10,10 @@ declare(strict_types=1);
 class ilObjOpencastEventListGUI extends ilObjectPluginListGUI
 {
     /**
+     * @var bool
+     */
+    public $payment_enabled;
+    /**
      * Init type
      */
     public function initType(): void
@@ -43,7 +47,7 @@ class ilObjOpencastEventListGUI extends ilObjectPluginListGUI
         $this->cut_enabled = true;
         $this->copy_enabled = true;
 
-        $commands = [
+        return [
             [
                 'permission' => 'read',
                 'cmd' => 'showContent',
@@ -55,8 +59,6 @@ class ilObjOpencastEventListGUI extends ilObjectPluginListGUI
                 "txt" => $this->txt('event_settings')
             ],
         ];
-
-        return $commands;
     }
 
     /**
@@ -83,19 +85,16 @@ class ilObjOpencastEventListGUI extends ilObjectPluginListGUI
     }
 
     /**
-    * Get all item information (title, commands, description) in HTML
-    *
-    * @access	public
-    * @param	int			$a_ref_id		item reference id
-    * @param	int			$a_obj_id		item object id
-    * @param	string		$a_title		item title
-    * @param	string		$a_description	item description
-    * @param	bool		$a_use_asynch
-    * @param	bool		$a_get_asynch_commands
-    * @param	string		$a_asynch_url
-    * @param	int		    $a_context	    workspace/tree context
-    * @return	string		html code
-    */
+     * Get all item information (title, commands, description) in HTML
+     *
+     * @access	public
+     * @param	int			$a_ref_id		item reference id
+     * @param	int			$a_obj_id		item object id
+     * @param	string		$a_title		item title
+     * @param	string		$a_description	item description
+     * @param	int		    $a_context	    workspace/tree context
+     * @return	string		html code
+     */
     public function getListItemHTML(
         int $a_ref_id,
         int $a_obj_id,

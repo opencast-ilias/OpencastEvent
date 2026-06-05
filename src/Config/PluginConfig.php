@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 namespace elanev\OpencastEvent\Config;
 
 use ActiveRecord;
@@ -15,17 +16,11 @@ class PluginConfig extends ActiveRecord
      */
     protected static $cached_config = [];
 
-    /**
-     * @return string
-     */
     public static function returnDbTableName(): string
     {
         return self::TABLE_NAME;
     }
 
-    /**
-     * @return string
-     */
     public function getConnectorContainerName(): string
     {
         return self::TABLE_NAME;
@@ -50,42 +45,26 @@ class PluginConfig extends ActiveRecord
      */
     protected $value;
 
-    /**
-     * @param string $name
-     */
     public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @param string $value
-     */
     public function setValue(string $value): void
     {
         $this->value = $value;
     }
 
-    /**
-     * @return string
-     */
     public function getValue(): string
     {
         return $this->value;
     }
 
-    /**
-     * @param string $name
-     * @return mixed
-     */
     public static function getConfig(string $name): mixed
     {
         if (!isset(self::$cached_config[$name])) {
@@ -106,7 +85,6 @@ class PluginConfig extends ActiveRecord
 
     /**
      * @param string $name
-     * @param mixed $value
      */
     public static function setConfig(?string $name, mixed $value): void
     {
@@ -115,7 +93,7 @@ class PluginConfig extends ActiveRecord
             $obj->setValue(json_encode($value));
             $obj->update();
         } else {
-            $obj = new self;
+            $obj = new self();
             $obj->setName($name);
             $obj->setValue(json_encode($value));
             $obj->create();
