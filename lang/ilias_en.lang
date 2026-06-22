@@ -74,3 +74,5 @@ cat_create_xoce#:#Create Opencast Video Object
 grp_create_xoce#:#Create Opencast Video Object
 fold_create_xoce#:#Create Opencast Video Object
 no_videos_for_listing#:#No videos could be found for the listing
+video_retrieval_failed#:#Error: Unable to find the video.
+access_video_failed#:#Error: Unable to access the video.
