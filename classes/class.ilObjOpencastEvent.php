@@ -7,16 +7,35 @@ use srag\Plugins\Opencast\Model\Event\EventAPIRepository;
 use srag\Plugins\Opencast\Container\Init;
 
 /**
- * Class ilObjOpencastEventAccess
+ * Class ilObjOpencastEvent
  *
  * @author Farbod Zamani Boroujeni <zamani@elan-ev.de>
  */
 class ilObjOpencastEvent extends ilObjectPlugin
 {
-    protected $table_name;
+    /** @var string table name */
+    protected string $table_name;
 
     /** @var EventAPIRepository*/
     private EventAPIRepository $event_repository;
+
+    /** @var bool online flag */
+    private bool $online = false;
+
+    /** @var string event id */
+    private string $event_id = '';
+
+    /** @var ?int width */
+    private ?int $width = null;
+
+    /** @var ?int width */
+    private ?int $height = null;
+
+    /** @var bool new tab flag */
+    private bool $new_tab = false;
+
+    /** @var bool maximize flag */
+    private bool $maximize = false;
 
     /**
      * Constructor
@@ -140,7 +159,7 @@ class ilObjOpencastEvent extends ilObjectPlugin
     /**
      * Do Cloning
      */
-    public function doCloneObject($new_obj, $a_target_id, $a_copy_id = null): void
+    public function doCloneObject(object $new_obj, string|int $a_target_id, $a_copy_id = null): void
     {
         $new_obj->setOnline($this->isOnline());
         $new_obj->setEventId($this->getEventId());
@@ -154,11 +173,11 @@ class ilObjOpencastEvent extends ilObjectPlugin
     /**
      * Set online
      *
-     * @param bool online
+     * @param bool $online
      */
-    public function setOnline(bool $a_val): void
+    public function setOnline(bool $online): void
     {
-        $this->online = $a_val;
+        $this->online = $online;
     }
 
     /**
@@ -174,11 +193,11 @@ class ilObjOpencastEvent extends ilObjectPlugin
     /**
      * Set Event ID
      *
-     * @param string event id
+     * @param string $event_id
      */
-    public function setEventId(string $a_val): void
+    public function setEventId(string $event_id): void
     {
-        $this->event_id = $a_val;
+        $this->event_id = $event_id;
     }
 
     /**
@@ -194,11 +213,11 @@ class ilObjOpencastEvent extends ilObjectPlugin
     /**
      * Set Width
      *
-     * @param int width
+     * @param int $width
      */
-    public function setWidth(int $a_val): void
+    public function setWidth(int $width): void
     {
-        $this->width = $a_val ? intval($a_val) : null;
+        $this->width = $width ? intval($width) : null;
     }
 
     /**
@@ -214,11 +233,11 @@ class ilObjOpencastEvent extends ilObjectPlugin
     /**
      * Set Height
      *
-     * @param int height
+     * @param int $height
      */
-    public function setHeight(int $a_val): void
+    public function setHeight(int $height): void
     {
-        $this->height = $a_val ? intval($a_val) : null;
+        $this->height = $height ? intval($height) : null;
     }
 
     /**
@@ -234,11 +253,11 @@ class ilObjOpencastEvent extends ilObjectPlugin
     /**
      * Set New Tab Flag
      *
-     * @param bool new tab flag
+     * @param bool $new_tab
      */
-    public function setNewTab(bool $a_val): void
+    public function setNewTab(bool $new_tab): void
     {
-        $this->new_tab = $a_val;
+        $this->new_tab = $new_tab;
     }
 
     /**
@@ -254,11 +273,11 @@ class ilObjOpencastEvent extends ilObjectPlugin
     /**
      * Set Maximize Flag
      *
-     * @param bool Maximize flag
+     * @param bool $maximize
      */
-    public function setMaximize(bool $a_val): void
+    public function setMaximize(bool $maximize): void
     {
-        $this->maximize = $a_val;
+        $this->maximize = $maximize;
     }
 
     /**
