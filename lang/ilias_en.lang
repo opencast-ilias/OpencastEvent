@@ -73,3 +73,5 @@ root_create_xoce#:#Create Opencast Video Object
 cat_create_xoce#:#Create Opencast Video Object
 grp_create_xoce#:#Create Opencast Video Object
 fold_create_xoce#:#Create Opencast Video Object
+video_retrieval_failed#:#Error: Unable to find the video.
+access_video_failed#:#Error: Unable to access the video.

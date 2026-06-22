@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../vendor/autoload.php';
+
 use elanev\OpencastEvent\Listing\OpencastEventListing;
+use srag\Plugins\Opencast\API\API;
 use srag\Plugins\Opencast\Container\Init;
 use srag\Plugins\Opencast\Model\Config\PluginConfig;
 use srag\Plugins\Opencast\Model\Event\Event;
@@ -12,10 +14,8 @@ use srag\Plugins\Opencast\Model\Metadata\Definition\MDFieldDefinition;
 use srag\Plugins\Opencast\Model\Series\SeriesRepository;
 use srag\Plugins\Opencast\Model\Series\SeriesAPIRepository;
 use srag\Plugins\Opencast\Model\User\xoctUser;
-use srag\Plugins\Opencast\Util\Player\PlayerDataBuilderFactory;
-use srag\Plugins\Opencast\Util\Player\PaellaConfigServiceFactory;
-use srag\Plugins\Opencast\Util\Player\PaellaConfigService;
 use srag\Plugins\Opencast\Util\Locale\Translator;
+use srag\Plugins\Opencast\Util\OutputResponse;
 
 /**
  * Class ilObjOpencastEventGUI
@@ -23,10 +23,11 @@ use srag\Plugins\Opencast\Util\Locale\Translator;
  * @author Farbod Zamani Boroujeni <zamani@elan-ev.de>
  *
  * @ilCtrl_isCalledBy ilObjOpencastEventGUI: ilRepositoryGUI, ilAdministrationGUI, ilObjPluginDispatchGUI
- * @ilCtrl_Calls ilObjOpencastEventGUI: ilPermissionGUI, ilInfoScreenGUI, ilObjectCopyGUI, ilCommonActionDispatcherGUI
+ * @ilCtrl_Calls ilObjOpencastEventGUI: ilPermissionGUI, ilInfoScreenGUI, ilObjectCopyGUI, ilCommonActionDispatcherGUI, xoctPlayerGUI
  */
 class ilObjOpencastEventGUI extends ilObjectPluginGUI
 {
+    use OutputResponse;
     public const DEFAULT_WIDTH = 960;
     public const DEFAULT_HEIGHT = 540;
     public const DEFAULT_LIMIT = 10;
@@ -52,15 +53,6 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
     /** @var SeriesRepository */
     public SeriesRepository $series_repository;
 
-    /** @var ilOpenCastPlugin */
-    private ilOpenCastPlugin $opencast_plugin;
-
-    /** @var PaellaConfigServiceFactory */
-    private PaellaConfigServiceFactory $paellaConfigServiceFactory;
-
-    /** @var PaellaConfigService */
-    private PaellaConfigService $paellaConfigService;
-
     /** @var Translator */
     private Translator $opencast_translator;
 
@@ -68,6 +60,12 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
      * @var \ILIAS\HTTP\Services
      */
     private \ILIAS\HTTP\Services $http;
+
+    /** @var xoctPlayerGUI */
+    private xoctPlayerGUI $opencast_player_gui;
+
+    /** @var API */
+    protected API $api;
 
     /**
      * @var bool change_event a flag to determine whether the event change is requested.
@@ -88,13 +86,16 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
         $this->main_tpl = $DIC->ui()->mainTemplate();
         $opencast_dic = Init::init();
 
-        $this->opencast_plugin = $opencast_dic[ilOpenCastPlugin::class];
+        $this->api = $opencast_dic[API::class];
         $this->event_repository = $opencast_dic[EventAPIRepository::class];
         $this->series_repository = $opencast_dic[SeriesAPIRepository::class];
         $this->opencast_translator = $opencast_dic->translator();
 
-        $this->paellaConfigServiceFactory = $opencast_dic->legacy()->paella_config_service_factory();
-        $this->paellaConfigService = $this->paellaConfigServiceFactory->get();
+        $this->opencast_player_gui = new xoctPlayerGUI(
+            $this->event_repository,
+            $opencast_dic->legacy()->paella_config_storage_service(),
+            $opencast_dic->legacy()->paella_config_service_factory()
+        );
 
         $this->ref_id = $this->retrieveQueryParam(
             'ref_id',
@@ -339,16 +340,16 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
     protected function showContent(): void
     {
         $this->tabs->activateTab('content');
-        $content_html = '';
+        $content_html = $this->txt('video_retrieval_failed');
         /** @disregard P1013 The method "getEventId" exists in ilObjOpencastEvent::getEventId */
         $event_id = $this->object->getEventId();
         $event = $this->getEvent($event_id);
         if (!empty($event)) {
             $this->main_tpl->addCss($this->getPlugin()->getResourcesPath() . '/templates/css/player.min.css');
             $this->main_tpl->addOnLoadCode('il.OpencastEvent.player.init(' .
-                json_encode($this->getPlayerJSConfig($event)) .
+                json_encode($this->getPlayerJSConfig()) .
             ');');
-            $stream_url = $this->ctrl->getLinkTarget($this, 'streamVideo');
+            $stream_url = $this->getStreamUrl($event->getIdentifier());
             /** @disregard P1013 The method "getNewTab" exists in ilObjOpencastEvent::getNewTab */
             $tpl_name = $this->object->getNewTab() ? 'tpl.OpencastEventPlayer.html' : 'tpl.OpencastEventPlayerEmbed.html';
             $tpl = new ilTemplate($this->getPlugin()->getDirectory() . '/templates/default/' . $tpl_name, true, true);
@@ -367,69 +368,63 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
     }
 
     /**
-     * This method is meant to call by the iframe in order to provide the Paella player source code.
+     * This is called by the iframe in order to provide the player,
+     * using the centralized video streaming function from OpenCast series plugin.
+     * @return void
+     * @throws Throwable
      */
     public function streamVideo(): void
     {
-        /** @disregard P1013 The method "getEventId" exists in ilObjOpencastEvent::getEventId */
-        $event_id = $this->object->getEventId();
-        $event = $this->getEvent($event_id);
-        if (empty($event)) {
-            echo "Error: Event not found";
-            exit;
-        }
-
-        if (!PluginConfig::getConfig(PluginConfig::F_INTERNAL_VIDEO_PLAYER) && !$event->isLiveEvent()) {
-            // redirect to opencast
-            header('Location: ' . $event->publications()->getPlayerLink());
-            exit;
-        }
-
         try {
-            $data = PlayerDataBuilderFactory::getInstance()->getBuilder($event)->buildStreamingData();
-        } catch (Exception $e) {
-            $this->main_tpl->setOnScreenMessage('failure', $e->getMessage());
-            echo $e->getMessage();
-            exit;
+            $this->opencast_player_gui->streamVideo();
+        } catch (\Throwable $th) {
+            $message = $th->getMessage();
+            if (
+                $message &&
+                str_contains($message, '401') ||
+                str_contains($message, '403')
+            ) {
+                $message = $this->txt('access_video_failed');
+            }
+            echo $message;
+        }
+        exit(0);
+    }
+
+    /**
+     * A domesticated version of JWT refresh token method,
+     * in order to check the access to this object before providing access token.
+     *
+     * @return void
+     */
+    public function refreshJwtAsync()
+    {
+        global $DIC;
+        $user_id = $DIC->user()->getId();
+        $event_id = $this->http->request()->getQueryParams()[xoctEventGUI::IDENTIFIER] ?? null;
+        $response = [
+            'status' => 'error',
+            'message' => 'Unable to generate access token.',
+        ];
+        if (
+            $event_id &&
+            method_exists($this->api, 'isJWTActivated') &&
+            $this->api->isJWTActivated() &&
+            ilObjOpencastEventAccess::hasPermission('read', $this->ref_id, $user_id)
+        ) {
+            $refreshed_token = $this->api->refreshTokenForEvent($event_id);
+            if ($refreshed_token) {
+                $response = [
+                    'status' => 'OK',
+                    'newToken' => $refreshed_token,
+                ];
+            } else {
+                $response['message'] = 'Invalid token!';
+            }
         }
 
-        $paella_player_tpl = $this->opencast_plugin->getTemplate('paella_player.html', true, true);
-
-        // The Opencast Plugin versions > 5.3.0 has a new way of providing js.
-        $main_opencast_js_path = $this->opencast_plugin->getDirectory() . '/js/opencast/dist/index.js';
-        $new_paella_player = true;
-        if (file_exists($main_opencast_js_path)) {
-            $jquery_path = str_replace('.min', '', iljQueryUtil::getLocaljQueryPath());
-            $ilias_basic_js_path = 'assets/js/Basic.js';
-            $paella_player_tpl->setVariable("JQUERY_PATH", $jquery_path);
-            $paella_player_tpl->setVariable("ILIAS_BASIC_JS_PATH", $ilias_basic_js_path);
-        } else {
-            $new_paella_player = false;
-            $paella_player_tpl->setVariable('PAELLA_PLAYER_FOLDER', $this->opencast_plugin->getDirectory()
-                . '/node_modules/paellaplayer/build/player');
-        }
-        $paella_player_tpl->setVariable('TITLE', $event->getTitle());
-        $paella_player_tpl->setVariable('DATA', json_encode($data));
-        $paella_player_tpl->setVariable('JS_CONFIG', json_encode($this->buildJSConfig($event, $new_paella_player)));
-
-        if ($event->isLiveEvent()) {
-            $paella_player_tpl->setVariable('LIVE_WAITING_TEXT', $this->opencast_translator->translate(
-                'live_waiting_text',
-                'event',
-                [date('H:i', $event->getScheduling()->getStart()->getTimestamp())]
-            ));
-            $paella_player_tpl->setVariable('LIVE_INTERRUPTED_TEXT', $this->opencast_translator->translate('live_interrupted_text', 'event'));
-            $paella_player_tpl->setVariable('LIVE_OVER_TEXT', $this->opencast_translator->translate('live_over_text', 'event'));
-        }
-
-        $paella_player_tpl->setVariable(
-            'STYLE_SHEET_LOCATION',
-            ILIAS_HTTP_PATH . '/' .
-                strstr($this->opencast_plugin->getDirectory(), 'Customizing/') . '/templates/default/player.css'
-        );
-        setcookie('lastProfile', "", -1);
-        echo $paella_player_tpl->get();
-        exit();
+        $response_json_encoded = json_encode($response);
+        $this->sendReponse($response_json_encoded);
     }
 
     //////////////////////
@@ -437,50 +432,21 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
     //////////////////////
 
     /**
-     * Creates the config object for the Paella player.
-     *
-     * @param Event $event the Event object
-     * @param bool $new_paella_player if the paella player is new
-     *
-     * @return stdClass $js_config
+     * Generates the stream url.
+     * @param string $identifier video id
+     * @return string stream url
      */
-    protected function buildJSConfig(Event $event, bool $new_paella_player = true): stdClass
+    protected function getStreamUrl(string $identifier): string
     {
-        $js_config = new stdClass();
-        $paella_config = [];
-        if ($new_paella_player) {
-            $paella_config = $this->paellaConfigService->getEffectivePaellaPlayerUrl();
-            $js_config->paella_config_livestream_type = PluginConfig::getConfig(PluginConfig::F_LIVESTREAM_TYPE) ?? 'hls';
-            $js_config->paella_config_livestream_buffered =
-                PluginConfig::getConfig(PluginConfig::F_LIVESTREAM_BUFFERED) ?? false;
-            $js_config->paella_config_resources_path = PluginConfig::PAELLA_RESOURCES_PATH;
-            $js_config->paella_config_fallback_captions =
-                PluginConfig::getConfig(PluginConfig::F_PAELLA_FALLBACK_CAPTIONS) ?? [];
-            $js_config->paella_config_fallback_langs = PluginConfig::getConfig(PluginConfig::F_PAELLA_FALLBACK_LANGS) ?? [];
-
-            $paella_themes = $this->paellaConfigService->getPaellaPlayerThemeUrl($event->isLiveEvent());
-            $js_config->paella_theme = $paella_themes['theme_url'];
-            $js_config->paella_theme_live = $paella_themes['theme_live_url'];
-            $js_config->paella_theme_info = $paella_themes['info'];
-
-            $js_config->paella_preview_fallback = $this->paellaConfigService->getPaellaPlayerPreviewFallback();
-        } else {
-            $paella_config = $this->paellaConfigService->getEffectivePaellaPlayerUrl($event->isLiveEvent());
-            $js_config->paella_player_folder = $this->opencast_plugin->getDirectory() . '/node_modules/paellaplayer/build/player';
-        }
-
-        $js_config->paella_config_file = $paella_config['url'];
-        $js_config->paella_config_info = $paella_config['info'];
-        $js_config->paella_config_is_warning = $paella_config['warn'];
-
-        if ($event->isLiveEvent()) {
-            // script to check live stream availability.
-            $js_config->check_script_hls = $this->opencast_plugin->getDirectory() . '/src/Util/check_hls_status.php';
-            $js_config->is_live_stream = true;
-            $js_config->event_start = $event->getScheduling()->getStart()->getTimestamp();
-            $js_config->event_end = $event->getScheduling()->getEnd()->getTimestamp();
-        }
-        return $js_config;
+        $this->ctrl->setParameterByClass(
+            xoctPlayerGUI::class,
+            xoctPlayerGUI::IDENTIFIER,
+            $identifier
+        );
+        return $this->ctrl->getLinkTargetByClass(
+            [\ilObjPluginDispatchGUI::class, \ilObjOpencastEventGUI::class, xoctPlayerGUI::class],
+            xoctPlayerGUI::CMD_STREAM_VIDEO
+        );
     }
 
     /**
