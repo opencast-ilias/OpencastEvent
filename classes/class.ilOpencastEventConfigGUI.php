@@ -32,6 +32,10 @@ class ilOpencastEventConfigGUI extends ilPluginConfigGUI
      * @var \ilTabsGUI
      */
     protected ilTabsGUI $tabs;
+    /**
+     * @var \ilPropertyFormGUI
+     */
+    protected ilPropertyFormGUI $form;
 
     public function __construct()
     {
