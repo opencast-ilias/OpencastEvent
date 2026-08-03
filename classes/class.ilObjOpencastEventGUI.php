@@ -18,7 +18,7 @@ use srag\Plugins\Opencast\Util\OutputResponse;
  * @author Farbod Zamani Boroujeni <zamani@elan-ev.de>
  *
  * @ilCtrl_isCalledBy ilObjOpencastEventGUI: ilRepositoryGUI, ilAdministrationGUI, ilObjPluginDispatchGUI
- * @ilCtrl_Calls ilObjOpencastEventGUI: ilPermissionGUI, ilInfoScreenGUI, ilObjectCopyGUI, ilCommonActionDispatcherGUI, xoctPlayerGUI,
+ * @ilCtrl_Calls ilObjOpencastEventGUI: ilPermissionGUI, ilInfoScreenGUI, ilObjectCopyGUI, ilCommonActionDispatcherGUI, xoctPlayerGUI
  */
 class ilObjOpencastEventGUI extends ilObjectPluginGUI
 {
@@ -345,12 +345,12 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
             $message = $th->getMessage();
             if (
                 $message &&
-                str_contains($message, '401') ||
-                str_contains($message, '403')
+                (str_contains($message, '401') ||
+                str_contains($message, '403'))
             ) {
                 $message = $this->txt('access_video_failed');
             }
-            echo $message;
+            echo $this->txt('stream_video_failed');
         }
         exit(0);
     }
