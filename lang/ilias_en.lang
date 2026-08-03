@@ -63,3 +63,4 @@ grp_create_xoce#:#Create Opencast Video Object
 fold_create_xoce#:#Create Opencast Video Object
 video_retrieval_failed#:#Error: Unable to find the video.
 access_video_failed#:#Error: Unable to access the video.
+stream_video_failed#:#Error: Failed to stream the video.
