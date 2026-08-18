@@ -431,19 +431,26 @@ class OpencastEventListing
 
         $total_current = count($all_events);
 
-        $total = $total_current + ($this->getApiOffset() * self::F_PAGINATION_PER_PAGE);
+        $listing_html = $this->plugin->txt('no_videos_for_listing');
 
-        $events_chunked = array_chunk($all_events, self::F_PAGINATION_PER_PAGE);
-        $current_chunk_index = $this->getCurrentPage();
-        if ($this->getApiOffset() > 0) {
-            $current_chunk_index = count($events_chunked) - 1;
+        if (!empty($total_current)) {
+            $total = $total_current + ($this->getApiOffset() * self::F_PAGINATION_PER_PAGE);
+
+            $events_chunked = array_chunk($all_events, self::F_PAGINATION_PER_PAGE);
+            $current_chunk_index = $this->getCurrentPage();
+            if ($this->getApiOffset() > 0) {
+                $current_chunk_index = count($events_chunked) - 1;
+            }
+
+            $items_paginated_events = [];
+            if (isset($events_chunked[$current_chunk_index])) {
+                $items_paginated_events = $events_chunked[$current_chunk_index];
+            }
+
+            $items = $this->getListingsItems($items_paginated_events);
+
+            $listing_html = $this->renderPanelListing($items, $total);
         }
-
-        $items_paginated_events = $events_chunked[$current_chunk_index];
-
-        $items = $this->getListingsItems($items_paginated_events);
-
-        $listing_html = $this->renderPanelListing($items, $total);
 
         if ($this->is_new) {
             return $this->renderListingWithingForm($listing_html, $filter_html);

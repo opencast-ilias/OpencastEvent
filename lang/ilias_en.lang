@@ -73,3 +73,4 @@ root_create_xoce#:#Create Opencast Video Object
 cat_create_xoce#:#Create Opencast Video Object
 grp_create_xoce#:#Create Opencast Video Object
 fold_create_xoce#:#Create Opencast Video Object
+no_videos_for_listing#:#No videos could be found for the listing

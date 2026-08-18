@@ -72,3 +72,4 @@ root_create_xoce#:#Opencast-Video-Objekt anlegen
 cat_create_xoce#:#Opencast-Video-Objekt anlegen
 grp_create_xoce#:#Opencast-Video-Objekt anlegen
 fold_create_xoce#:#Opencast-Video-Objekt anlegen
+no_videos_for_listing#:#Es konnten keine Videos für die Auflistung gefunden werden.
