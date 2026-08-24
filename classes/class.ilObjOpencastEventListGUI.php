@@ -33,7 +33,6 @@ class ilObjOpencastEventListGUI extends ilObjectPluginListGUI
         // Always set
         $this->timings_enabled = true;
         $this->subscribe_enabled = true;
-        $this->payment_enabled = false;
         $this->link_enabled = true;
         $this->info_screen_enabled = true;
         $this->delete_enabled = true;
@@ -44,7 +43,7 @@ class ilObjOpencastEventListGUI extends ilObjectPluginListGUI
         $this->cut_enabled = true;
         $this->copy_enabled = true;
 
-        $commands = [
+        return [
             [
                 'permission' => 'read',
                 'cmd' => 'showContent',
@@ -56,8 +55,6 @@ class ilObjOpencastEventListGUI extends ilObjectPluginListGUI
                 "txt" => $this->txt('event_settings')
             ],
         ];
-
-        return $commands;
     }
 
     /**
@@ -84,19 +81,16 @@ class ilObjOpencastEventListGUI extends ilObjectPluginListGUI
     }
 
     /**
-    * Get all item information (title, commands, description) in HTML
-    *
-    * @access	public
-    * @param	int			$a_ref_id		item reference id
-    * @param	int			$a_obj_id		item object id
-    * @param	string		$a_title		item title
-    * @param	string		$a_description	item description
-    * @param	bool		$a_use_asynch
-    * @param	bool		$a_get_asynch_commands
-    * @param	string		$a_asynch_url
-    * @param	int		    $a_context	    workspace/tree context
-    * @return	string		html code
-    */
+     * Get all item information (title, commands, description) in HTML
+     *
+     * @access	public
+     * @param	int			$a_ref_id		item reference id
+     * @param	int			$a_obj_id		item object id
+     * @param	string		$a_title		item title
+     * @param	string		$a_description	item description
+     * @param	int		    $a_context	    workspace/tree context
+     * @return	string		html code
+     */
     public function getListItemHTML(
         int $a_ref_id,
         int $a_obj_id,

@@ -12,25 +12,11 @@ use elanev\OpencastEvent\Config\PluginConfig as LocalPluginConfig;
  */
 class ilOpencastEventConfigGUI extends ilPluginConfigGUI
 {
-    /**
-     * @var elanev\OpencastEvent\Config\PluginConfig
-     */
+    protected ilPropertyFormGUI $form;
     protected LocalPluginConfig $config_object;
-    /**
-     * @var \ilCtrlInterface
-     */
     protected ilCtrlInterface $ctrl;
-    /**
-     * @var \ilGlobalTemplateInterface
-     */
     protected ilGlobalTemplateInterface $main_tpl;
-    /**
-     * @var \ilLanguage
-     */
     protected ilLanguage $language;
-    /**
-     * @var \ilTabsGUI
-     */
     protected ilTabsGUI $tabs;
     /**
      * @var \ilPropertyFormGUI
@@ -48,9 +34,6 @@ class ilOpencastEventConfigGUI extends ilPluginConfigGUI
     }
 
 
-    /**
-     * @return array
-     */
     public function getFields(): array
     {
         return [
@@ -103,9 +86,6 @@ class ilOpencastEventConfigGUI extends ilPluginConfigGUI
     }
 
 
-    /**
-     * @return ilPropertyFormGUI
-     */
     public function initConfigurationForm(): \ilPropertyFormGUI
     {
         $this->form = new \ilPropertyFormGUI();
@@ -157,7 +137,6 @@ class ilOpencastEventConfigGUI extends ilPluginConfigGUI
 
     /**
      * @param string $key the key lang string
-     * @return string
      */
     public function txt(string $key): string
     {

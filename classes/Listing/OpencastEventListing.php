@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace elanev\OpencastEvent\Listing;
 
 use ilOpencastEventPlugin;
-use ilOpenCastPlugin;
 use ilTemplate;
 use ILIAS\UI\Factory;
 use ILIAS\UI\Renderer;
@@ -77,38 +76,21 @@ class OpencastEventListing
     /** @var int the default constant for API limit of events */
     public const F_PAGINATION_API_LIMIT = 1000;
 
-    /**
-     * @var \ILIAS\DI\Container
-     */
     protected \ILIAS\DI\Container $dic;
-    /**
-     * @var Factory
-     */
     private Factory $ui_factory;
-    /**
-     * @var Renderer
-     */
     private Renderer $renderer;
-    /**
-     * @var ilOpencastEventPlugin
-     */
     protected ilOpencastEventPlugin $plugin;
-    /**
-     * @var ilOpenCastPlugin
-     */
-    private ilOpenCastPlugin $opencast_plugin;
 
     /** @var string the filter id */
     public string $filter_id;
 
-    /** @var Translator */
     private Translator $opencast_translator;
 
 
     function __construct(
         protected \ilObjOpencastEventGUI $gui,
         protected ilPropertyFormGUI $form,
-        private int $ref_id = 0,
+        int $ref_id = 0,
         private bool $is_new = true
     ) {
         global $DIC;
@@ -117,9 +99,39 @@ class OpencastEventListing
         $this->renderer = $DIC->ui()->renderer();
         $this->plugin = $this->gui->getPlugin();
         $opencast_dic = Init::init();
-        $this->opencast_plugin = $opencast_dic[ilOpenCastPlugin::class];
         $this->opencast_translator = $opencast_dic->translator();
         $this->filter_id = $this->gui::class . '_filter_' . $ref_id;
+    }
+
+    /**
+     * Create an ilTemplate from the plugin's default template directory.
+     *
+     * @param string $file Template file name.
+     * @param bool $remove_unknown_variables Strip unresolved template variables.
+     */
+    private function template(string $file, bool $remove_unknown_variables = true): ilTemplate
+    {
+        return new ilTemplate(
+            $this->plugin->getDirectory() . '/templates/default/' . $file,
+            true,
+            $remove_unknown_variables
+        );
+    }
+
+    /**
+     * Set the given variables on a template block and parse it.
+     *
+     * @param ilTemplate $tpl Target template.
+     * @param string $block Block name to fill.
+     * @param array<string, string> $variables Variable name => value pairs.
+     */
+    private function fillBlock(ilTemplate $tpl, string $block, array $variables): void
+    {
+        $tpl->setCurrentBlock($block);
+        foreach ($variables as $name => $value) {
+            $tpl->setVariable($name, $value);
+        }
+        $tpl->parseCurrentBlock();
     }
 
     /**
@@ -127,8 +139,6 @@ class OpencastEventListing
      *
      * Includes fields for text search, series selection, and start date range.
      * The filter is bound to the current listing action link.
-     *
-     * @return \ILIAS\UI\Component\Input\Container\Filter\Standard
      */
     protected function getListingFilter(): StandardFilter
     {
@@ -147,7 +157,7 @@ class OpencastEventListing
 
         $action = $this->getActionLink('filter');
 
-        $filter = $this->dic->uiService()->filter()->standard(
+        return $this->dic->uiService()->filter()->standard(
             $this->filter_id,
             $action,
             $filter_inputs,
@@ -155,14 +165,11 @@ class OpencastEventListing
             true,
             true
         );
-
-        return $filter;
     }
 
     /**
      * Extract selected filter values from a standard filter component.
      *
-     * @param \ILIAS\UI\Component\Input\Container\Filter\Standard $filter
      * @return array|null Filter values as associative array or null when no data.
      */
     protected function getListingFilterData(StandardFilter $filter): ?array
@@ -173,7 +180,6 @@ class OpencastEventListing
     /**
      * Render the filter component into HTML.
      *
-     * @param \ILIAS\UI\Component\Input\Container\Filter\Standard $filter
      * @return string HTML output for the filter bar.
      */
     protected function renderListingFilters(StandardFilter $filter): string
@@ -189,12 +195,10 @@ class OpencastEventListing
      * - title asc/desc
      * - series asc/desc
      * - location asc/desc
-     *
-     * @return \ILIAS\UI\Component\ViewControl\Sortation
      */
     protected function getListingSort(): \ILIAS\UI\Component\ViewControl\Sortation
     {
-        $sortation = $this->ui_factory->viewControl()->sortation(
+        return $this->ui_factory->viewControl()->sortation(
             [
                 self::F_SORT_START_ASC      => $this->plugin->txt(self::F_SORT_START_ASC),
                 self::F_SORT_START_DESC     => $this->plugin->txt(self::F_SORT_START_DESC),
@@ -207,8 +211,6 @@ class OpencastEventListing
             ],
             $this->getListingSortValue()
         )->withTargetURL($this->getActionLink('sortation'), self::F_SORT_QUERY_PARAM);
-
-        return $sortation;
     }
 
     /**
@@ -220,31 +222,42 @@ class OpencastEventListing
      */
     protected function getListingSortValue(): string
     {
-        $selected = self::F_SORT_START_DESC;
-        if (
-            $this->dic->http()->wrapper()->query()->has(self::F_SORT_QUERY_PARAM) &&
-            $this->dic->http()->wrapper()->query()->retrieve(
-                self::F_SORT_QUERY_PARAM,
-                $this->dic->refinery()->kindlyTo()->string()
-            )
-        ) {
-            $selected = $this->dic->http()->wrapper()->query()->retrieve(
-                self::F_SORT_QUERY_PARAM,
-                $this->dic->refinery()->kindlyTo()->string()
-            );
+        return $this->retrieveQueryParam(
+            self::F_SORT_QUERY_PARAM,
+            $this->dic->refinery()->kindlyTo()->string(),
+            self::F_SORT_START_DESC
+        );
+    }
+
+    /**
+     * Retrieve and transform a query parameter, falling back to a default
+     * when the parameter is absent or its transformed value is empty.
+     *
+     * @param string $key Query parameter name.
+     * @param \ILIAS\Refinery\Transformation $transformation Transformation to apply.
+     * @param mixed $default Default returned when the parameter is missing/empty.
+     * @return mixed Transformed value or default.
+     */
+    private function retrieveQueryParam(
+        string $key,
+        \ILIAS\Refinery\Transformation $transformation,
+        mixed $default
+    ): mixed {
+        $query = $this->dic->http()->wrapper()->query();
+        if (!$query->has($key)) {
+            return $default;
         }
-        return $selected;
+        return $query->retrieve($key, $transformation) ?: $default;
     }
 
     /**
      * Create pagination controls for event listing.
      *
      * @param int $total Total number of items (for pagination calculation).
-     * @return \ILIAS\UI\Component\ViewControl\Pagination
      */
     protected function getListingPagination(int $total): \ILIAS\UI\Component\ViewControl\Pagination
     {
-        $pagination = $this->ui_factory->viewControl()->pagination()
+        return $this->ui_factory->viewControl()->pagination()
             ->withTargetURL(
                 $this->getActionLink('pagination'), self::F_PAGINATION_QUERY_PARAM
             )
@@ -252,7 +265,6 @@ class OpencastEventListing
             ->withPageSize(self::F_PAGINATION_PER_PAGE)
             ->withMaxPaginationButtons(2)
             ->withCurrentPage($this->getCurrentPage());
-        return $pagination;
     }
 
     /**
@@ -264,14 +276,11 @@ class OpencastEventListing
      */
     protected function getCurrentPage(): int
     {
-        $current_page = 0;
-        if ($this->dic->http()->wrapper()->query()->has(self::F_PAGINATION_QUERY_PARAM)) {
-            $current_page = $this->dic->http()->wrapper()->query()->retrieve(
-                self::F_PAGINATION_QUERY_PARAM,
-                $this->dic->refinery()->kindlyTo()->int()
-            );
-        }
-        return (int) $current_page;
+        return (int) $this->retrieveQueryParam(
+            self::F_PAGINATION_QUERY_PARAM,
+            $this->dic->refinery()->kindlyTo()->int(),
+            0
+        );
     }
     /**
      * Calculate the API page offset for event fetch requests.
@@ -284,8 +293,7 @@ class OpencastEventListing
     protected function getApiOffset(): int
     {
         $global_offset = $this->getCurrentPage() * self::F_PAGINATION_PER_PAGE;
-        $api_page = intdiv($global_offset, self::F_PAGINATION_API_LIMIT);
-        return $api_page;
+        return intdiv($global_offset, self::F_PAGINATION_API_LIMIT);
     }
 
     /**
@@ -326,44 +334,20 @@ class OpencastEventListing
             }
 
             // Preparing the ID property with extra spans to be used by js functions.
-            $span_id_tpl = new ilTemplate(
-                $this->plugin->getDirectory() . '/templates/default/tpl.OpencastEventListPropSpanId.html',
-                true,
-                true
-            );
-            $span_id_tpl->setCurrentBlock('id');
-            $span_id_tpl->setVariable('ID', $event->getIdentifier());
-            $span_id_tpl->parseCurrentBlock();
-
-            $span_id_tpl->setCurrentBlock('title');
-            $span_id_tpl->setVariable('TITLE', $event->getTitle());
-            $span_id_tpl->parseCurrentBlock();
-
-            $span_id_tpl->setCurrentBlock('desc');
-            $span_id_tpl->setVariable('DESC', $event->getDescription());
-            $span_id_tpl->parseCurrentBlock();
+            $span_id_tpl = $this->template('tpl.OpencastEventListPropSpanId.html');
+            $this->fillBlock($span_id_tpl, 'id', ['ID' => $event->getIdentifier()]);
+            $this->fillBlock($span_id_tpl, 'title', ['TITLE' => $event->getTitle()]);
+            $this->fillBlock($span_id_tpl, 'desc', ['DESC' => $event->getDescription()]);
 
             // Preparing the Status property with extra spans to be used by js functions.
             $selectable = $event->getProcessingState() == Event::STATE_SUCCEEDED;
-            $span_status_tpl = new ilTemplate(
-                $this->plugin->getDirectory() . '/templates/default/tpl.OpencastEventListPropSpanStatus.html',
-                true,
-                true
-            );
-            $span_status_tpl->setCurrentBlock('selectable');
-            $span_status_tpl->setVariable('SELECTABLE', $selectable ? 'true' : 'false');
-            $span_status_tpl->parseCurrentBlock();
-
-            $span_status_tpl->setCurrentBlock('text');
             $item_status_txt = $selectable ?
                 $this->plugin->txt('list_item_status_txt') :
                 $this->plugin->txt('list_item_status_txt_not_selectable');
-            $span_status_tpl->setVariable('TEXT', $item_status_txt);
-            $span_status_tpl->parseCurrentBlock();
-
-            $span_status_tpl->setCurrentBlock('selected');
-            $span_status_tpl->setVariable('SELECTED', $this->plugin->txt('list_item_status_selected_txt'));
-            $span_status_tpl->parseCurrentBlock();
+            $span_status_tpl = $this->template('tpl.OpencastEventListPropSpanStatus.html');
+            $this->fillBlock($span_status_tpl, 'selectable', ['SELECTABLE' => $selectable ? 'true' : 'false']);
+            $this->fillBlock($span_status_tpl, 'text', ['TEXT' => $item_status_txt]);
+            $this->fillBlock($span_status_tpl, 'selected', ['SELECTED' => $this->plugin->txt('list_item_status_selected_txt')]);
 
             /** @disregard P1013 The method "withLeadImage" exists but intelephense cannot find it! */
             $items[] = $item->withProperties([
@@ -470,23 +454,11 @@ class OpencastEventListing
      */
     protected function renderListingAfterForm(string $listing_html, string $filter_html): string
     {
-        $edit_event_form_tpl = new ilTemplate(
-            $this->plugin->getDirectory() . '/templates/default/tpl.OpencastEventEdit.html',
-            true,
-            true
-        );
+        $edit_event_form_tpl = $this->template('tpl.OpencastEventEdit.html');
 
-        $edit_event_form_tpl->setCurrentBlock('form');
-        $edit_event_form_tpl->setVariable('FORM', $this->form->getHTML());
-        $edit_event_form_tpl->parseCurrentBlock();
-
-        $edit_event_form_tpl->setCurrentBlock('filter');
-        $edit_event_form_tpl->setVariable('FILTER', $filter_html);
-        $edit_event_form_tpl->parseCurrentBlock();
-
-        $edit_event_form_tpl->setCurrentBlock('listing');
-        $edit_event_form_tpl->setVariable('LISTING', $listing_html);
-        $edit_event_form_tpl->parseCurrentBlock();
+        $this->fillBlock($edit_event_form_tpl, 'form', ['FORM' => $this->form->getHTML()]);
+        $this->fillBlock($edit_event_form_tpl, 'filter', ['FILTER' => $filter_html]);
+        $this->fillBlock($edit_event_form_tpl, 'listing', ['LISTING' => $listing_html]);
 
         return $edit_event_form_tpl->get();
     }
@@ -503,27 +475,13 @@ class OpencastEventListing
      */
     protected function renderListingWithingForm(string $listing_html, string $filter_html): string
     {
-        $new_event_form_tpl = new ilTemplate(
-            $this->plugin->getDirectory() . '/templates/default/tpl.OpencastEventCreate.html',
-            true,
-            true
-        );
+        $new_event_form_tpl = $this->template('tpl.OpencastEventCreate.html');
 
-        $new_event_form_tpl->setCurrentBlock('filter');
-        $new_event_form_tpl->setVariable('FILTER', $filter_html);
-        $new_event_form_tpl->parseCurrentBlock();
+        $this->fillBlock($new_event_form_tpl, 'filter', ['FILTER' => $filter_html]);
 
         $new_event_form_tpl->setCurrentBlock('form');
-        $footer_replace_tpl = new ilTemplate(
-            $this->plugin->getDirectory() . '/templates/default/tpl.OpencastEventFooterReplace.html',
-            true,
-            false
-        );
-        $event_listing_replace_tpl = new ilTemplate(
-            $this->plugin->getDirectory() . '/templates/default/tpl.OpencastEventFormEventListingReplace.html',
-            true,
-            true
-        );
+        $footer_replace_tpl = $this->template('tpl.OpencastEventFooterReplace.html', false);
+        $event_listing_replace_tpl = $this->template('tpl.OpencastEventFormEventListingReplace.html');
 
         $event_listing_replace_tpl->setVariable('LISTING', $listing_html);
         $event_listing_replace_tpl->setVariable('FOOTER', $footer_replace_tpl->get());

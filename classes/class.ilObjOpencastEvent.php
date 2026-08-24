@@ -5,7 +5,6 @@ declare(strict_types=1);
 use \elanev\OpencastEvent\Config\PluginConfig as LocalPluginConfig;
 use srag\Plugins\Opencast\Model\Event\EventAPIRepository;
 use srag\Plugins\Opencast\Container\Init;
-use srag\Plugins\Opencast\Model\Config\PluginConfig;
 
 /**
  * Class ilObjOpencastEventAccess
@@ -14,9 +13,8 @@ use srag\Plugins\Opencast\Model\Config\PluginConfig;
  */
 class ilObjOpencastEvent extends ilObjectPlugin
 {
-    protected $table_name;
+    protected string $table_name = ilOpencastEventPlugin::TABLE_NAME;
 
-    /** @var EventAPIRepository*/
     private EventAPIRepository $event_repository;
 
     private bool $online = false;
@@ -30,11 +28,9 @@ class ilObjOpencastEvent extends ilObjectPlugin
      * Constructor
      *
      * @access        public
-     * @param int $a_ref_id
      */
     public function __construct(int $a_ref_id = 0)
     {
-        $this->table_name = ilOpencastEventPlugin::TABLE_NAME;
         $opencast_dic = Init::init();
         $this->event_repository = $opencast_dic[EventAPIRepository::class];
 
@@ -54,23 +50,16 @@ class ilObjOpencastEvent extends ilObjectPlugin
      */
     public function doCreate(bool $clone_mode = false): void
     {
-        global $ilDB;
-
         // Getting new_tab default value from configs.
         $default_new_tab = (bool) LocalPluginConfig::getConfig(LocalPluginConfig::F_THUMBNAIL_LINK);
 
-        $values = [
-            $ilDB->quote($this->getId(), "integer"),
-            $ilDB->quote(0, "integer"),
-            $ilDB->quote($this->getEventId(), "string"),
-            $ilDB->quote(($default_new_tab ? 1 : 0), "integer"),
-            $ilDB->quote(1, "integer"),
-        ];
-
-        $insert_sql = "INSERT INTO {$this->table_name} (id, is_online, event_id, new_tab, maximize) VALUES (" .
-            implode(', ', $values) . ")";
-
-        $ilDB->manipulate($insert_sql);
+        $this->db->insert($this->table_name, [
+            'id' => ['integer', $this->getId()],
+            'is_online' => ['integer', 0],
+            'event_id' => ['text', $this->getEventId()],
+            'new_tab' => ['integer', $default_new_tab ? 1 : 0],
+            'maximize' => ['integer', 1],
+        ]);
     }
 
     /**
@@ -78,18 +67,17 @@ class ilObjOpencastEvent extends ilObjectPlugin
      */
     public function doRead(): void
     {
-        global $ilDB;
+        $set = $this->db->queryF(
+            'SELECT * FROM ' . $this->table_name . ' WHERE id = %s',
+            ['integer'],
+            [$this->getId()]
+        );
 
-        $object_id = $ilDB->quote($this->getId(), "integer");
-        $select_sql = "SELECT * FROM {$this->table_name} WHERE id = $object_id";
-
-        $set = $ilDB->query($select_sql);
-
-        while ($rec = $ilDB->fetchAssoc($set)) {
+        while ($rec = $this->db->fetchAssoc($set)) {
             $this->setOnline(!empty($rec["is_online"]));
             $this->setEventId($rec["event_id"]);
-            $this->setWidth($rec["width"] ? intval($rec["width"]) : 0);
-            $this->setHeight($rec["height"] ? intval($rec["height"]) : 0);
+            $this->setWidth((int) $rec["width"]);
+            $this->setHeight((int) $rec["height"]);
             $this->setNewTab(!empty($rec["new_tab"]));
             $this->setMaximize(!empty($rec["maximize"]));
         }
@@ -100,10 +88,10 @@ class ilObjOpencastEvent extends ilObjectPlugin
             $latest_title = $event->getTitle();
             $latest_description = $event->getDescription();
             if ($event) {
-                if ($latest_title != $this->getTitle()) {
+                if ($latest_title !== $this->getTitle()) {
                     $this->setTitle($latest_title);
                 }
-                if ($latest_description != $this->getDescription()) {
+                if ($latest_description !== $this->getDescription()) {
                     $this->setDescription($latest_description);
                 }
             }
@@ -116,20 +104,16 @@ class ilObjOpencastEvent extends ilObjectPlugin
      */
     public function doUpdate(): void
     {
-        global $ilDB;
-
-        $values = [
-            'is_online = ' . $ilDB->quote($this->isOnline(), "integer"),
-            'event_id = ' . $ilDB->quote($this->getEventId(), "string"),
-            'new_tab = ' . $ilDB->quote($this->getNewTab(), "integer"),
-            'width = ' . $ilDB->quote($this->getWidth(), "integer"),
-            'height = ' . $ilDB->quote($this->getHeight(), "integer"),
-            'maximize = ' . $ilDB->quote($this->getMaximize(), "integer"),
-        ];
-        $object_id = $ilDB->quote($this->getId(), "integer");
-
-        $update_sql = "UPDATE {$this->table_name} SET " . implode(', ', $values) . " WHERE id = $object_id";
-        $ilDB->manipulate($up = $update_sql);
+        $this->db->update($this->table_name, [
+            'is_online' => ['integer', (int) $this->isOnline()],
+            'event_id' => ['text', $this->getEventId()],
+            'new_tab' => ['integer', (int) $this->getNewTab()],
+            'width' => ['integer', $this->getWidth()],
+            'height' => ['integer', $this->getHeight()],
+            'maximize' => ['integer', (int) $this->getMaximize()],
+        ], [
+            'id' => ['integer', $this->getId()],
+        ]);
     }
 
     /**
@@ -137,12 +121,11 @@ class ilObjOpencastEvent extends ilObjectPlugin
      */
     public function doDelete(): void
     {
-        global $ilDB;
-
-        $object_id = $ilDB->quote($this->getId(), "integer");
-
-        $delete_sql = "DELETE FROM {$this->table_name} WHERE id = $object_id";
-        $ilDB->manipulate($delete_sql);
+        $this->db->manipulateF(
+            'DELETE FROM ' . $this->table_name . ' WHERE id = %s',
+            ['integer'],
+            [$this->getId()]
+        );
     }
 
     /**
@@ -176,7 +159,7 @@ class ilObjOpencastEvent extends ilObjectPlugin
      */
     public function isOnline(): bool
     {
-        return $this->online ? true : false;
+        return $this->online;
     }
 
     /**
@@ -206,7 +189,7 @@ class ilObjOpencastEvent extends ilObjectPlugin
      */
     public function setWidth(int $a_val): void
     {
-        $this->width = $a_val ? intval($a_val) : null;
+        $this->width = $a_val !== 0 ? intval($a_val) : null;
     }
 
     /**
@@ -216,7 +199,7 @@ class ilObjOpencastEvent extends ilObjectPlugin
      */
     public function getWidth(): int
     {
-        return !empty($this->width) ? $this->width : 0;
+        return empty($this->width) ? 0 : $this->width;
     }
 
     /**
@@ -226,7 +209,7 @@ class ilObjOpencastEvent extends ilObjectPlugin
      */
     public function setHeight(int $a_val): void
     {
-        $this->height = $a_val ? intval($a_val) : null;
+        $this->height = $a_val !== 0 ? intval($a_val) : null;
     }
 
     /**
@@ -236,7 +219,7 @@ class ilObjOpencastEvent extends ilObjectPlugin
      */
     public function getHeight(): int
     {
-        return !empty($this->height) ? $this->height : 0;
+        return empty($this->height) ? 0 : $this->height;
     }
 
     /**
@@ -256,7 +239,7 @@ class ilObjOpencastEvent extends ilObjectPlugin
      */
     public function getNewTab(): bool
     {
-        return $this->new_tab ? true : false;
+        return $this->new_tab;
     }
 
     /**
@@ -276,6 +259,6 @@ class ilObjOpencastEvent extends ilObjectPlugin
      */
     public function getMaximize(): bool
     {
-        return $this->maximize ? true : false;
+        return $this->maximize;
     }
 }

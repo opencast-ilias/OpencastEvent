@@ -51,7 +51,6 @@ class ilOpencastEventPlugin extends ilRepositoryObjectPlugin
 
     /**
      * Provide a readable path for loading the resources like js and css files by ILIAS.
-     * @return string
      */
     public function getResourcesPath(): string
     {
