@@ -526,9 +526,9 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
         $newObj->create();
 
         if ($newObj) {
-            $parent_id = $this->node_id;
-            $this->node_id = null;
-            $this->putObjectInTree($newObj, $parent_id);
+            // ILIAS 10 no longer declares ilObjectGUI::$node_id; putObjectInTree() resolves the
+            // parent from the requested ref id when none is passed.
+            $this->putObjectInTree($newObj);
 
             // set default permissions
             ilObjOpencastEventAccess::setDefaultPerms($newObj->getRefId());
