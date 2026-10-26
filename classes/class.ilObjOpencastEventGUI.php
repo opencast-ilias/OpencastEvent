@@ -339,6 +339,11 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
      */
     public function streamVideo(): void
     {
+        // the player streams whatever event id the request carries, so it must be the one of this object
+        if (!$this->isEventOfObject($this->http->request()->getQueryParams()[xoctPlayerGUI::IDENTIFIER] ?? null)) {
+            echo $this->txt('access_video_failed');
+            exit(0);
+        }
         try {
             $this->opencast_player_gui->streamVideo();
         } catch (\Throwable $th) {
@@ -371,7 +376,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
             'message' => 'Unable to generate access token.',
         ];
         if (
-            $event_id &&
+            $this->isEventOfObject($event_id) &&
             method_exists($this->api, 'isJWTActivated') &&
             $this->api->isJWTActivated() &&
             ilObjOpencastEventAccess::hasPermission('read', $this->ref_id, $user_id)
@@ -389,6 +394,18 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
 
         $response_json_encoded = json_encode($response);
         $this->sendReponse($response_json_encoded);
+    }
+
+    /**
+     * Checks whether the given event id is the one this object refers to.
+     */
+    private function isEventOfObject(?string $event_id): bool
+    {
+        /** @disregard P1013 The method "getEventId" exists in ilObjOpencastEvent::getEventId */
+        return $event_id !== null
+            && $event_id !== ''
+            && $this->object instanceof ilObjOpencastEvent
+            && $event_id === $this->object->getEventId();
     }
 
     //////////////////////
