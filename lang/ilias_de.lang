@@ -61,3 +61,6 @@ root_create_xoce#:#Opencast-Video-Objekt anlegen
 cat_create_xoce#:#Opencast-Video-Objekt anlegen
 grp_create_xoce#:#Opencast-Video-Objekt anlegen
 fold_create_xoce#:#Opencast-Video-Objekt anlegen
+video_retrieval_failed#:#Fehler: Video konnte nicht gefunden werden.
+access_video_failed#:#Fehler: Video kann nicht abgerufen werden.
+stream_video_failed#:#Fehler: Das Video konnte nicht gestreamt werden.

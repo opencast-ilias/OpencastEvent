@@ -145,4 +145,23 @@ class ilObjOpencastEventAccess extends ilObjectPluginAccess
         global $ilUser;
         return $ilUser->getId() === ANONYMOUS_USER_ID;
     }
+
+    /**
+     * Checks whether the object could be accessed.
+     * @param string $permission
+     * @param null|int $ref_id
+     * @param null|int $user_id
+     * @return bool
+     */
+    public static function hasPermission(string $permission, ?int $ref_id = null, ?int $user_id = null): bool
+    {
+        global $DIC;
+        $access = $DIC->access();
+        $ref_id ??= (int) ($DIC->http()->request()->getQueryParams()['ref_id'] ?? 0);
+
+        if ($user_id === null) {
+            return $access->checkAccess($permission, '', $ref_id);
+        }
+        return $access->checkAccessOfUser($user_id, $permission, '', $ref_id);
+    }
 }
