@@ -29,7 +29,7 @@ class ilObjOpencastEvent extends ilObjectPlugin
     /** @var ?int width */
     private ?int $width = null;
 
-    /** @var ?int width */
+    /** @var ?int height */
     private ?int $height = null;
 
     /** @var bool new tab flag */
@@ -160,7 +160,7 @@ class ilObjOpencastEvent extends ilObjectPlugin
     /**
      * Do Cloning
      */
-    public function doCloneObject(object $new_obj, string|int $a_target_id, $a_copy_id = null): void
+    protected function doCloneObject(ilObject2 $new_obj, int $a_target_id, ?int $a_copy_id = null): void
     {
         $new_obj->setOnline($this->isOnline());
         $new_obj->setEventId($this->getEventId());
