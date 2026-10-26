@@ -377,32 +377,27 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
     {
         // the player streams whatever event id the request carries, so it must be the one of this object
         if (!$this->isEventOfObject($this->http->request()->getQueryParams()[xoctPlayerGUI::IDENTIFIER] ?? null)) {
-            echo $this->txt('access_video_failed');
-            exit(0);
+            $this->sendReponse($this->txt('access_video_failed'));
         }
         try {
             $this->opencast_player_gui->streamVideo();
         } catch (\Throwable $th) {
             $message = $th->getMessage();
             if (
-                $message &&
-                (str_contains($message, '401') ||
-                str_contains($message, '403'))
+                str_contains($message, '401') ||
+                str_contains($message, '403')
             ) {
-                $message = $this->txt('access_video_failed');
+                $this->sendReponse($this->txt('access_video_failed'));
             }
-            echo $this->txt('stream_video_failed');
+            $this->sendReponse($this->txt('stream_video_failed'));
         }
-        exit(0);
     }
 
     /**
      * A domesticated version of JWT refresh token method,
      * in order to check the access to this object before providing access token.
-     *
-     * @return void
      */
-    public function refreshJwtAsync()
+    public function refreshJwtAsync(): void
     {
         global $DIC;
         $user_id = $DIC->user()->getId();
