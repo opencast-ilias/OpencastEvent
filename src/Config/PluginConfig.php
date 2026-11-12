@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 namespace elanev\OpencastEvent\Config;
 
 use ActiveRecord;
@@ -84,7 +85,6 @@ class PluginConfig extends ActiveRecord
 
     /**
      * @param string $name
-     * @return mixed
      */
     public static function getConfig(string $name): mixed
     {
@@ -106,7 +106,6 @@ class PluginConfig extends ActiveRecord
 
     /**
      * @param string $name
-     * @param mixed $value
      */
     public static function setConfig(?string $name, mixed $value): void
     {
@@ -115,7 +114,7 @@ class PluginConfig extends ActiveRecord
             $obj->setValue(json_encode($value));
             $obj->update();
         } else {
-            $obj = new self;
+            $obj = new self();
             $obj->setName($name);
             $obj->setValue(json_encode($value));
             $obj->create();

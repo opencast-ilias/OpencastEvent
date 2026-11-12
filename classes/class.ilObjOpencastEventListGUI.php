@@ -43,7 +43,7 @@ class ilObjOpencastEventListGUI extends ilObjectPluginListGUI
         $this->cut_enabled = true;
         $this->copy_enabled = true;
 
-        $commands = [
+        return [
             [
                 'permission' => 'read',
                 'cmd' => 'showContent',
@@ -55,8 +55,6 @@ class ilObjOpencastEventListGUI extends ilObjectPluginListGUI
                 "txt" => $this->txt('event_settings')
             ],
         ];
-
-        return $commands;
     }
 
     /**

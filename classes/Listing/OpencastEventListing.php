@@ -1,10 +1,10 @@
 <?php
 
 declare(strict_types=1);
+
 namespace elanev\OpencastEvent\Listing;
 
 use ilOpencastEventPlugin;
-use ilOpenCastPlugin;
 use ilTemplate;
 use ILIAS\UI\Factory;
 use ILIAS\UI\Renderer;
@@ -93,10 +93,6 @@ class OpencastEventListing
      * @var ilOpencastEventPlugin
      */
     protected ilOpencastEventPlugin $plugin;
-    /**
-     * @var ilOpenCastPlugin
-     */
-    private ilOpenCastPlugin $opencast_plugin;
 
     /** @var string the filter id */
     public string $filter_id;
@@ -105,10 +101,10 @@ class OpencastEventListing
     private Translator $opencast_translator;
 
 
-    function __construct(
+    public function __construct(
         protected \ilObjOpencastEventGUI $gui,
         protected ilPropertyFormGUI $form,
-        private int $ref_id = 0,
+        int $ref_id = 0,
         private bool $is_new = true
     ) {
         global $DIC;
@@ -117,7 +113,6 @@ class OpencastEventListing
         $this->renderer = $DIC->ui()->renderer();
         $this->plugin = $this->gui->getPlugin();
         $opencast_dic = Init::init();
-        $this->opencast_plugin = $opencast_dic[ilOpenCastPlugin::class];
         $this->opencast_translator = $opencast_dic->translator();
         $this->filter_id = $this->gui::class . '_filter_' . $ref_id;
     }
@@ -133,21 +128,21 @@ class OpencastEventListing
     protected function getListingFilter(): StandardFilter
     {
         $filter_inputs = [
-            self::F_TEXTFILTER  => $this->ui_factory->input()->field()
+            self::F_TEXTFILTER => $this->ui_factory->input()->field()
                                         ->text($this->plugin->txt(self::F_TEXTFILTER)),
-            self::F_SERIES      => $this->ui_factory->input()->field()
+            self::F_SERIES => $this->ui_factory->input()->field()
                                         ->select(
                                             $this->opencast_translator->translate('event_series'),
                                             $this->gui->getSeriesFilterOptions()
                                         ),
-            self::F_START       => $this->ui_factory->input()->field()
+            self::F_START => $this->ui_factory->input()->field()
                                         ->duration($this->opencast_translator->translate('event_start'))
                                         ->withUseTime(false),
         ];
 
         $action = $this->getActionLink('filter');
 
-        $filter = $this->dic->uiService()->filter()->standard(
+        return $this->dic->uiService()->filter()->standard(
             $this->filter_id,
             $action,
             $filter_inputs,
@@ -155,8 +150,6 @@ class OpencastEventListing
             true,
             true
         );
-
-        return $filter;
     }
 
     /**
@@ -194,21 +187,19 @@ class OpencastEventListing
      */
     protected function getListingSort(): \ILIAS\UI\Component\ViewControl\Sortation
     {
-        $sortation = $this->ui_factory->viewControl()->sortation(
+        return $this->ui_factory->viewControl()->sortation(
             [
-                self::F_SORT_START_ASC      => $this->plugin->txt(self::F_SORT_START_ASC),
-                self::F_SORT_START_DESC     => $this->plugin->txt(self::F_SORT_START_DESC),
-                self::F_SORT_TITLE_ASC      => $this->plugin->txt(self::F_SORT_TITLE_ASC),
-                self::F_SORT_TITLE_DESC     => $this->plugin->txt(self::F_SORT_TITLE_DESC),
-                self::F_SORT_SERIES_ASC     => $this->plugin->txt(self::F_SORT_SERIES_ASC),
-                self::F_SORT_SERIES_DESC    => $this->plugin->txt(self::F_SORT_SERIES_DESC),
-                self::F_SORT_LOCATION_ASC   => $this->plugin->txt(self::F_SORT_LOCATION_ASC),
-                self::F_SORT_LOCATION_DESC  => $this->plugin->txt(self::F_SORT_LOCATION_DESC),
+                self::F_SORT_START_ASC => $this->plugin->txt(self::F_SORT_START_ASC),
+                self::F_SORT_START_DESC => $this->plugin->txt(self::F_SORT_START_DESC),
+                self::F_SORT_TITLE_ASC => $this->plugin->txt(self::F_SORT_TITLE_ASC),
+                self::F_SORT_TITLE_DESC => $this->plugin->txt(self::F_SORT_TITLE_DESC),
+                self::F_SORT_SERIES_ASC => $this->plugin->txt(self::F_SORT_SERIES_ASC),
+                self::F_SORT_SERIES_DESC => $this->plugin->txt(self::F_SORT_SERIES_DESC),
+                self::F_SORT_LOCATION_ASC => $this->plugin->txt(self::F_SORT_LOCATION_ASC),
+                self::F_SORT_LOCATION_DESC => $this->plugin->txt(self::F_SORT_LOCATION_DESC),
             ],
             $this->getListingSortValue()
         )->withTargetURL($this->getActionLink('sortation'), self::F_SORT_QUERY_PARAM);
-
-        return $sortation;
     }
 
     /**
@@ -220,7 +211,6 @@ class OpencastEventListing
      */
     protected function getListingSortValue(): string
     {
-        $selected = self::F_SORT_START_DESC;
         if (
             $this->dic->http()->wrapper()->query()->has(self::F_SORT_QUERY_PARAM) &&
             $this->dic->http()->wrapper()->query()->retrieve(
@@ -228,12 +218,12 @@ class OpencastEventListing
                 $this->dic->refinery()->kindlyTo()->string()
             )
         ) {
-            $selected = $this->dic->http()->wrapper()->query()->retrieve(
+            return $this->dic->http()->wrapper()->query()->retrieve(
                 self::F_SORT_QUERY_PARAM,
                 $this->dic->refinery()->kindlyTo()->string()
             );
         }
-        return $selected;
+        return self::F_SORT_START_DESC;
     }
 
     /**
@@ -244,15 +234,15 @@ class OpencastEventListing
      */
     protected function getListingPagination(int $total): \ILIAS\UI\Component\ViewControl\Pagination
     {
-        $pagination = $this->ui_factory->viewControl()->pagination()
+        return $this->ui_factory->viewControl()->pagination()
             ->withTargetURL(
-                $this->getActionLink('pagination'), self::F_PAGINATION_QUERY_PARAM
+                $this->getActionLink('pagination'),
+                self::F_PAGINATION_QUERY_PARAM
             )
             ->withTotalEntries($total)
             ->withPageSize(self::F_PAGINATION_PER_PAGE)
             ->withMaxPaginationButtons(2)
             ->withCurrentPage($this->getCurrentPage());
-        return $pagination;
     }
 
     /**
@@ -284,8 +274,7 @@ class OpencastEventListing
     protected function getApiOffset(): int
     {
         $global_offset = $this->getCurrentPage() * self::F_PAGINATION_PER_PAGE;
-        $api_page = intdiv($global_offset, self::F_PAGINATION_API_LIMIT);
-        return $api_page;
+        return intdiv($global_offset, self::F_PAGINATION_API_LIMIT);
     }
 
     /**
@@ -529,7 +518,9 @@ class OpencastEventListing
         $event_listing_replace_tpl->setVariable('FOOTER', $footer_replace_tpl->get());
 
         $form_with_listing = str_replace(
-            $footer_replace_tpl->get(), $event_listing_replace_tpl->get(), $this->form->getHTML()
+            $footer_replace_tpl->get(),
+            $event_listing_replace_tpl->get(),
+            $this->form->getHTML()
         );
         $new_event_form_tpl->setVariable('FORM', $form_with_listing);
         $new_event_form_tpl->parseCurrentBlock();

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use elanev\OpencastEvent\Config\PluginConfig as LocalPluginConfig;
+
 /**
  * ilOpencastEventConfigGUI
  *
@@ -61,11 +62,6 @@ class ilOpencastEventConfigGUI extends ilPluginConfigGUI
                 'value' => (bool) $this->config_object::getConfig($this->config_object::F_THUMBNAIL_LINK) ?? false
             ]
         ];
-    }
-
-    public function executeCommand(): void
-    {
-        parent::executeCommand();
     }
 
     public function performCommand($cmd): void

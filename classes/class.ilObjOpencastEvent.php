@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-use \elanev\OpencastEvent\Config\PluginConfig as LocalPluginConfig;
+use elanev\OpencastEvent\Config\PluginConfig as LocalPluginConfig;
 use srag\Plugins\Opencast\Model\Event\EventAPIRepository;
 use srag\Plugins\Opencast\Container\Init;
-use srag\Plugins\Opencast\Model\Config\PluginConfig;
 
 /**
  * Class ilObjOpencastEvent
@@ -112,10 +111,10 @@ class ilObjOpencastEvent extends ilObjectPlugin
             $latest_title = $event->getTitle();
             $latest_description = $event->getDescription();
             if ($event) {
-                if ($latest_title != $this->getTitle()) {
+                if ($latest_title !== $this->getTitle()) {
                     $this->setTitle($latest_title);
                 }
-                if ($latest_description != $this->getDescription()) {
+                if ($latest_description !== $this->getDescription()) {
                     $this->setDescription($latest_description);
                 }
             }
@@ -188,7 +187,7 @@ class ilObjOpencastEvent extends ilObjectPlugin
      */
     public function isOnline(): bool
     {
-        return $this->online ? true : false;
+        return $this->online;
     }
 
     /**
@@ -268,7 +267,7 @@ class ilObjOpencastEvent extends ilObjectPlugin
      */
     public function getNewTab(): bool
     {
-        return $this->new_tab ? true : false;
+        return $this->new_tab;
     }
 
     /**
@@ -288,6 +287,6 @@ class ilObjOpencastEvent extends ilObjectPlugin
      */
     public function getMaximize(): bool
     {
-        return $this->maximize ? true : false;
+        return $this->maximize;
     }
 }

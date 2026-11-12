@@ -99,8 +99,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
 
         $this->ref_id = $this->retrieveQueryParam(
             'ref_id',
-            $this->dic->refinery()->kindlyTo()->int(),
-            null
+            $this->dic->refinery()->kindlyTo()->int()
         );
 
         $this->change_event = $this->retrieveQueryParam(
@@ -162,7 +161,7 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
      */
     protected function setHeaderOfflineStatus(): void
     {
-        if ($this->object &&
+        if ($this->object instanceof \ilObject &&
             $this->object instanceof ilObjOpencastEvent &&
             !$this->object->isOnline()) {
             $this->main_tpl->setAlertProperties([
@@ -204,11 +203,9 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
             $this->ctrl->redirectByClass('ilDashboardGUI', '');
         }
 
-        $forms = [
+        return [
             self::CFORM_NEW => $this->initCreateForm($a_new_type),
         ];
-
-        return $forms;
     }
 
     ///////////////////
@@ -265,15 +262,10 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
                 $this->main_tpl->setOnScreenMessage('success', $this->txt("create_successful"), true);
 
                 $args = func_get_args();
-                if ($args) {
-                    $this->afterSave($newEventObj, $args);
-                } else {
-                    $this->afterSave($newEventObj);
-                }
+                $this->afterSave($newEventObj);
                 return;
-            } else {
-                $this->main_tpl->setOnScreenMessage('failure', $this->txt("msg_creation_failed"));
             }
+            $this->main_tpl->setOnScreenMessage('failure', $this->txt("msg_creation_failed"));
         }
 
         $this->ctrl->redirect($this, 'create');
@@ -472,9 +464,9 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
         /** @disregard P1013 The method "getMaximize" exists in ilObjOpencastEvent::getMaximize */
         $js_config->maximize = $this->object->getMaximize();
         /** @disregard P1013 The method "getWidth" exists in ilObjOpencastEvent::getWidth */
-        $js_config->width = $this->object->getWidth() ? $this->object->getWidth() : self::DEFAULT_WIDTH;
+        $js_config->width = $this->object->getWidth() ?: self::DEFAULT_WIDTH;
         /** @disregard P1013 The method "getHeight" exists in ilObjOpencastEvent::getHeight */
-        $js_config->height = $this->object->getHeight() ? $this->object->getHeight() : self::DEFAULT_HEIGHT;
+        $js_config->height = $this->object->getHeight() ?: self::DEFAULT_HEIGHT;
         return $js_config;
     }
 
@@ -531,13 +523,13 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
         $this->object->setTitle($event->getTitle());
         $this->object->setDescription($event->getDescription());
         /** @disregard P1013 The method "setOnline" exists in ilObjOpencastEvent::setOnline */
-        $this->object->setOnline($form->getInput('online') ? true : false);
+        $this->object->setOnline((bool) $form->getInput('online'));
         /** @disregard P1013 The method "setEventId" exists in ilObjOpencastEvent::setEventId */
         $this->object->setEventId($form->getInput('event_id'));
         /** @disregard P1013 The method "setNewTab" exists in ilObjOpencastEvent::setNewTab */
-        $this->object->setNewTab($form->getInput('new_tab') ? true : false);
+        $this->object->setNewTab((bool) $form->getInput('new_tab'));
         /** @disregard P1013 The method "setMaximize" exists in ilObjOpencastEvent::setMaximize */
-        $this->object->setMaximize($form->getInput('size_type') == 'maximize' ? true : false);
+        $this->object->setMaximize($form->getInput('size_type') == 'maximize');
         if ($form->getInput('size_type') == 'custom') {
             $embed_size = $form->getInput('embed_size');
             /** @disregard P1013 The method "setWidth" exists in ilObjOpencastEvent::setWidth */
@@ -618,9 +610,9 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
             // preview image
             $preview_image = new ilNonEditableValueGUI($this->opencast_translator->translate('event_preview'), '', true);
             /** @disregard P1013 The method "setWidth" exists in ilObjOpencastEvent::setWidth */
-            $preview_image_width = $this->object->getWidth() ? $this->object->getWidth() : self::DEFAULT_WIDTH;
+            $preview_image_width = $this->object->getWidth() ?: self::DEFAULT_WIDTH;
             /** @disregard P1013 The method "getHeight" exists in ilObjOpencastEvent::getHeight */
-            $preview_image_height = $this->object->getHeight() ? $this->object->getHeight() : self::DEFAULT_HEIGHT;
+            $preview_image_height = $this->object->getHeight() ?: self::DEFAULT_HEIGHT;
             $preview_image_tpl = new ilTemplate($this->getPlugin()->getDirectory() . '/templates/default/tpl.OpencastEventPreviewImage.html', false, false);
             $preview_image_tpl->setVariable('DYNAMIC_WIDTH', $preview_image_width);
             $preview_image_tpl->setVariable('DYNAMIC_HEIGHT', $preview_image_height);
@@ -716,8 +708,8 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
             'current_title' => $this->object->getTitle(),
             'current_event_id' => $this->object->getEventId(),
             'embed_size' => [
-                'width' => $this->object->getWidth() ? $this->object->getWidth() : self::DEFAULT_WIDTH,
-                'height' => $this->object->getHeight() ? $this->object->getHeight() : self::DEFAULT_HEIGHT,
+                'width' => $this->object->getWidth() ?: self::DEFAULT_WIDTH,
+                'height' => $this->object->getHeight() ?: self::DEFAULT_HEIGHT,
                 'constr_prop' => true
             ],
             'new_tab' => $this->object->getNewtab()
@@ -747,12 +739,8 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
      */
     private function checkParentGroupCourse(): bool
     {
-        $is_checked = false;
-        if (isset($this->ref_id) && $this->tree->checkForParentType($this->ref_id, 'grp') > 0 ||
-            $this->tree->checkForParentType($this->ref_id, 'crs') > 0) {
-            $is_checked = true;
-        }
-        return $is_checked;
+        return isset($this->ref_id) && $this->tree->checkForParentType($this->ref_id, 'grp') > 0 ||
+            $this->tree->checkForParentType($this->ref_id, 'crs') > 0;
     }
 
     /**
