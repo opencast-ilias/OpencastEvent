@@ -122,6 +122,7 @@ class OpencastEventListing
      *
      * @param string $file Template file name.
      * @param bool $remove_unknown_variables Strip unresolved template variables.
+     * @return ilTemplate
      */
     private function template(string $file, bool $remove_unknown_variables = true): ilTemplate
     {

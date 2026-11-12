@@ -124,6 +124,8 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
     /**
      * Typed accessor for the current object, so plugin-specific methods are
      * resolvable without per-call type hints.
+     *
+     * @return ilObjOpencastEvent
      */
     private function getEventObject(): ilObjOpencastEvent
     {
@@ -134,6 +136,10 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
 
     /**
      * Return the stored dimension or the given default when none is set.
+     *
+     * @param int $value The stored width or height, 0 when none is set.
+     * @param int $default The value to use when none is set.
+     * @return int
      */
     private function effectiveDimension(int $value, int $default): int
     {
@@ -438,6 +444,9 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
 
     /**
      * Checks whether the given event id is the one this object refers to.
+     *
+     * @param ?string $event_id The event id the request carries.
+     * @return bool
      */
     private function isEventOfObject(?string $event_id): bool
     {
@@ -745,8 +754,10 @@ class ilObjOpencastEventGUI extends ilObjectPluginGUI
      */
     private function checkParentGroupCourse(): bool
     {
-        return isset($this->ref_id) && $this->tree->checkForParentType($this->ref_id, 'grp') > 0 ||
-            $this->tree->checkForParentType($this->ref_id, 'crs') > 0;
+        return isset($this->ref_id) && (
+            $this->tree->checkForParentType($this->ref_id, 'grp') > 0 ||
+            $this->tree->checkForParentType($this->ref_id, 'crs') > 0
+        );
     }
 
     /**
